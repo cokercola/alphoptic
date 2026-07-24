@@ -1,10 +1,10 @@
 {
-  "updated_at": "2026-07-24T18:01:15.543413Z",
+  "updated_at": "2026-07-24T19:32:26.417352Z",
   "summary": {
-    "bills_tracked": 3,
-    "high_impact": 0,
-    "new_signals_today": 3,
-    "industries_affected": 3
+    "bills_tracked": 10,
+    "high_impact": 2,
+    "new_signals_today": 10,
+    "industries_affected": 10
   },
   "signals": [
     {
@@ -20,17 +20,17 @@
       "cosponsors": 4,
       "last_action": "Referred to the House Committee on Ways and Means.",
       "next_event": "TBD",
-      "summary": "Bill details are unavailable, making precise impact assessment impossible; likely targets pet or animal welfare regulations with uncertain industry effects.",
+      "summary": "Insufficient bill summary available to determine specific impact on pet industry or animal welfare regulations.",
       "companies": [
         {
-          "ticker": "FRPT",
-          "name": "Freshpet Inc.",
+          "ticker": "IDXX",
+          "name": "IDEXX Laboratories",
           "effect": "mixed",
           "exposure": 20
         },
         {
-          "ticker": "CHWY",
-          "name": "Chewy Inc.",
+          "ticker": "PETS",
+          "name": "PetMed Express",
           "effect": "mixed",
           "exposure": 20
         }
@@ -39,58 +39,294 @@
     {
       "bill_id": "S622",
       "title": "Leech Lake Reservation Restoration Amendments Act of 2025",
-      "industry": "Real Estate / Federal Land Management",
+      "industry": "Land Management & Federal Real Estate",
       "direction": "mixed",
       "passage_probability": 25,
-      "impact_score": 25,
+      "impact_score": 18,
       "confidence": 55,
       "status": "Held at the desk.",
       "sponsor": "Sen. Smith, Tina [D-MN]",
       "cosponsors": 1,
       "last_action": "Held at the desk.",
       "next_event": "TBD",
-      "summary": "Federal land in Minnesota's Chippewa National Forest transfers to Leech Lake Band of Ojibwe, with minimal broad commercial industry impact.",
-      "companies": [
-        {
-          "ticker": "WY",
-          "name": "Weyerhaeuser Company",
-          "effect": "mixed",
-          "exposure": 10
-        }
-      ]
+      "summary": "Federal land in Minnesota's Chippewa National Forest transfers to Leech Lake Band of Ojibwe, with limited broad commercial industry impact.",
+      "companies": []
     },
     {
       "bill_id": "HR3101",
       "title": "SHIELD Act",
-      "industry": "Technology / Patent Law",
+      "industry": "Technology / Cybersecurity",
       "direction": "mixed",
       "passage_probability": 28,
-      "impact_score": 40,
-      "confidence": 20,
+      "impact_score": 30,
+      "confidence": 15,
       "status": "Referred to the House Committee on the Judiciary.",
       "sponsor": "Rep. Garcia, Robert [D-CA-42]",
       "cosponsors": 17,
       "last_action": "Referred to the House Committee on the Judiciary.",
       "next_event": "TBD",
-      "summary": "Insufficient bill summary to assess impact; SHIELD Act name suggests patent troll litigation reform affecting tech sector broadly.",
+      "summary": "Insufficient bill summary available to determine concrete industry impact or affected companies with confidence.",
+      "companies": []
+    },
+    {
+      "bill_id": "HR6179",
+      "title": "Clean Cloud Act of 2025",
+      "industry": "Cloud Computing & Data Centers",
+      "direction": "negative",
+      "passage_probability": 26,
+      "impact_score": 72,
+      "confidence": 78,
+      "status": "Referred to the House Committee on Energy and Commerce.",
+      "sponsor": "Rep. Cohen, Steve [D-TN-9]",
+      "cosponsors": 9,
+      "last_action": "Referred to the House Committee on Energy and Commerce.",
+      "next_event": "TBD",
+      "summary": "Bill imposes escalating emissions fees on large data centers and cryptomining facilities, raising operating costs significantly through 2035 and beyond.",
       "companies": [
         {
-          "ticker": "AAPL",
-          "name": "Apple Inc.",
+          "ticker": "AMZN",
+          "name": "Amazon (AWS)",
+          "effect": "negative",
+          "exposure": 75
+        },
+        {
+          "ticker": "MSFT",
+          "name": "Microsoft",
+          "effect": "negative",
+          "exposure": 70
+        },
+        {
+          "ticker": "GOOGL",
+          "name": "Alphabet (Google Cloud)",
+          "effect": "negative",
+          "exposure": 68
+        },
+        {
+          "ticker": "MARA",
+          "name": "MARA Holdings",
+          "effect": "negative",
+          "exposure": 90
+        }
+      ]
+    },
+    {
+      "bill_id": "HR6983",
+      "title": "PRICE Act",
+      "industry": "Energy & Commerce",
+      "direction": "mixed",
+      "passage_probability": 25,
+      "impact_score": 30,
+      "confidence": 10,
+      "status": "Referred to the House Committee on Energy and Commerce.",
+      "sponsor": "Rep. Menendez, Robert [D-NJ-8]",
+      "cosponsors": 4,
+      "last_action": "Referred to the House Committee on Energy and Commerce.",
+      "next_event": "TBD",
+      "summary": "Insufficient information available to assess bill impact without a summary or full text.",
+      "companies": []
+    },
+    {
+      "bill_id": "HR2152",
+      "title": "AI PLAN Act",
+      "industry": "Financial Technology & Cybersecurity",
+      "direction": "positive",
+      "passage_probability": 26,
+      "impact_score": 38,
+      "confidence": 62,
+      "status": "Placed on the Union Calendar, Calendar No. 615.",
+      "sponsor": "Rep. Nunn, Zachary [R-IA-3]",
+      "cosponsors": 7,
+      "last_action": "Placed on the Union Calendar, Calendar No. 615.",
+      "next_event": "TBD",
+      "summary": "Bill mandates federal study of AI-driven financial crime risks, likely boosting demand for AI fraud detection and cybersecurity firms.",
+      "companies": [
+        {
+          "ticker": "PANW",
+          "name": "Palo Alto Networks",
+          "effect": "positive",
+          "exposure": 35
+        },
+        {
+          "ticker": "FEYE",
+          "name": "Mandiant (Google Cloud)",
+          "effect": "positive",
+          "exposure": 28
+        },
+        {
+          "ticker": "BAH",
+          "name": "Booz Allen Hamilton",
+          "effect": "positive",
+          "exposure": 45
+        },
+        {
+          "ticker": "NICE",
+          "name": "NICE Ltd.",
+          "effect": "positive",
+          "exposure": 40
+        }
+      ]
+    },
+    {
+      "bill_id": "HR7147",
+      "title": "Homeland Security and Further Additional Continuing Appropriations Act, 2026.",
+      "industry": "Defense & Homeland Security",
+      "direction": "positive",
+      "passage_probability": 25,
+      "impact_score": 62,
+      "confidence": 72,
+      "status": "Became Public Law No: 119-86.",
+      "sponsor": "Rep. Cole, Tom [R-OK-4]",
+      "cosponsors": 0,
+      "last_action": "Became Public Law No: 119-86.",
+      "next_event": "TBD",
+      "summary": "Funds DHS operations for FY2026, sustaining contracts for border security, cybersecurity, and emergency management private-sector partners.",
+      "companies": [
+        {
+          "ticker": "PLTR",
+          "name": "Palantir Technologies",
+          "effect": "positive",
+          "exposure": 55
+        },
+        {
+          "ticker": "CACI",
+          "name": "CACI International",
+          "effect": "positive",
+          "exposure": 60
+        },
+        {
+          "ticker": "BAH",
+          "name": "Booz Allen Hamilton",
+          "effect": "positive",
+          "exposure": 65
+        },
+        {
+          "ticker": "SAIC",
+          "name": "Science Applications International Corp",
+          "effect": "positive",
+          "exposure": 58
+        }
+      ]
+    },
+    {
+      "bill_id": "HR7006",
+      "title": "Financial Services and General Government and National Security, Department of State, and Related Programs Appropriations Act, 2026",
+      "industry": "Government & Financial Services",
+      "direction": "mixed",
+      "passage_probability": 25,
+      "impact_score": 45,
+      "confidence": 55,
+      "status": "Received in the Senate.",
+      "sponsor": "Rep. Cole, Tom [R-OK-4]",
+      "cosponsors": 0,
+      "last_action": "Received in the Senate.",
+      "next_event": "TBD",
+      "summary": "Broad federal appropriations bill funding Treasury, State Department, and foreign aid programs with mixed effects across financial and defense sectors.",
+      "companies": [
+        {
+          "ticker": "BAC",
+          "name": "Bank of America",
+          "effect": "mixed",
+          "exposure": 30
+        },
+        {
+          "ticker": "GS",
+          "name": "Goldman Sachs",
+          "effect": "mixed",
+          "exposure": 35
+        },
+        {
+          "ticker": "LMT",
+          "name": "Lockheed Martin",
           "effect": "positive",
           "exposure": 40
         },
         {
-          "ticker": "GOOGL",
-          "name": "Alphabet Inc.",
+          "ticker": "RTX",
+          "name": "RTX Corporation",
           "effect": "positive",
           "exposure": 38
+        }
+      ]
+    },
+    {
+      "bill_id": "HR9040",
+      "title": "Regulate the Price of All Drugs Act",
+      "industry": "Pharmaceuticals & Biotechnology",
+      "direction": "negative",
+      "passage_probability": 25,
+      "impact_score": 82,
+      "confidence": 45,
+      "status": "Referred to the Committee on Energy and Commerce, and in addition to the Committees on the Judiciary, and Financial Services, for a period to be subsequently determined by the Speaker, in each case for consideration of such provisions as fall within the jurisdiction of the committee concerned.",
+      "sponsor": "Rep. Sherman, Brad [D-CA-32]",
+      "cosponsors": 0,
+      "last_action": "Referred to the Committee on Energy and Commerce, and in addition to the Committees on the Judiciary, and Financial Services, for a period to be subsequently determined by the Speaker, in each case for consideration of such provisions as fall within the jurisdiction of the committee concerned.",
+      "next_event": "TBD",
+      "summary": "Broad drug price regulation would significantly compress pharmaceutical revenues and profit margins across the industry.",
+      "companies": [
+        {
+          "ticker": "JNJ",
+          "name": "Johnson & Johnson",
+          "effect": "negative",
+          "exposure": 75
         },
         {
-          "ticker": "MSFT",
-          "name": "Microsoft Corporation",
-          "effect": "positive",
-          "exposure": 35
+          "ticker": "PFE",
+          "name": "Pfizer",
+          "effect": "negative",
+          "exposure": 78
+        },
+        {
+          "ticker": "MRK",
+          "name": "Merck & Co.",
+          "effect": "negative",
+          "exposure": 80
+        },
+        {
+          "ticker": "ABBV",
+          "name": "AbbVie",
+          "effect": "negative",
+          "exposure": 85
+        }
+      ]
+    },
+    {
+      "bill_id": "HR9393",
+      "title": "Lower Costs, More Transparency Act of 2026",
+      "industry": "Healthcare / Pharmacy Benefit Management",
+      "direction": "negative",
+      "passage_probability": 25,
+      "impact_score": 62,
+      "confidence": 35,
+      "status": "Forwarded by Subcommittee to Full Committee by Voice Vote.",
+      "sponsor": "Rep. Guthrie, Brett [R-KY-2]",
+      "cosponsors": 1,
+      "last_action": "Forwarded by Subcommittee to Full Committee by Voice Vote.",
+      "next_event": "TBD",
+      "summary": "Bill likely targets drug pricing transparency and PBM practices, pressuring pharmacy benefit managers and insurers while potentially benefiting consumers.",
+      "companies": [
+        {
+          "ticker": "CVS",
+          "name": "CVS Health",
+          "effect": "negative",
+          "exposure": 70
+        },
+        {
+          "ticker": "CI",
+          "name": "Cigna Group",
+          "effect": "negative",
+          "exposure": 65
+        },
+        {
+          "ticker": "UNH",
+          "name": "UnitedHealth Group",
+          "effect": "negative",
+          "exposure": 60
+        },
+        {
+          "ticker": "ESRX",
+          "name": "Express Scripts (Evernorth)",
+          "effect": "negative",
+          "exposure": 72
         }
       ]
     }
