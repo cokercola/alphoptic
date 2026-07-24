@@ -18,7 +18,7 @@ async function loadDashboard() {
     <a class="signal-card ${s.direction}" href="bills/detail.html?id=${s.bill_id}">
       <div class="signal-head">
         <span>${s.bill_id} — ${s.title}</span>
-        <span class="prob ${s.direction}">${s.direction.toUpperCase()} ${s.passage_probability}%</span>
+        <span class="prob ${s.direction}">${s.direction.toUpperCase()} ${s.passage_probability}%${infoIcon(TOOLTIP_TEXT.direction + ' ' + TOOLTIP_TEXT.probability)}</span>
       </div>
       <div class="signal-sub">${s.industry} · impact ${s.impact_score}/100 · ${s.companies.map(c => c.ticker).join(', ')}</div>
     </a>
@@ -27,12 +27,18 @@ async function loadDashboard() {
   const tickers = {};
   data.signals.forEach(s => s.companies.forEach(c => { tickers[c.ticker] = c; }));
   const watchlist = document.getElementById('watchlist');
-  watchlist.innerHTML = Object.values(tickers).slice(0, 6).map(c => `
+  watchlist.innerHTML = `
+    <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">
+      Exposure score, not price change${infoIcon(TOOLTIP_TEXT.exposure)}
+    </div>
+  ` + Object.values(tickers).slice(0, 6).map(c => `
     <div class="ticker-row">
       <span>${c.ticker}</span>
-      <span class="change ${c.effect === 'negative' ? 'negative' : 'positive'}">${c.exposure}</span>
+      <span class="change ${c.effect}">${c.exposure}</span>
     </div>
   `).join('');
+
+  initInfoTooltips();
 }
 
 loadDashboard().catch(err => {

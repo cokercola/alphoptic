@@ -29,13 +29,13 @@ WATCHED_BILLS = [
     {"congress": 119, "type": "hr", "number": 1842},
     {"congress": 119, "type": "s", "number": 622},
     {"congress": 119, "type": "hr", "number": 3101},
-    {"congress": 119, "type": "hr", "number": 6179},   # Clean Cloud Act — data centers/crypto mining energy use
-    {"congress": 119, "type": "hr", "number": 6983},   # PRICE Act — data center electricity generation requirements
-    {"congress": 119, "type": "hr", "number": 2152},   # AI PLAN Act — AI-enabled financial crime/fraud strategy
+    {"congress": 119, "type": "hr", "number": 6179},   # Clean Cloud Act - data centers/crypto mining energy use
+    {"congress": 119, "type": "hr", "number": 6983},   # PRICE Act - data center electricity generation requirements
+    {"congress": 119, "type": "hr", "number": 2152},   # AI PLAN Act - AI-enabled financial crime/fraud strategy
     {"congress": 119, "type": "hr", "number": 7147},   # DHS Appropriations Act, 2026
     {"congress": 119, "type": "hr", "number": 7006},   # Financial Services & General Government Appropriations Act, 2026
     {"congress": 119, "type": "hr", "number": 9040},   # Regulate the Price of All Drugs Act
-    {"congress": 119, "type": "hr", "number": 9393},   # Lower Costs, More Transparency Act of 2026 — hospital price transparency
+    {"congress": 119, "type": "hr", "number": 9393},   # Lower Costs, More Transparency Act of 2026
 ]
 
 

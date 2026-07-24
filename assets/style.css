@@ -151,6 +151,7 @@ body {
 }
 .ticker-row .change.positive { color: var(--green); }
 .ticker-row .change.negative { color: var(--red); }
+.ticker-row .change.mixed { color: var(--amber); }
 
 .upcoming-item {
   font-size: 12px;
@@ -242,3 +243,43 @@ table.data-table a { color: var(--blue); text-decoration: none; }
   background: var(--panel);
   border-radius: 6px;
 }
+
+.info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: bold;
+  font-style: normal;
+  cursor: pointer;
+  margin-left: 6px;
+  position: relative;
+  vertical-align: middle;
+}
+.info-icon:hover { background: rgba(255,255,255,0.28); color: var(--text); }
+
+.tooltip-popover {
+  display: none;
+  position: absolute;
+  bottom: 130%;
+  right: -8px;
+  background: var(--navy);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: normal;
+  color: var(--text);
+  width: 220px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  z-index: 50;
+  text-align: left;
+  line-height: 1.4;
+  cursor: default;
+}
+.tooltip-popover.open { display: block; }
