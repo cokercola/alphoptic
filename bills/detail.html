@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bill detail — Alphoptic</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo-mark">A</div>
+    <span>ALPHOPTIC</span>
+  </div>
+  <input class="search" type="text" placeholder="Search bills, tickers, lawmakers...">
+  <div class="updated" id="updated-at"></div>
+</header>
+
+<div class="layout two-col">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main id="content">
+    <div class="breadcrumb"><a href="../index.html">Dashboard</a> / <a href="index.html">Bills</a> / <span id="crumb-id">...</span></div>
+  </main>
+</div>
+
+<script src="../assets/site.js"></script>
+<script>
+async function init() {
+  renderSidebar('bills');
+  const params = new URLSearchParams(window.location.search);
+  const billId = params.get('id');
+  const data = await fetchSiteData();
+  document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
+
+  const bill = data.signals.find(s => s.bill_id === billId);
+  const content = document.getElementById('content');
+
+  if (!bill) {
+    content.innerHTML += `<div class="empty-note">No bill found for "${billId || ''}". <a href="index.html">Back to all bills</a>.</div>`;
+    return;
+  }
+
+  document.getElementById('crumb-id').textContent = bill.bill_id;
+  document.title = bill.bill_id + ' — Alphoptic';
+
+  content.innerHTML += `
+    <div class="detail-header">
+      <h1>${bill.bill_id} — ${bill.title}</h1>
+      <div class="meta">${bill.status} · Sponsor: ${bill.sponsor} · ${bill.cosponsors} cosponsors</div>
+    </div>
+
+    <p style="color:var(--text-secondary); max-width:640px;">${bill.summary}</p>
+
+    <div class="info-grid">
+      <div class="item"><div class="label">Direction</div><div class="value">${directionPill(bill.direction)}</div></div>
+      <div class="item"><div class="label">Passage probability</div><div class="value">${bill.passage_probability}%</div></div>
+      <div class="item"><div class="label">Impact score</div><div class="value">${bill.impact_score}/100</div></div>
+      <div class="item"><div class="label">Confidence</div><div class="value">${bill.confidence}%</div></div>
+      <div class="item"><div class="label">Last action</div><div class="value" style="font-size:13px;">${bill.last_action}</div></div>
+      <div class="item"><div class="label">Next event</div><div class="value" style="font-size:13px;">${bill.next_event}</div></div>
+    </div>
+
+    <div class="section-label">Company exposure</div>
+    <table class="data-table">
+      <thead><tr><th>Ticker</th><th>Company</th><th>Effect</th><th>Exposure</th></tr></thead>
+      <tbody>
+        ${bill.companies.map(c => `
+          <tr>
+            <td><a href="../companies/index.html?ticker=${c.ticker}">${c.ticker}</a></td>
+            <td>${c.name}</td>
+            <td>${directionPill(c.effect)}</td>
+            <td>${c.exposure}/100</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+init().catch(err => {
+  console.error(err);
+  document.getElementById('content').innerHTML += `<div class="empty-note">Could not load bill data.</div>`;
+});
+</script>
+</body>
+</html>

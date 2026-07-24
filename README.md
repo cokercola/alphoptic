@@ -43,13 +43,20 @@ no server.
    (the `workflow_dispatch` trigger) to confirm it works before waiting
    for the schedule.
 
+## What's built
+
+- Dashboard, Bills, Industries, Companies, Signals, and Watchlist pages —
+  all reading live from `data/bills.json`, so nothing needs hand-editing
+  as the data refreshes twice daily.
+- Bill detail pages are a single template (`bills/detail.html?id=HR1842`)
+  rather than one file per bill, since bills change and static
+  per-bill files would drift out of sync.
+
 ## What's intentionally not built yet
 
-- Bill detail pages (`bills/HR1842.html` etc.) - the dashboard links to
-  these but they don't exist yet. Next step once the data pipeline is
-  solid.
-- Industries, Companies, Signals, Watchlist pages - sidebar links are
-  placeholders.
+- Watchlist is not personalized per user - that needs accounts and
+  sign-in, which this static-site architecture doesn't support. Right
+  now it just shows every tracked ticker.
 - Passage-probability model is a rough heuristic (cosponsor count +
   latest action stage), not the richer feature set described in the
   original spec (sponsor seniority, companion bills, etc.). Good enough
@@ -57,3 +64,4 @@ no server.
 - No price-movement backtesting yet - that's the piece that actually
   proves the signal is worth anything, and it needs a market-data source
   wired in separately.
+- Search bar in the header is visual only - not wired up to anything yet.

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Industries — Alphoptic</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo-mark">A</div>
+    <span>ALPHOPTIC</span>
+  </div>
+  <input class="search" type="text" placeholder="Search bills, tickers, lawmakers...">
+  <div class="updated" id="updated-at"></div>
+</header>
+
+<div class="layout two-col">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <div class="breadcrumb"><a href="../index.html">Dashboard</a> / Industries</div>
+    <div class="section-label">Industries with active legislation</div>
+    <div id="industry-list"></div>
+  </main>
+</div>
+
+<script src="../assets/site.js"></script>
+<script>
+async function init() {
+  renderSidebar('industries');
+  const data = await fetchSiteData();
+  document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
+
+  const byIndustry = {};
+  data.signals.forEach(s => {
+    if (!byIndustry[s.industry]) byIndustry[s.industry] = [];
+    byIndustry[s.industry].push(s);
+  });
+
+  const list = document.getElementById('industry-list');
+  const industries = Object.keys(byIndustry);
+
+  if (!industries.length) {
+    list.innerHTML = `<div class="empty-note">No industry data yet.</div>`;
+    return;
+  }
+
+  list.innerHTML = industries.map(industry => {
+    const bills = byIndustry[industry];
+    const avgImpact = Math.round(bills.reduce((sum, b) => sum + b.impact_score, 0) / bills.length);
+    return `
+      <div class="industry-card">
+        <h3>${industry}</h3>
+        <div class="meta">${bills.length} bill${bills.length > 1 ? 's' : ''} tracked · avg impact ${avgImpact}/100</div>
+        ${bills.map(b => `
+          <div style="font-size:13px; padding:4px 0;">
+            <a href="../bills/detail.html?id=${b.bill_id}" style="color:var(--blue); text-decoration:none;">${b.bill_id}</a>
+            — ${b.title} ${directionPill(b.direction)}
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }).join('');
+}
+init().catch(err => {
+  console.error(err);
+  document.getElementById('industry-list').innerHTML = `<div class="empty-note">Could not load industry data.</div>`;
+});
+</script>
+</body>
+</html>

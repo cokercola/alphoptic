@@ -168,3 +168,83 @@ body {
   .layout { grid-template-columns: 1fr; }
   .sidebar { flex-direction: row; overflow-x: auto; }
 }
+
+.layout.two-col { grid-template-columns: 160px 1fr; }
+
+.breadcrumb {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+
+.detail-header {
+  margin-bottom: 16px;
+}
+.detail-header h1 {
+  font-size: 20px;
+  margin: 0 0 6px;
+}
+.detail-header .meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+.info-grid .item { background: var(--panel); border-radius: 6px; padding: 10px; }
+.info-grid .item .label { font-size: 11px; color: var(--text-muted); }
+.info-grid .item .value { font-size: 15px; font-weight: bold; margin-top: 3px; }
+
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+table.data-table th {
+  text-align: left;
+  color: var(--text-muted);
+  font-weight: normal;
+  font-size: 11px;
+  text-transform: uppercase;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+table.data-table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+}
+table.data-table tr:last-child td { border-bottom: none; }
+table.data-table a { color: var(--blue); text-decoration: none; }
+
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: bold;
+}
+.pill.positive { background: rgba(76,181,107,0.15); color: var(--green); }
+.pill.negative { background: rgba(224,82,82,0.15); color: var(--red); }
+.pill.mixed { background: rgba(232,178,61,0.15); color: var(--amber); }
+
+.industry-card {
+  background: var(--panel);
+  border-radius: 6px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.industry-card h3 { margin: 0 0 6px; font-size: 15px; }
+.industry-card .meta { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+
+.empty-note {
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 20px;
+  background: var(--panel);
+  border-radius: 6px;
+}

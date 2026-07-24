@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bills — Alphoptic</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo-mark">A</div>
+    <span>ALPHOPTIC</span>
+  </div>
+  <input class="search" type="text" placeholder="Search bills, tickers, lawmakers...">
+  <div class="updated" id="updated-at"></div>
+</header>
+
+<div class="layout two-col">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <div class="breadcrumb"><a href="../index.html">Dashboard</a> / Bills</div>
+    <div class="section-label">All tracked bills</div>
+    <table class="data-table" id="bills-table">
+      <thead>
+        <tr><th>Bill</th><th>Industry</th><th>Direction</th><th>Passage odds</th><th>Impact</th><th>Status</th></tr>
+      </thead>
+      <tbody id="bills-body"></tbody>
+    </table>
+  </main>
+</div>
+
+<script src="../assets/site.js"></script>
+<script>
+async function init() {
+  renderSidebar('bills');
+  const data = await fetchSiteData();
+  document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
+
+  const body = document.getElementById('bills-body');
+  if (!data.signals.length) {
+    body.innerHTML = `<tr><td colspan="6" class="empty-note">No bills tracked yet.</td></tr>`;
+    return;
+  }
+  body.innerHTML = data.signals.map(s => `
+    <tr>
+      <td><a href="detail.html?id=${s.bill_id}">${s.bill_id}</a> — ${s.title}</td>
+      <td>${s.industry}</td>
+      <td>${directionPill(s.direction)}</td>
+      <td>${s.passage_probability}%</td>
+      <td>${s.impact_score}/100</td>
+      <td>${s.status}</td>
+    </tr>
+  `).join('');
+}
+init().catch(err => {
+  console.error(err);
+  document.getElementById('bills-body').innerHTML = `<tr><td colspan="6" class="empty-note">Could not load bill data.</td></tr>`;
+});
+</script>
+</body>
+</html>

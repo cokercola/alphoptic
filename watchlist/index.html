@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Watchlist — Alphoptic</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo-mark">A</div>
+    <span>ALPHOPTIC</span>
+  </div>
+  <input class="search" type="text" placeholder="Search bills, tickers, lawmakers...">
+  <div class="updated" id="updated-at"></div>
+</header>
+
+<div class="layout two-col">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <div class="breadcrumb"><a href="../index.html">Dashboard</a> / Watchlist</div>
+    <div class="empty-note" style="margin-bottom:16px;">
+      Personalized, per-user watchlists (follow specific bills, tickers, or committees) aren't built yet —
+      that needs accounts and sign-in, which this static-site architecture doesn't have. For now, this
+      shows every company currently tracked across active bills.
+    </div>
+    <div class="section-label">All tracked tickers</div>
+    <table class="data-table">
+      <thead><tr><th>Ticker</th><th>Company</th><th>Net effect</th><th>Bills affecting it</th></tr></thead>
+      <tbody id="watchlist-body"></tbody>
+    </table>
+  </main>
+</div>
+
+<script src="../assets/site.js"></script>
+<script>
+async function init() {
+  renderSidebar('watchlist');
+  const data = await fetchSiteData();
+  document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
+
+  const byTicker = {};
+  data.signals.forEach(s => {
+    s.companies.forEach(c => {
+      if (!byTicker[c.ticker]) byTicker[c.ticker] = { name: c.name, effects: [], bills: [] };
+      byTicker[c.ticker].effects.push(c.effect);
+      byTicker[c.ticker].bills.push(s.bill_id);
+    });
+  });
+
+  const body = document.getElementById('watchlist-body');
+  const tickers = Object.keys(byTicker);
+
+  if (!tickers.length) {
+    body.innerHTML = `<tr><td colspan="4" class="empty-note">No tracked tickers yet.</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = tickers.map(t => {
+    const info = byTicker[t];
+    const positive = info.effects.filter(e => e === 'positive').length;
+    const negative = info.effects.filter(e => e === 'negative').length;
+    const net = positive > negative ? 'positive' : negative > positive ? 'negative' : 'mixed';
+    return `
+      <tr>
+        <td>${t}</td>
+        <td>${info.name}</td>
+        <td>${directionPill(net)}</td>
+        <td>${info.bills.map(b => `<a href="../bills/detail.html?id=${b}">${b}</a>`).join(', ')}</td>
+      </tr>
+    `;
+  }).join('');
+}
+init().catch(err => {
+  console.error(err);
+  document.getElementById('watchlist-body').innerHTML = `<tr><td colspan="4" class="empty-note">Could not load data.</td></tr>`;
+});
+</script>
+</body>
+</html>

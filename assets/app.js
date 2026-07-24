@@ -15,7 +15,7 @@ async function loadDashboard() {
 
   const list = document.getElementById('signal-list');
   list.innerHTML = data.signals.map(s => `
-    <a class="signal-card ${s.direction}" href="bills/${s.bill_id}.html">
+    <a class="signal-card ${s.direction}" href="bills/detail.html?id=${s.bill_id}">
       <div class="signal-head">
         <span>${s.bill_id} — ${s.title}</span>
         <span class="prob ${s.direction}">${s.direction.toUpperCase()} ${s.passage_probability}%</span>

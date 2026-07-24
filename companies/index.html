@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Companies — Alphoptic</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo-mark">A</div>
+    <span>ALPHOPTIC</span>
+  </div>
+  <input class="search" type="text" placeholder="Search bills, tickers, lawmakers...">
+  <div class="updated" id="updated-at"></div>
+</header>
+
+<div class="layout two-col">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <div class="breadcrumb"><a href="../index.html">Dashboard</a> / Companies</div>
+    <div class="section-label" id="section-title">Companies with legislative exposure</div>
+    <table class="data-table">
+      <thead><tr><th>Ticker</th><th>Company</th><th>Bill</th><th>Effect</th><th>Exposure</th></tr></thead>
+      <tbody id="companies-body"></tbody>
+    </table>
+  </main>
+</div>
+
+<script src="../assets/site.js"></script>
+<script>
+async function init() {
+  renderSidebar('companies');
+  const params = new URLSearchParams(window.location.search);
+  const filterTicker = params.get('ticker');
+
+  const data = await fetchSiteData();
+  document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
+
+  let rows = [];
+  data.signals.forEach(s => {
+    s.companies.forEach(c => rows.push({ ...c, bill_id: s.bill_id, bill_title: s.title }));
+  });
+
+  if (filterTicker) {
+    rows = rows.filter(r => r.ticker === filterTicker);
+    document.getElementById('section-title').textContent = `Legislative exposure — ${filterTicker}`;
+  }
+
+  const body = document.getElementById('companies-body');
+  if (!rows.length) {
+    body.innerHTML = `<tr><td colspan="5" class="empty-note">No company exposure data${filterTicker ? ' for ' + filterTicker : ''}.</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = rows.map(r => `
+    <tr>
+      <td>${r.ticker}</td>
+      <td>${r.name}</td>
+      <td><a href="../bills/detail.html?id=${r.bill_id}">${r.bill_id}</a> — ${r.bill_title}</td>
+      <td>${directionPill(r.effect)}</td>
+      <td>${r.exposure}/100</td>
+    </tr>
+  `).join('');
+}
+init().catch(err => {
+  console.error(err);
+  document.getElementById('companies-body').innerHTML = `<tr><td colspan="5" class="empty-note">Could not load company data.</td></tr>`;
+});
+</script>
+</body>
+</html>
