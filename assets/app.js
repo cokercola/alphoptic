@@ -14,31 +14,36 @@ async function loadDashboard() {
   `;
 
   const list = document.getElementById('signal-list');
-  list.innerHTML = data.signals.map(s => `
-    <a class="signal-card ${s.direction}" href="bills/detail.html?id=${s.bill_id}">
+  const hasTooltips = typeof infoIcon === 'function' && typeof TOOLTIP_TEXT !== 'undefined';
+  list.innerHTML = data.signals.map(s => {
+    const companies = Array.isArray(s.companies) ? s.companies : [];
+    const direction = s.direction || 'mixed';
+    const probIcon = hasTooltips ? infoIcon(TOOLTIP_TEXT.direction + ' ' + TOOLTIP_TEXT.probability) : '';
+    return `
+    <a class="signal-card ${direction}" href="bills/detail.html?id=${s.bill_id}">
       <div class="signal-head">
         <span>${s.bill_id} — ${s.title}</span>
-        <span class="prob ${s.direction}">${s.direction.toUpperCase()} ${s.passage_probability}%${infoIcon(TOOLTIP_TEXT.direction + ' ' + TOOLTIP_TEXT.probability)}</span>
+        <span class="prob ${direction}">${direction.toUpperCase()} ${s.passage_probability}%${probIcon}</span>
       </div>
-      <div class="signal-sub">${s.industry} · impact ${s.impact_score}/100 · ${s.companies.map(c => c.ticker).join(', ')}</div>
+      <div class="signal-sub">${s.industry} · impact ${s.impact_score}/100 · ${companies.map(c => c.ticker).join(', ')}</div>
     </a>
-  `).join('');
+  `;
+  }).join('');
 
   const tickers = {};
-  data.signals.forEach(s => s.companies.forEach(c => { tickers[c.ticker] = c; }));
+  data.signals.forEach(s => (Array.isArray(s.companies) ? s.companies : []).forEach(c => { tickers[c.ticker] = c; }));
   const watchlist = document.getElementById('watchlist');
-  watchlist.innerHTML = `
-    <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">
-      Exposure score, not price change${infoIcon(TOOLTIP_TEXT.exposure)}
-    </div>
-  ` + Object.values(tickers).slice(0, 6).map(c => `
+  const exposureNote = hasTooltips
+    ? `<div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Exposure score, not price change${infoIcon(TOOLTIP_TEXT.exposure)}</div>`
+    : `<div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Exposure score, not price change</div>`;
+  watchlist.innerHTML = exposureNote + Object.values(tickers).slice(0, 6).map(c => `
     <div class="ticker-row">
       <span>${c.ticker}</span>
-      <span class="change ${c.effect}">${c.exposure}</span>
+      <span class="change ${c.effect || 'mixed'}">${c.exposure}</span>
     </div>
   `).join('');
 
-  initInfoTooltips();
+  if (hasTooltips) initInfoTooltips();
 }
 
 loadDashboard().catch(err => {
