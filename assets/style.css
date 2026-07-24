@@ -40,15 +40,9 @@ body {
 }
 
 .logo-mark {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  background: var(--blue);
-  color: var(--navy);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
+  height: 34px;
+  width: auto;
+  display: block;
 }
 
 .search {
