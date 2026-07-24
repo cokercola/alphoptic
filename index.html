@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alphoptic — Legislative Intelligence</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo-mark">A</div>
+    <span>ALPHOPTIC</span>
+  </div>
+  <input class="search" type="text" placeholder="Search bills, tickers, lawmakers...">
+  <div class="updated" id="updated-at">Loading...</div>
+</header>
+
+<div class="layout">
+
+  <nav class="sidebar">
+    <a class="active" href="index.html">Dashboard</a>
+    <a href="bills/index.html">Bills</a>
+    <a href="industries/index.html">Industries</a>
+    <a href="companies/index.html">Companies</a>
+    <a href="signals/index.html">Signals</a>
+    <a href="watchlist/index.html">Watchlist</a>
+  </nav>
+
+  <main class="feed">
+    <div class="stat-row" id="stat-row"></div>
+    <div class="section-label">Top signals today</div>
+    <div id="signal-list"></div>
+  </main>
+
+  <aside class="ticker-panel">
+    <div class="section-label">Watchlist</div>
+    <div id="watchlist"></div>
+    <div class="section-label" style="margin-top:16px;">Upcoming</div>
+    <div class="upcoming-item">Mon — Senate hearing, S.881</div>
+    <div class="upcoming-item">Wed — House floor vote, H.R.1842</div>
+  </aside>
+
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

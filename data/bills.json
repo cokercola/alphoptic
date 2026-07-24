@@ -1,0 +1,72 @@
+{
+  "updated_at": "2026-07-24T13:00:00Z",
+  "summary": {
+    "bills_tracked": 4281,
+    "high_impact": 37,
+    "new_signals_today": 12,
+    "industries_affected": 64
+  },
+  "signals": [
+    {
+      "bill_id": "HR1842",
+      "title": "American Semiconductor Manufacturing Act",
+      "industry": "Semiconductors",
+      "direction": "positive",
+      "passage_probability": 68,
+      "impact_score": 82,
+      "confidence": 84,
+      "status": "Passed committee",
+      "sponsor": "Rep. Jane Smith",
+      "cosponsors": 43,
+      "last_action": "Committee approval",
+      "next_event": "House floor vote",
+      "summary": "Creates tax credits and grant funding for domestic semiconductor manufacturing facilities.",
+      "companies": [
+        {"ticker": "AMAT", "name": "Applied Materials", "effect": "positive", "exposure": 88},
+        {"ticker": "INTC", "name": "Intel", "effect": "positive", "exposure": 85},
+        {"ticker": "LRCX", "name": "Lam Research", "effect": "positive", "exposure": 81},
+        {"ticker": "TSM", "name": "Taiwan Semiconductor", "effect": "mixed", "exposure": 52}
+      ]
+    },
+    {
+      "bill_id": "S622",
+      "title": "Drug Pricing Transparency Amendment",
+      "industry": "Pharmaceuticals",
+      "direction": "negative",
+      "passage_probability": 74,
+      "impact_score": 76,
+      "confidence": 72,
+      "status": "Amendment added",
+      "sponsor": "Sen. Alan Reyes",
+      "cosponsors": 21,
+      "last_action": "Amendment adopted in committee",
+      "next_event": "Full Senate vote",
+      "summary": "Adds Medicare negotiation provisions affecting branded drug reimbursement.",
+      "companies": [
+        {"ticker": "LLY", "name": "Eli Lilly", "effect": "negative", "exposure": 79},
+        {"ticker": "PFE", "name": "Pfizer", "effect": "negative", "exposure": 64},
+        {"ticker": "MRK", "name": "Merck", "effect": "negative", "exposure": 58}
+      ]
+    },
+    {
+      "bill_id": "HR3101",
+      "title": "Defense Readiness Appropriations Act",
+      "industry": "Defense",
+      "direction": "positive",
+      "passage_probability": 81,
+      "impact_score": 65,
+      "confidence": 88,
+      "status": "Passed House",
+      "sponsor": "Rep. Carl Dunn",
+      "cosponsors": 57,
+      "last_action": "Passed House floor vote",
+      "next_event": "Senate committee hearing",
+      "summary": "Increases procurement funding for munitions and shipbuilding programs.",
+      "companies": [
+        {"ticker": "LMT", "name": "Lockheed Martin", "effect": "positive", "exposure": 74},
+        {"ticker": "RTX", "name": "RTX Corporation", "effect": "positive", "exposure": 69},
+        {"ticker": "NOC", "name": "Northrop Grumman", "effect": "positive", "exposure": 66}
+      ]
+    }
+  ]
+}

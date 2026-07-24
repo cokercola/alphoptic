@@ -1,0 +1,170 @@
+:root {
+  --navy: #0B1F3A;
+  --panel: #132A4D;
+  --border: #274264;
+  --blue: #5A9BFF;
+  --orange: #E8622C;
+  --green: #4CB56B;
+  --red: #E05252;
+  --amber: #E8B23D;
+  --text: #E7ECF3;
+  --text-muted: #8CA3C4;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--navy);
+  color: var(--text);
+  font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+  font-size: 14px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 2px solid var(--orange);
+  gap: 20px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.logo-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--blue);
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.search {
+  flex: 1;
+  max-width: 420px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.updated {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 160px 1fr 240px;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sidebar { display: flex; flex-direction: column; gap: 2px; }
+.sidebar a {
+  padding: 8px 10px;
+  border-radius: 5px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+}
+.sidebar a.active { background: rgba(90,155,255,0.13); color: var(--blue); font-weight: bold; }
+.sidebar a:hover { color: var(--text); }
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.stat-card {
+  background: var(--panel);
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+}
+.stat-card .label { font-size: 11px; color: var(--text-muted); }
+.stat-card .value { font-size: 18px; font-weight: bold; margin-top: 4px; }
+
+.section-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.signal-card {
+  background: var(--panel);
+  border-radius: 0 6px 6px 0;
+  border-left: 3px solid var(--border);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.signal-card.positive { border-left-color: var(--green); }
+.signal-card.negative { border-left-color: var(--red); }
+.signal-card.mixed { border-left-color: var(--amber); }
+
+.signal-head {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: 13px;
+}
+.signal-head .prob.positive { color: var(--green); }
+.signal-head .prob.negative { color: var(--red); }
+.signal-head .prob.mixed { color: var(--amber); }
+
+.signal-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.ticker-panel {
+  background: var(--panel);
+  border-radius: 6px;
+  padding: 12px;
+  height: fit-content;
+  font-size: 13px;
+}
+
+.ticker-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.ticker-row .change.positive { color: var(--green); }
+.ticker-row .change.negative { color: var(--red); }
+
+.upcoming-item {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 4px 0;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { flex-direction: row; overflow-x: auto; }
+}
