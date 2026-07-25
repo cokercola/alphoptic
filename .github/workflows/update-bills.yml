@@ -3,7 +3,7 @@ name: Update legislative signals
 on:
   schedule:
     - cron: "0 12 * * *"
-    - cron: "0 22 * * *"
+    
   workflow_dispatch: {}
 
 permissions:
