@@ -28,6 +28,7 @@ body {
   padding: 14px 20px;
   border-bottom: 2px solid var(--orange);
   gap: 20px;
+  background: linear-gradient(90deg, #EDEFF2 0%, #2A2E35 100%);
 }
 
 .brand {
@@ -44,6 +45,9 @@ body {
   width: auto;
   display: block;
 }
+
+.brand-alph { color: var(--navy); }
+.brand-optic { color: var(--blue); }
 
 .search {
   flex: 1;
