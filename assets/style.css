@@ -28,7 +28,7 @@ body {
   padding: 14px 20px;
   border-bottom: 2px solid var(--orange);
   gap: 20px;
-  background: linear-gradient(90deg, #EDEFF2 0%, #0B1F3A 20%, #0B1F3A 100%);
+  background: linear-gradient(90deg, #EDEFF2 0%, #0B1F3A 10%, #0B1F3A 100%);
 }
 
 .brand {
