@@ -3,64 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Alphoptic — Legislative Intelligence</title>
-<meta name="description" content="Track bills in Congress, measure industry impact, and identify legislative signals before policy becomes law.">
-<meta property="og:title" content="Alphoptic — First Sight">
-<meta property="og:description" content="Track bills in Congress, measure industry impact, and identify legislative signals before policy becomes law.">
-<meta property="og:image" content="https://alphoptic.com/assets/social-card.png">
-<meta property="og:url" content="https://alphoptic.com">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Alphoptic — First Sight">
-<meta name="twitter:description" content="Track bills in Congress, measure industry impact, and identify legislative signals before policy becomes law.">
-<meta name="twitter:image" content="https://alphoptic.com/assets/social-card.png">
-<link rel="stylesheet" href="assets/style.css">
-<link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<title>Trades — Alphoptic</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/trades.css">
+<link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
 </head>
 <body>
 
 <header class="topbar">
   <div class="brand">
-    <img src="assets/logo.png" alt="Alphoptic" class="logo-mark">
+    <img src="../assets/logo.png" alt="Alphoptic" class="logo-mark">
     <span><span class="brand-alph">ALPH</span><span class="brand-optic">OPTIC</span></span>
   </div>
   <input class="search" type="text" placeholder="Search bills, tickers, lawmakers...">
-  <div class="updated" id="updated-at">Loading...</div>
+  <div class="updated" id="updated-at"></div>
 </header>
 
-</header>
-<div class="explainer-strip">
-  <p>Alphoptic tracks bills in Congress, estimates their industry and company impact, and flags legislative signals — AI-assisted estimates, not predictions.</p>
-</div>
-<div class="layout">
+<div class="layout two-col">
+  <nav class="sidebar" id="sidebar"></nav>
 
-  <nav class="sidebar">
-    <a class="active" href="index.html">Dashboard</a>
-    <a href="bills/index.html">Bills</a>
-    <a href="industries/index.html">Industries</a>
-    <a href="companies/index.html">Companies</a>
-    <a href="signals/index.html">Signals</a>
-    <a href="watchlist/index.html">Watchlist</a>
-  </nav>
-
-  <main class="feed">
-    <div class="stat-row" id="stat-row"></div>
-    <div class="section-label">Top signals today</div>
-    <div id="signal-list"></div>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">Dashboard</a> / Trades</div>
+    <div class="section-label" id="section-title">Congress trades</div>
+    <div id="trades-full" data-trades-target></div>
   </main>
-
-  <aside class="ticker-panel">
-    <div class="section-label">Watchlist</div>
-    <div id="watchlist"></div>
-    <div class="section-label" style="margin-top:16px;">Upcoming</div>
-    <div class="upcoming-item">Mon — Senate hearing, S.881</div>
-    <div class="upcoming-item">Wed — House floor vote, H.R.1842</div>
-  </aside>
-
 </div>
 
-<script src="assets/site.js"></script>
-<script src="assets/app.js"></script>
+<script src="../assets/site.js"></script>
+<script src="../assets/trades.js"></script>
+<script>
+renderSidebar('trades');
+
+loadTradesData('../data/congress-trades.json', function (data) {
+  document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
+  renderFullTrades('trades-full', data, '../');
+});
+</script>
+
 </body>
 </html>
