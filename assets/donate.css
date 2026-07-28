@@ -1,0 +1,96 @@
+/* Donate button + popover, styled to match the topbar */
+
+.donate-wrap {
+  position: relative;
+}
+
+.donate-btn {
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px 8px 12px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.donate-btn svg {
+  flex-shrink: 0;
+}
+
+.donate-btn:hover {
+  filter: brightness(1.08);
+}
+
+.donate-popover {
+  display: none;
+  position: absolute;
+  top: 130%;
+  right: 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  width: 200px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  z-index: 50;
+}
+
+.donate-popover.open {
+  display: block;
+}
+
+.donate-popover-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.donate-amounts {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.donate-amount-btn {
+  display: block;
+  text-align: center;
+  background: var(--navy);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 0;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.donate-amount-btn:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.donate-custom-btn {
+  display: block;
+  text-align: center;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 0;
+  font-size: 12px;
+  color: var(--text-secondary, var(--text-muted));
+  text-decoration: none;
+}
+
+.donate-custom-btn:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}
