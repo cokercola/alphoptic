@@ -1,0 +1,36 @@
+name: Update congress trades
+
+on:
+  schedule:
+    - cron: "0 13 * * *"
+
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch congress trades
+        env:
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+        run: python scripts/fetch_congress_trades.py
+
+      - name: Commit updated data
+        run: |
+          git config user.name "alphoptic-bot"
+          git config user.email "actions@github.com"
+          git add data/congress-trades.json
+          git diff --staged --quiet || git commit -m "Update congress trades"
+          git push
