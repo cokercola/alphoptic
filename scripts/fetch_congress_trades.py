@@ -53,8 +53,8 @@ LOOKBACK_DAYS = 30       # only show disclosures within this window
 NEW_WITHIN_DAYS = 7      # flag as "new" if filed within this many days
 MAX_TRADES_PER_PERSON = 15
 
-PAGE_LIMIT = 250         # FMP's max page size for these endpoints
-MAX_PAGES = 6            # safety cap: 6 pages x 250 = up to 1,500 records/chamber
+PAGE_LIMIT = 100         # 250 triggers FMP's paid-tier paywall (402); 100 is free
+MAX_PAGES = 15           # safety cap: 15 pages x 100 = up to 1,500 records/chamber
 
 
 def load_known_tickers():
