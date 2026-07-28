@@ -1,45 +1,30 @@
 {
-  "updated_at": "2026-07-27T09:41:00Z",
+  "updated_at": "2026-07-28T21:00:40.457386Z",
   "lookback_days": 30,
   "lawmakers": [
     {
       "name": "Nancy Pelosi",
       "party": "D",
       "chamber": "House",
-      "trades": [
-        { "symbol": "NVDA", "amount": 750000, "direction": "buy", "trade_date": "2026-07-20", "filed_date": "2026-07-24", "is_new": true, "linked": false },
-        { "symbol": "AAPL", "amount": 250000, "direction": "buy", "trade_date": "2026-07-12", "filed_date": "2026-07-18", "is_new": true, "linked": true },
-        { "symbol": "AVGO", "amount": 150000, "direction": "sell", "trade_date": "2026-06-30", "filed_date": "2026-07-09", "is_new": false, "linked": false },
-        { "symbol": "UBER", "amount": 100000, "direction": "buy", "trade_date": "2026-06-20", "filed_date": "2026-06-30", "is_new": false, "linked": false }
-      ]
+      "trades": []
     },
     {
       "name": "Ro Khanna",
       "party": "D",
       "chamber": "House",
-      "trades": [
-        { "symbol": "MU", "amount": 500000, "direction": "sell", "trade_date": "2026-07-19", "filed_date": "2026-07-25", "is_new": true, "linked": false },
-        { "symbol": "CRM", "amount": 300000, "direction": "buy", "trade_date": "2026-07-15", "filed_date": "2026-07-22", "is_new": true, "linked": false },
-        { "symbol": "PINS", "amount": 200000, "direction": "buy", "trade_date": "2026-07-08", "filed_date": "2026-07-14", "is_new": false, "linked": false }
-      ]
+      "trades": []
     },
     {
       "name": "Ted Cruz",
       "party": "R",
       "chamber": "Senate",
-      "trades": [
-        { "symbol": "XOM", "amount": 150000, "direction": "buy", "trade_date": "2026-06-28", "filed_date": "2026-07-03", "is_new": false, "linked": false }
-      ]
+      "trades": []
     },
     {
       "name": "Michael McCaul",
       "party": "R",
       "chamber": "House",
-      "trades": [
-        { "symbol": "RTX", "amount": 400000, "direction": "buy", "trade_date": "2026-07-14", "filed_date": "2026-07-20", "is_new": true, "linked": false },
-        { "symbol": "NOC", "amount": 250000, "direction": "buy", "trade_date": "2026-07-05", "filed_date": "2026-07-11", "is_new": false, "linked": false },
-        { "symbol": "LDOS", "amount": 100000, "direction": "sell", "trade_date": "2026-06-22", "filed_date": "2026-06-28", "is_new": false, "linked": true }
-      ]
+      "trades": []
     },
     {
       "name": "Dan Crenshaw",
