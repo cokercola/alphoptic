@@ -2,14 +2,18 @@
 Pulls stock trade disclosures for a fixed watchlist of lawmakers and
 writes data/congress-trades.json for the static site to read.
 
-Uses FMP's by-name search endpoints (senate-trades-by-name /
-house-trades-by-name) rather than the senate-latest/house-latest feeds.
-The "latest" feeds only return the most recent disclosures across all
-~535 members of Congress, so a specific tracked lawmaker may not appear
-in them at all on a given day - by-name search queries each person
-directly instead. This means 5 API calls per run (one per tracked
-lawmaker) rather than 2, but each call is small and this is still well
-within FMP's free-tier daily request cap.
+Uses FMP's senate-latest / house-latest endpoints (confirmed free-tier
+accessible) rather than the by-name search endpoints, which return
+402 Payment Required on the free plan.
+
+senate-latest/house-latest return the most recent disclosures across ALL
+~535 members of Congress, not just our 5 tracked ones - so a single page
+(the default: up to 250 records) may not contain any of them on a given
+day. To handle this, we paginate through multiple pages per chamber,
+stopping once either (a) we've gone past LOOKBACK_DAYS worth of
+disclosures, or (b) we hit MAX_PAGES, whichever comes first - a safety
+cap so a slow news day for our 5 people doesn't turn into an unbounded
+number of API calls.
 
 Ticker "linked" status is derived from data/bills.json (this repo's
 existing source of truth for company/ticker exposure) rather than a
@@ -35,23 +39,22 @@ FMP_BASE = "https://financialmodelingprep.com/stable"
 BILLS_JSON_PATH = "data/bills.json"
 OUTPUT_PATH = "data/congress-trades.json"
 
-# The 5 lawmakers we're tracking. `search_name` is what gets sent to
-# FMP's by-name endpoint - their last name, since it's more specific than
-# first name and less likely to pull in unrelated members. `match` is
-# used as a secondary check against the returned records' actual
-# firstName/lastName, in case the by-name search returns near-matches
-# (e.g. another "Cruz").
+# The 5 lawmakers we're tracking. `match` is a list of substrings checked
+# against each record's actual firstName + lastName (case-insensitive).
 WATCHLIST = [
-    {"name": "Nancy Pelosi",    "party": "D", "chamber": "House",  "search_name": "Pelosi",   "match": ["pelosi"]},
-    {"name": "Ro Khanna",       "party": "D", "chamber": "House",  "search_name": "Khanna",   "match": ["khanna"]},
-    {"name": "Ted Cruz",        "party": "R", "chamber": "Senate", "search_name": "Cruz",     "match": ["cruz"]},
-    {"name": "Michael McCaul",  "party": "R", "chamber": "House",  "search_name": "McCaul",   "match": ["mccaul"]},
-    {"name": "Dan Crenshaw",    "party": "R", "chamber": "House",  "search_name": "Crenshaw", "match": ["crenshaw"]},
+    {"name": "Nancy Pelosi",    "party": "D", "chamber": "House",  "match": ["pelosi"]},
+    {"name": "Ro Khanna",       "party": "D", "chamber": "House",  "match": ["khanna"]},
+    {"name": "Ted Cruz",        "party": "R", "chamber": "Senate", "match": ["cruz"]},
+    {"name": "Michael McCaul",  "party": "R", "chamber": "House",  "match": ["mccaul"]},
+    {"name": "Dan Crenshaw",    "party": "R", "chamber": "House",  "match": ["crenshaw"]},
 ]
 
 LOOKBACK_DAYS = 30       # only show disclosures within this window
 NEW_WITHIN_DAYS = 7      # flag as "new" if filed within this many days
 MAX_TRADES_PER_PERSON = 15
+
+PAGE_LIMIT = 250         # FMP's max page size for these endpoints
+MAX_PAGES = 6            # safety cap: 6 pages x 250 = up to 1,500 records/chamber
 
 
 def load_known_tickers():
@@ -75,13 +78,14 @@ def load_known_tickers():
     return tickers
 
 
-def record_matches_person(rec, person):
-    """Confirms a returned record is actually this specific person, not
-    just a substring hit from FMP's search (e.g. a different 'Cruz')."""
-    full_name = f"{rec.get('firstName', '')} {rec.get('lastName', '')}".strip()
-    name_source = full_name or rec.get("office") or rec.get("name") or ""
-    name_lower = name_source.lower()
-    return any(fragment in name_lower for fragment in person["match"])
+def match_lawmaker(record_name, chamber):
+    name_lower = (record_name or "").lower()
+    for person in WATCHLIST:
+        if person["chamber"] != chamber:
+            continue
+        if any(fragment in name_lower for fragment in person["match"]):
+            return person
+    return None
 
 
 def normalize_direction(raw_type):
@@ -121,31 +125,66 @@ def within_lookback(date_str, days):
     return d >= datetime.datetime.utcnow() - datetime.timedelta(days=days)
 
 
-def fetch_trades_by_name(chamber, search_name):
-    endpoint = "senate-trades-by-name" if chamber == "Senate" else "house-trades-by-name"
-    url = f"{FMP_BASE}/{endpoint}"
-    resp = requests.get(url, params={"name": search_name, "apikey": FMP_API_KEY}, timeout=30)
-    resp.raise_for_status()
-    return resp.json()
+def record_date(rec):
+    date_str = rec.get("disclosureDate") or rec.get("transactionDate")
+    if not date_str:
+        return None
+    try:
+        return datetime.datetime.strptime(date_str[:10], "%Y-%m-%d")
+    except ValueError:
+        return None
+
+
+def fetch_latest_paginated(endpoint):
+    """Pages through senate-latest / house-latest until records fall
+    outside LOOKBACK_DAYS or MAX_PAGES is hit. Returns the combined list."""
+    cutoff = datetime.datetime.utcnow() - datetime.timedelta(days=LOOKBACK_DAYS)
+    all_records = []
+
+    for page in range(MAX_PAGES):
+        url = f"{FMP_BASE}/{endpoint}"
+        resp = requests.get(
+            url,
+            params={"page": page, "limit": PAGE_LIMIT, "apikey": FMP_API_KEY},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        records = resp.json()
+
+        if not records:
+            break
+
+        all_records.extend(records)
+
+        # Records come back most-recent-first, so once the last record on
+        # this page is older than our lookback window, later pages will
+        # only be older still - safe to stop.
+        oldest_on_page = record_date(records[-1])
+        if oldest_on_page and oldest_on_page < cutoff:
+            break
+
+    return all_records
 
 
 def main():
     known_tickers = load_known_tickers()
+
+    senate_raw = fetch_latest_paginated("senate-latest")
+    house_raw = fetch_latest_paginated("house-latest")
+    print(f"Fetched {len(senate_raw)} Senate records, {len(house_raw)} House records "
+          f"(within {LOOKBACK_DAYS}-day lookback, up to {MAX_PAGES} pages each).")
 
     by_person = {
         p["name"]: {"name": p["name"], "party": p["party"], "chamber": p["chamber"], "trades": []}
         for p in WATCHLIST
     }
 
-    for person in WATCHLIST:
-        try:
-            records = fetch_trades_by_name(person["chamber"], person["search_name"])
-        except requests.HTTPError as e:
-            print(f"WARNING: failed to fetch trades for {person['name']}: {e}")
-            continue
-
-        for rec in records:
-            if not record_matches_person(rec, person):
+    for chamber, raw in (("Senate", senate_raw), ("House", house_raw)):
+        for rec in raw:
+            full_name = f"{rec.get('firstName', '')} {rec.get('lastName', '')}".strip()
+            record_name = full_name or rec.get("office") or rec.get("name")
+            person = match_lawmaker(record_name, chamber)
+            if not person:
                 continue
 
             direction = normalize_direction(rec.get("type") or rec.get("transactionType"))
