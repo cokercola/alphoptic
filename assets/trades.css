@@ -1,0 +1,155 @@
+/* Congress trades — dashboard teaser + full trades page.
+   Reuses existing CSS variables from style.css (--panel, --border,
+   --green, --red, --blue, --navy, --text, --text-muted). */
+
+.trade-card {
+  background: var(--panel);
+  border-radius: 6px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.trade-card-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.trade-card-name {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.trade-card-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.trade-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.trade-row:last-child {
+  border-bottom: none;
+}
+
+.trade-symbol {
+  width: 48px;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.trade-symbol--linked {
+  color: var(--blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.trade-bar-track {
+  flex: 1;
+  height: 16px;
+  background: var(--navy);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.trade-bar-fill {
+  height: 100%;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  min-width: 14%;
+}
+
+.trade-bar-label {
+  font-size: 10px;
+  font-weight: bold;
+  color: var(--navy);
+  white-space: nowrap;
+}
+
+.trade-amount {
+  width: 42px;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: right;
+}
+
+.trade-date {
+  width: 130px;
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.trade-new-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--blue);
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* Dashboard teaser variant */
+.trade-teaser-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--panel);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+}
+
+.trade-teaser-row:last-child {
+  margin-bottom: 0;
+}
+
+.trade-teaser-row .trade-row {
+  flex: 1;
+  border-bottom: none;
+  padding: 0;
+}
+
+.trade-teaser-person {
+  width: 130px;
+  flex-shrink: 0;
+}
+
+.trade-teaser-name {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.trade-teaser-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.trades-teaser-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.trades-teaser-header a {
+  font-size: 12px;
+  color: var(--blue);
+  text-decoration: none;
+}
