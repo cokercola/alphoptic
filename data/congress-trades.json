@@ -1,36 +1,75 @@
 {
-  "updated_at": "2026-07-28T21:13:37.121901Z",
+  "updated_at": "2026-07-28T21:33:34.527090Z",
   "lookback_days": 30,
   "lawmakers": [
     {
       "name": "Nancy Pelosi",
       "party": "D",
       "chamber": "House",
+      "pinned": true,
       "trades": []
     },
     {
       "name": "Ro Khanna",
       "party": "D",
       "chamber": "House",
+      "pinned": true,
       "trades": []
     },
     {
       "name": "Ted Cruz",
       "party": "R",
       "chamber": "Senate",
+      "pinned": true,
       "trades": []
     },
     {
       "name": "Michael McCaul",
       "party": "R",
       "chamber": "House",
+      "pinned": true,
       "trades": []
     },
     {
       "name": "Dan Crenshaw",
       "party": "R",
       "chamber": "House",
+      "pinned": true,
       "trades": []
+    },
+    {
+      "name": "Robert E. Latta",
+      "party": null,
+      "chamber": "House",
+      "pinned": false,
+      "trades": [
+        {
+          "symbol": "FMAO",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-20",
+          "filed_date": "2026-07-27",
+          "is_new": true,
+          "linked": false
+        }
+      ]
+    },
+    {
+      "name": "Sam Liccardo",
+      "party": null,
+      "chamber": "House",
+      "pinned": false,
+      "trades": [
+        {
+          "symbol": "NVDA",
+          "amount": 32500,
+          "direction": "sell",
+          "trade_date": "2026-07-21",
+          "filed_date": "2026-07-27",
+          "is_new": true,
+          "linked": false
+        }
+      ]
     }
   ]
 }
