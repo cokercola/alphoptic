@@ -78,8 +78,9 @@ function renderTeaser(containerId, data, count, pathPrefix) {
 
   const flattened = [];
   data.lawmakers.forEach((person) => {
+    const metaParts = [person.party, person.chamber].filter(Boolean);
     person.trades.forEach((trade) => {
-      flattened.push({ ...trade, personName: person.name, personMeta: `${person.party} · ${person.chamber}` });
+      flattened.push({ ...trade, personName: person.name, personMeta: metaParts.join(" · ") });
     });
   });
 
@@ -110,8 +111,9 @@ function renderTeaser(containerId, data, count, pathPrefix) {
 }
 
 /**
- * Full trades page: one card per lawmaker, all their trades, or an empty
- * state if they have none in the current window.
+ * Full trades page: pinned lawmaker cards first, then a divider, then any
+ * randomly-selected extra lawmakers who have trades this run (there may
+ * be 0-2 of these, since they're only included when they have data).
  * Call from trades/index.html, where pathPrefix should be "../".
  */
 function renderFullTrades(containerId, data, pathPrefix) {
@@ -120,34 +122,47 @@ function renderFullTrades(containerId, data, pathPrefix) {
 
   pathPrefix = pathPrefix || "";
 
-  el.innerHTML = data.lawmakers
-    .map((person) => {
-      if (person.trades.length === 0) {
-        return `
-          <div class="trade-card">
-            <div class="trade-card-head">
-              <span class="trade-card-name">${person.name}</span>
-              <span class="trade-card-meta">${person.party} · ${person.chamber}</span>
-            </div>
-            <div class="empty-note" style="padding-top:8px; background:none;">No disclosed trades this period</div>
-          </div>
-        `;
-      }
+  const cardHTML = (person) => {
+    const metaParts = [person.party, person.chamber].filter(Boolean);
+    const meta = metaParts.join(" · ");
 
-      const maxAmount = Math.max(...person.trades.map((t) => t.amount));
-      const rows = person.trades.map((t) => tradeRowHTML(t, { maxAmount, showBothDates: true, pathPrefix })).join("");
-
+    if (person.trades.length === 0) {
       return `
         <div class="trade-card">
           <div class="trade-card-head">
             <span class="trade-card-name">${person.name}</span>
-            <span class="trade-card-meta">${person.party} · ${person.chamber}</span>
+            <span class="trade-card-meta">${meta}</span>
           </div>
-          ${rows}
+          <div class="empty-note" style="padding-top:8px; background:none;">No disclosed trades this period</div>
         </div>
       `;
-    })
-    .join("");
+    }
+
+    const maxAmount = Math.max(...person.trades.map((t) => t.amount));
+    const rows = person.trades.map((t) => tradeRowHTML(t, { maxAmount, showBothDates: true, pathPrefix })).join("");
+
+    return `
+      <div class="trade-card">
+        <div class="trade-card-head">
+          <span class="trade-card-name">${person.name}</span>
+          <span class="trade-card-meta">${meta}</span>
+        </div>
+        ${rows}
+      </div>
+    `;
+  };
+
+  const pinned = data.lawmakers.filter((p) => p.pinned !== false);
+  const extras = data.lawmakers.filter((p) => p.pinned === false);
+
+  let html = pinned.map(cardHTML).join("");
+
+  if (extras.length > 0) {
+    html += `<div class="trades-extra-divider">Also trading recently</div>`;
+    html += extras.map(cardHTML).join("");
+  }
+
+  el.innerHTML = html;
 }
 
 /**
