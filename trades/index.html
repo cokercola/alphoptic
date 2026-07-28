@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trades — Alphoptic</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/trades.css">
+<link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="../assets/logo.png" alt="Alphoptic" class="logo-mark">
+    <span><span class="brand-alph">ALPH</span><span class="brand-optic">OPTIC</span></span>
+  </div>
+  <input class="search" type="text" placeholder="Search bills, tickers, lawmakers...">
+  <div class="updated" id="updated-at"></div>
+</header>
+
+<div class="layout two-col">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <div class="breadcrumb"><a href="../index.html">Dashboard</a> / Trades</div>
+    <div class="section-label" id="section-title">Congress trades</div>
+    <div id="trades-full" data-trades-target></div>
+  </main>
+</div>
+
+<script src="../assets/site.js"></script>
+<script src="../assets/trades.js"></script>
+<script>
+renderSidebar('trades');
+
+loadTradesData('../data/congress-trades.json', function (data) {
+  document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
+  renderFullTrades('trades-full', data, '../');
+});
+</script>
+
+</body>
+</html>
