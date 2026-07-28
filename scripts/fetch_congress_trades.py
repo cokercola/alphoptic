@@ -136,7 +136,8 @@ def main():
 
     for chamber, raw in (("Senate", senate_raw), ("House", house_raw)):
         for rec in raw:
-            record_name = rec.get("representative") or rec.get("senator") or rec.get("name") or rec.get("office")
+            full_name = f"{rec.get('firstName', '')} {rec.get('lastName', '')}".strip()
+            record_name = full_name or rec.get("office") or rec.get("name")
             person = match_lawmaker(record_name, chamber)
             if not person:
                 continue
