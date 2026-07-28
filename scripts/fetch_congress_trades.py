@@ -1,11 +1,15 @@
 """
-Pulls recent Senate + House stock trade disclosures for a fixed watchlist
-of lawmakers and writes data/congress-trades.json for the static site to
-read.
+Pulls stock trade disclosures for a fixed watchlist of lawmakers and
+writes data/congress-trades.json for the static site to read.
 
-Only 2 API calls per run (senate-latest, house-latest), regardless of how
-many lawmakers/symbols are tracked - filtering happens client-side here,
-which keeps this well within FMP's free-tier daily request cap.
+Uses FMP's by-name search endpoints (senate-trades-by-name /
+house-trades-by-name) rather than the senate-latest/house-latest feeds.
+The "latest" feeds only return the most recent disclosures across all
+~535 members of Congress, so a specific tracked lawmaker may not appear
+in them at all on a given day - by-name search queries each person
+directly instead. This means 5 API calls per run (one per tracked
+lawmaker) rather than 2, but each call is small and this is still well
+within FMP's free-tier daily request cap.
 
 Ticker "linked" status is derived from data/bills.json (this repo's
 existing source of truth for company/ticker exposure) rather than a
@@ -31,16 +35,18 @@ FMP_BASE = "https://financialmodelingprep.com/stable"
 BILLS_JSON_PATH = "data/bills.json"
 OUTPUT_PATH = "data/congress-trades.json"
 
-# The 5 lawmakers we're tracking. `match` is a list of substrings FMP might
-# use in its representative/senator name field for this person - FMP's
-# naming isn't always consistent (e.g. "Nancy Pelosi" vs "Pelosi, Nancy"),
-# so we match loosely and case-insensitively.
+# The 5 lawmakers we're tracking. `search_name` is what gets sent to
+# FMP's by-name endpoint - their last name, since it's more specific than
+# first name and less likely to pull in unrelated members. `match` is
+# used as a secondary check against the returned records' actual
+# firstName/lastName, in case the by-name search returns near-matches
+# (e.g. another "Cruz").
 WATCHLIST = [
-    {"name": "Nancy Pelosi",    "party": "D", "chamber": "House",  "match": ["pelosi"]},
-    {"name": "Ro Khanna",       "party": "D", "chamber": "House",  "match": ["khanna"]},
-    {"name": "Ted Cruz",        "party": "R", "chamber": "Senate", "match": ["cruz"]},
-    {"name": "Michael McCaul",  "party": "R", "chamber": "House",  "match": ["mccaul"]},
-    {"name": "Dan Crenshaw",    "party": "R", "chamber": "House",  "match": ["crenshaw"]},
+    {"name": "Nancy Pelosi",    "party": "D", "chamber": "House",  "search_name": "Pelosi",   "match": ["pelosi"]},
+    {"name": "Ro Khanna",       "party": "D", "chamber": "House",  "search_name": "Khanna",   "match": ["khanna"]},
+    {"name": "Ted Cruz",        "party": "R", "chamber": "Senate", "search_name": "Cruz",     "match": ["cruz"]},
+    {"name": "Michael McCaul",  "party": "R", "chamber": "House",  "search_name": "McCaul",   "match": ["mccaul"]},
+    {"name": "Dan Crenshaw",    "party": "R", "chamber": "House",  "search_name": "Crenshaw", "match": ["crenshaw"]},
 ]
 
 LOOKBACK_DAYS = 30       # only show disclosures within this window
@@ -69,14 +75,13 @@ def load_known_tickers():
     return tickers
 
 
-def match_lawmaker(record_name, chamber):
-    name_lower = (record_name or "").lower()
-    for person in WATCHLIST:
-        if person["chamber"] != chamber:
-            continue
-        if any(fragment in name_lower for fragment in person["match"]):
-            return person
-    return None
+def record_matches_person(rec, person):
+    """Confirms a returned record is actually this specific person, not
+    just a substring hit from FMP's search (e.g. a different 'Cruz')."""
+    full_name = f"{rec.get('firstName', '')} {rec.get('lastName', '')}".strip()
+    name_source = full_name or rec.get("office") or rec.get("name") or ""
+    name_lower = name_source.lower()
+    return any(fragment in name_lower for fragment in person["match"])
 
 
 def normalize_direction(raw_type):
@@ -116,9 +121,10 @@ def within_lookback(date_str, days):
     return d >= datetime.datetime.utcnow() - datetime.timedelta(days=days)
 
 
-def fetch_latest(endpoint):
+def fetch_trades_by_name(chamber, search_name):
+    endpoint = "senate-trades-by-name" if chamber == "Senate" else "house-trades-by-name"
     url = f"{FMP_BASE}/{endpoint}"
-    resp = requests.get(url, params={"apikey": FMP_API_KEY}, timeout=30)
+    resp = requests.get(url, params={"name": search_name, "apikey": FMP_API_KEY}, timeout=30)
     resp.raise_for_status()
     return resp.json()
 
@@ -126,20 +132,20 @@ def fetch_latest(endpoint):
 def main():
     known_tickers = load_known_tickers()
 
-    senate_raw = fetch_latest("senate-latest")
-    house_raw = fetch_latest("house-latest")
-
     by_person = {
         p["name"]: {"name": p["name"], "party": p["party"], "chamber": p["chamber"], "trades": []}
         for p in WATCHLIST
     }
 
-    for chamber, raw in (("Senate", senate_raw), ("House", house_raw)):
-        for rec in raw:
-            full_name = f"{rec.get('firstName', '')} {rec.get('lastName', '')}".strip()
-            record_name = full_name or rec.get("office") or rec.get("name")
-            person = match_lawmaker(record_name, chamber)
-            if not person:
+    for person in WATCHLIST:
+        try:
+            records = fetch_trades_by_name(person["chamber"], person["search_name"])
+        except requests.HTTPError as e:
+            print(f"WARNING: failed to fetch trades for {person['name']}: {e}")
+            continue
+
+        for rec in records:
+            if not record_matches_person(rec, person):
                 continue
 
             direction = normalize_direction(rec.get("type") or rec.get("transactionType"))
