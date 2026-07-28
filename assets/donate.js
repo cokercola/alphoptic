@@ -5,7 +5,7 @@
  */
 
 const DONATION_LINKS = {
-  5: "https://buy.stripe.com/6oU4gBce20oqgGkdPQebu00",
+  5: "https://buy.stripe.com/REPLACE_WITH_5_DOLLAR_LINK",
   10: "https://buy.stripe.com/REPLACE_WITH_10_DOLLAR_LINK",
   25: "https://buy.stripe.com/REPLACE_WITH_25_DOLLAR_LINK",
   custom: "https://buy.stripe.com/REPLACE_WITH_CUSTOM_AMOUNT_LINK",
@@ -14,6 +14,17 @@ const DONATION_LINKS = {
 function renderDonateWidget(containerId) {
   const el = document.getElementById(containerId);
   if (!el) return;
+
+  const isReady = (url) => url && !url.includes("REPLACE_WITH");
+
+  const amountButtons = [5, 10, 25]
+    .filter((amt) => isReady(DONATION_LINKS[amt]))
+    .map((amt) => `<a class="donate-amount-btn" href="${DONATION_LINKS[amt]}" target="_blank" rel="noopener">$${amt}</a>`)
+    .join("");
+
+  const customButton = isReady(DONATION_LINKS.custom)
+    ? `<a class="donate-custom-btn" href="${DONATION_LINKS.custom}" target="_blank" rel="noopener">Custom amount</a>`
+    : "";
 
   el.innerHTML = `
     <div class="donate-wrap">
@@ -29,11 +40,9 @@ function renderDonateWidget(containerId) {
       <div class="donate-popover" id="donate-popover">
         <div class="donate-popover-label">Support Alphoptic</div>
         <div class="donate-amounts">
-          <a class="donate-amount-btn" href="${DONATION_LINKS[5]}" target="_blank" rel="noopener">$5</a>
-          <a class="donate-amount-btn" href="${DONATION_LINKS[10]}" target="_blank" rel="noopener">$10</a>
-          <a class="donate-amount-btn" href="${DONATION_LINKS[25]}" target="_blank" rel="noopener">$25</a>
+          ${amountButtons}
         </div>
-        <a class="donate-custom-btn" href="${DONATION_LINKS.custom}" target="_blank" rel="noopener">Custom amount</a>
+        ${customButton}
       </div>
     </div>
   `;
