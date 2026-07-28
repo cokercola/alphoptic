@@ -18,7 +18,9 @@
 <link rel="stylesheet" href="assets/trades.css">
 <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/donate.css">
 </head>
+ 
 <body>
 
 <header class="topbar">
@@ -27,6 +29,7 @@
     <span><span class="brand-alph">ALPH</span><span class="brand-optic">OPTIC</span></span>
   </div>
   <input class="search" type="text" placeholder="Search bills, tickers, lawmakers...">
+  <div id="donate-widget"></div>
   <div class="updated" id="updated-at">Loading...</div>
 </header>
 
@@ -76,5 +79,7 @@ loadTradesData('data/congress-trades.json', function (data) {
   renderTeaser('trades-teaser', data, 3, '');
 });
 </script>
+  <script src="assets/donate.js"></script>
+<script>renderDonateWidget('donate-widget');</script>
 </body>
 </html>
