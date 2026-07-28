@@ -5,7 +5,7 @@
  */
 
 const DONATION_LINKS = {
-  5: "https://buy.stripe.com/REPLACE_WITH_5_DOLLAR_LINK",
+  5: "https://buy.stripe.com/6oU4gBce20oqgGkdPQebu00",
   10: "https://buy.stripe.com/REPLACE_WITH_10_DOLLAR_LINK",
   25: "https://buy.stripe.com/REPLACE_WITH_25_DOLLAR_LINK",
   custom: "https://buy.stripe.com/REPLACE_WITH_CUSTOM_AMOUNT_LINK",
