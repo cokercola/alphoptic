@@ -1,0 +1,15 @@
+{
+  "updated_at": "2026-07-29T01:41:36.422912Z",
+  "starting_balance": 1000,
+  "equity": 1000.0,
+  "cash": 1000.0,
+  "positions": [],
+  "history": [
+    {
+      "date": "2026-07-29",
+      "equity": 1000.0
+    }
+  ],
+  "trade_log": [],
+  "processed_signals": []
+}
