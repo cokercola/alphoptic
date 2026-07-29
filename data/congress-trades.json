@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-29T01:57:29.430658Z",
+  "updated_at": "2026-07-29T02:01:39.772538Z",
   "lookback_days": 30,
   "lawmakers": [
     {
@@ -38,53 +38,35 @@
       "trades": []
     },
     {
-      "name": "Laurel Lee",
+      "name": "Sam Liccardo",
       "party": null,
       "chamber": "House",
       "pinned": false,
       "trades": [
         {
-          "symbol": "NOK",
-          "amount": 8000,
+          "symbol": "NVDA",
+          "amount": 32500,
           "direction": "sell",
-          "trade_date": "2026-07-06",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "NOK",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-06",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "NOK",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-06",
-          "filed_date": "2026-07-20",
-          "is_new": false,
+          "trade_date": "2026-07-21",
+          "filed_date": "2026-07-27",
+          "is_new": true,
           "linked": false
         }
       ]
     },
     {
-      "name": "Thomas H. Kean",
+      "name": "Debbie Dingell",
       "party": null,
       "chamber": "House",
       "pinned": false,
       "trades": [
         {
-          "symbol": "ADI",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-06-30",
-          "filed_date": "2026-07-16",
-          "is_new": false,
+          "symbol": "FMCC",
+          "amount": 32500,
+          "direction": "buy",
+          "trade_date": "2026-07-14",
+          "filed_date": "2026-07-23",
+          "is_new": true,
           "linked": false
         }
       ]
