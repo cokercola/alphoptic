@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-29T01:53:50.694669Z",
+  "updated_at": "2026-07-29T02:03:43.615270Z",
   "starting_balance": 1000,
   "equity": 1000.0,
   "cash": 1000.0,
@@ -10,6 +10,348 @@
       "equity": 1000.0
     }
   ],
-  "trade_log": [],
-  "processed_signals": []
+  "trade_log": [
+    {
+      "date": "2026-07-29",
+      "symbol": "ARCC",
+      "action": "signal_ignored",
+      "reason": "Pete Sessions sold ARCC (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "FMAO",
+      "action": "signal_buy",
+      "reason": "Robert E. Latta bought FMAO"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "NVDA",
+      "action": "signal_ignored",
+      "reason": "Sam Liccardo sold NVDA (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "FMCC",
+      "action": "signal_buy",
+      "reason": "Debbie Dingell bought FMCC"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "HD",
+      "action": "signal_ignored",
+      "reason": "James A. Himes sold HD (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "BAC",
+      "action": "signal_ignored",
+      "reason": "James A. Himes sold BAC (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "XOM",
+      "action": "signal_ignored",
+      "reason": "James A. Himes sold XOM (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "MGA",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold MGA (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "AMD",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold AMD (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "COST",
+      "action": "signal_buy",
+      "reason": "Dan Newhouse bought COST"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "LLY",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold LLY (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "ADBE",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold ADBE (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "MU",
+      "action": "signal_buy",
+      "reason": "Dan Newhouse bought MU"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "MS",
+      "action": "signal_buy",
+      "reason": "Dan Newhouse bought MS"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "DE",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold DE (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "FMC",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold FMC (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "UBER",
+      "action": "signal_buy",
+      "reason": "Dan Newhouse bought UBER"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "NVDA",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold NVDA (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "ANET",
+      "action": "signal_buy",
+      "reason": "Dan Newhouse bought ANET"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "FTNT",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold FTNT (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "UPS",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold UPS (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "GOOGL",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold GOOGL (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "AMCR",
+      "action": "signal_buy",
+      "reason": "Dan Newhouse bought AMCR"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "APH",
+      "action": "signal_buy",
+      "reason": "Dan Newhouse bought APH"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "HONA",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold HONA (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "INTU",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold INTU (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "MPC",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold MPC (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "UNH",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold UNH (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "HSY",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold HSY (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "DUK",
+      "action": "signal_buy",
+      "reason": "Dan Newhouse bought DUK"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "CSX",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold CSX (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "FE",
+      "action": "signal_buy",
+      "reason": "Dan Newhouse bought FE"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "HON",
+      "action": "signal_buy",
+      "reason": "Dan Newhouse bought HON"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "AMAT",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold AMAT (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "ACN",
+      "action": "signal_buy",
+      "reason": "Dan Newhouse bought ACN"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "PANW",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold PANW (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "FIS",
+      "action": "signal_buy",
+      "reason": "Dan Newhouse bought FIS"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "TMO",
+      "action": "signal_ignored",
+      "reason": "Dan Newhouse sold TMO (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "NOK",
+      "action": "signal_ignored",
+      "reason": "Laurel Lee sold NOK (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "NOK",
+      "action": "signal_ignored",
+      "reason": "Laurel Lee sold NOK (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "NOK",
+      "action": "signal_ignored",
+      "reason": "Laurel Lee sold NOK (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "ADI",
+      "action": "signal_ignored",
+      "reason": "Thomas H. Kean sold ADI (not held - no short, ignored)"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "COST",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $71.43"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "MU",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $71.43"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "UBER",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $71.43"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "AMCR",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $71.43"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "DUK",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $71.43"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "APH",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $71.43"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "FIS",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $71.43"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "HON",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $71.43"
+    }
+  ],
+  "processed_signals": [
+    "James A. Himes|XOM|2026-07-20|sell",
+    "Dan Newhouse|FIS|2026-07-10|buy",
+    "Dan Newhouse|AMCR|2026-07-10|buy",
+    "Dan Newhouse|MPC|2026-07-10|sell",
+    "Dan Newhouse|AMD|2026-07-10|sell",
+    "Dan Newhouse|NVDA|2026-07-10|sell",
+    "Dan Newhouse|AMAT|2026-07-10|sell",
+    "Thomas H. Kean|ADI|2026-06-30|sell",
+    "Dan Newhouse|COST|2026-07-10|buy",
+    "Pete Sessions|ARCC|2026-07-24|sell",
+    "Dan Newhouse|TMO|2026-07-10|sell",
+    "Dan Newhouse|MGA|2026-07-10|sell",
+    "Dan Newhouse|ANET|2026-07-10|buy",
+    "James A. Himes|BAC|2026-07-20|sell",
+    "Dan Newhouse|FE|2026-07-10|buy",
+    "Dan Newhouse|HON|2026-07-10|buy",
+    "Dan Newhouse|LLY|2026-07-10|sell",
+    "James A. Himes|HD|2026-07-20|sell",
+    "Dan Newhouse|INTU|2026-07-10|sell",
+    "Dan Newhouse|DUK|2026-07-10|buy",
+    "Dan Newhouse|ADBE|2026-07-10|sell",
+    "Dan Newhouse|ACN|2026-07-10|buy",
+    "Dan Newhouse|GOOGL|2026-07-10|sell",
+    "Dan Newhouse|UBER|2026-07-10|buy",
+    "Dan Newhouse|FTNT|2026-07-10|sell",
+    "Dan Newhouse|HSY|2026-07-10|sell",
+    "Dan Newhouse|CSX|2026-07-10|sell",
+    "Dan Newhouse|MS|2026-07-10|buy",
+    "Dan Newhouse|MU|2026-07-10|buy",
+    "Laurel Lee|NOK|2026-07-06|sell",
+    "Dan Newhouse|UNH|2026-07-10|sell",
+    "Sam Liccardo|NVDA|2026-07-21|sell",
+    "Dan Newhouse|PANW|2026-07-10|sell",
+    "Robert E. Latta|FMAO|2026-07-20|buy",
+    "Dan Newhouse|APH|2026-07-10|buy",
+    "Dan Newhouse|UPS|2026-07-10|sell",
+    "Debbie Dingell|FMCC|2026-07-14|buy",
+    "Dan Newhouse|HONA|2026-07-10|sell",
+    "Dan Newhouse|FMC|2026-07-10|sell",
+    "Dan Newhouse|DE|2026-07-10|sell"
+  ]
 }
