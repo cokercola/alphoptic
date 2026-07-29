@@ -1,16 +1,180 @@
 {
-  "updated_at": "2026-07-29T02:03:43.615270Z",
+  "updated_at": "2026-07-29T15:30:02.812211Z",
   "starting_balance": 1000,
-  "equity": 1000.0,
-  "cash": 1000.0,
-  "positions": [],
+  "equity": 994.59,
+  "cash": 1.07,
+  "positions": [
+    {
+      "symbol": "ACN",
+      "qty": 0.432848484,
+      "market_value": 75.607809,
+      "cost_basis": 71.42,
+      "unrealized_pl": 4.187809
+    },
+    {
+      "symbol": "AMCR",
+      "qty": 1.694881745,
+      "market_value": 76.506962,
+      "cost_basis": 77.23,
+      "unrealized_pl": -0.723038
+    },
+    {
+      "symbol": "ANET",
+      "qty": 0.473085421,
+      "market_value": 76.455335,
+      "cost_basis": 79.18,
+      "unrealized_pl": -2.724665
+    },
+    {
+      "symbol": "APH",
+      "qty": 0.499472739,
+      "market_value": 76.434313,
+      "cost_basis": 78.25,
+      "unrealized_pl": -1.815687
+    },
+    {
+      "symbol": "COST",
+      "qty": 0.07854257,
+      "market_value": 76.533451,
+      "cost_basis": 76.069999,
+      "unrealized_pl": 0.463452
+    },
+    {
+      "symbol": "DUK",
+      "qty": 0.589989875,
+      "market_value": 76.515787,
+      "cost_basis": 76.55,
+      "unrealized_pl": -0.034213
+    },
+    {
+      "symbol": "FE",
+      "qty": 1.530638647,
+      "market_value": 76.508973,
+      "cost_basis": 76.429999,
+      "unrealized_pl": 0.078974
+    },
+    {
+      "symbol": "FIS",
+      "qty": 1.661152221,
+      "market_value": 76.512671,
+      "cost_basis": 74.7,
+      "unrealized_pl": 1.812671
+    },
+    {
+      "symbol": "FMAO",
+      "qty": 2.15485227,
+      "market_value": 76.50803,
+      "cost_basis": 74.959999,
+      "unrealized_pl": 1.548031
+    },
+    {
+      "symbol": "HON",
+      "qty": 0.31658829,
+      "market_value": 76.509892,
+      "cost_basis": 77.66,
+      "unrealized_pl": -1.150108
+    },
+    {
+      "symbol": "MS",
+      "qty": 0.372788296,
+      "market_value": 76.49243,
+      "cost_basis": 78.82,
+      "unrealized_pl": -2.32757
+    },
+    {
+      "symbol": "MU",
+      "qty": 0.097946781,
+      "market_value": 76.413181,
+      "cost_basis": 81.0,
+      "unrealized_pl": -4.586819
+    },
+    {
+      "symbol": "UBER",
+      "qty": 1.093725902,
+      "market_value": 76.528001,
+      "cost_basis": 76.66,
+      "unrealized_pl": -0.131999
+    }
+  ],
   "history": [
     {
       "date": "2026-07-29",
-      "equity": 1000.0
+      "equity": 994.59
     }
   ],
   "trade_log": [
+    {
+      "date": "2026-07-29",
+      "symbol": "AMCR",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $76.52"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "HON",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $76.52"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "MS",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $76.52"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "DUK",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $76.52"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "APH",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $76.52"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "ANET",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $76.52"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "FIS",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $76.52"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "COST",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $76.52"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "MU",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $76.52"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "FE",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $76.52"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "UBER",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $76.52"
+    },
+    {
+      "date": "2026-07-29",
+      "symbol": "FMAO",
+      "action": "rebalance_buy",
+      "reason": "Equal-weight rebalance toward $76.52"
+    },
     {
       "date": "2026-07-29",
       "symbol": "ARCC",
@@ -238,120 +402,48 @@
       "symbol": "TMO",
       "action": "signal_ignored",
       "reason": "Dan Newhouse sold TMO (not held - no short, ignored)"
-    },
-    {
-      "date": "2026-07-29",
-      "symbol": "NOK",
-      "action": "signal_ignored",
-      "reason": "Laurel Lee sold NOK (not held - no short, ignored)"
-    },
-    {
-      "date": "2026-07-29",
-      "symbol": "NOK",
-      "action": "signal_ignored",
-      "reason": "Laurel Lee sold NOK (not held - no short, ignored)"
-    },
-    {
-      "date": "2026-07-29",
-      "symbol": "NOK",
-      "action": "signal_ignored",
-      "reason": "Laurel Lee sold NOK (not held - no short, ignored)"
-    },
-    {
-      "date": "2026-07-29",
-      "symbol": "ADI",
-      "action": "signal_ignored",
-      "reason": "Thomas H. Kean sold ADI (not held - no short, ignored)"
-    },
-    {
-      "date": "2026-07-29",
-      "symbol": "COST",
-      "action": "rebalance_buy",
-      "reason": "Equal-weight rebalance toward $71.43"
-    },
-    {
-      "date": "2026-07-29",
-      "symbol": "MU",
-      "action": "rebalance_buy",
-      "reason": "Equal-weight rebalance toward $71.43"
-    },
-    {
-      "date": "2026-07-29",
-      "symbol": "UBER",
-      "action": "rebalance_buy",
-      "reason": "Equal-weight rebalance toward $71.43"
-    },
-    {
-      "date": "2026-07-29",
-      "symbol": "AMCR",
-      "action": "rebalance_buy",
-      "reason": "Equal-weight rebalance toward $71.43"
-    },
-    {
-      "date": "2026-07-29",
-      "symbol": "DUK",
-      "action": "rebalance_buy",
-      "reason": "Equal-weight rebalance toward $71.43"
-    },
-    {
-      "date": "2026-07-29",
-      "symbol": "APH",
-      "action": "rebalance_buy",
-      "reason": "Equal-weight rebalance toward $71.43"
-    },
-    {
-      "date": "2026-07-29",
-      "symbol": "FIS",
-      "action": "rebalance_buy",
-      "reason": "Equal-weight rebalance toward $71.43"
-    },
-    {
-      "date": "2026-07-29",
-      "symbol": "HON",
-      "action": "rebalance_buy",
-      "reason": "Equal-weight rebalance toward $71.43"
     }
   ],
   "processed_signals": [
-    "James A. Himes|XOM|2026-07-20|sell",
-    "Dan Newhouse|FIS|2026-07-10|buy",
-    "Dan Newhouse|AMCR|2026-07-10|buy",
-    "Dan Newhouse|MPC|2026-07-10|sell",
-    "Dan Newhouse|AMD|2026-07-10|sell",
     "Dan Newhouse|NVDA|2026-07-10|sell",
-    "Dan Newhouse|AMAT|2026-07-10|sell",
-    "Thomas H. Kean|ADI|2026-06-30|sell",
-    "Dan Newhouse|COST|2026-07-10|buy",
-    "Pete Sessions|ARCC|2026-07-24|sell",
-    "Dan Newhouse|TMO|2026-07-10|sell",
-    "Dan Newhouse|MGA|2026-07-10|sell",
-    "Dan Newhouse|ANET|2026-07-10|buy",
-    "James A. Himes|BAC|2026-07-20|sell",
-    "Dan Newhouse|FE|2026-07-10|buy",
-    "Dan Newhouse|HON|2026-07-10|buy",
-    "Dan Newhouse|LLY|2026-07-10|sell",
-    "James A. Himes|HD|2026-07-20|sell",
-    "Dan Newhouse|INTU|2026-07-10|sell",
-    "Dan Newhouse|DUK|2026-07-10|buy",
-    "Dan Newhouse|ADBE|2026-07-10|sell",
-    "Dan Newhouse|ACN|2026-07-10|buy",
-    "Dan Newhouse|GOOGL|2026-07-10|sell",
-    "Dan Newhouse|UBER|2026-07-10|buy",
-    "Dan Newhouse|FTNT|2026-07-10|sell",
-    "Dan Newhouse|HSY|2026-07-10|sell",
-    "Dan Newhouse|CSX|2026-07-10|sell",
-    "Dan Newhouse|MS|2026-07-10|buy",
-    "Dan Newhouse|MU|2026-07-10|buy",
-    "Laurel Lee|NOK|2026-07-06|sell",
-    "Dan Newhouse|UNH|2026-07-10|sell",
-    "Sam Liccardo|NVDA|2026-07-21|sell",
+    "Dan Newhouse|AMD|2026-07-10|sell",
     "Dan Newhouse|PANW|2026-07-10|sell",
-    "Robert E. Latta|FMAO|2026-07-20|buy",
-    "Dan Newhouse|APH|2026-07-10|buy",
-    "Dan Newhouse|UPS|2026-07-10|sell",
+    "Pete Sessions|ARCC|2026-07-24|sell",
+    "Dan Newhouse|DUK|2026-07-10|buy",
+    "Dan Newhouse|MGA|2026-07-10|sell",
+    "Dan Newhouse|COST|2026-07-10|buy",
+    "Dan Newhouse|TMO|2026-07-10|sell",
+    "Dan Newhouse|INTU|2026-07-10|sell",
+    "Dan Newhouse|ADBE|2026-07-10|sell",
+    "Dan Newhouse|UNH|2026-07-10|sell",
     "Debbie Dingell|FMCC|2026-07-14|buy",
+    "James A. Himes|BAC|2026-07-20|sell",
+    "Dan Newhouse|MU|2026-07-10|buy",
+    "Dan Newhouse|MS|2026-07-10|buy",
+    "Dan Newhouse|UBER|2026-07-10|buy",
     "Dan Newhouse|HONA|2026-07-10|sell",
+    "Dan Newhouse|GOOGL|2026-07-10|sell",
+    "Dan Newhouse|HSY|2026-07-10|sell",
     "Dan Newhouse|FMC|2026-07-10|sell",
-    "Dan Newhouse|DE|2026-07-10|sell"
+    "Dan Newhouse|FTNT|2026-07-10|sell",
+    "Dan Newhouse|AMAT|2026-07-10|sell",
+    "James A. Himes|HD|2026-07-20|sell",
+    "Dan Newhouse|LLY|2026-07-10|sell",
+    "Dan Newhouse|ACN|2026-07-10|buy",
+    "Dan Newhouse|DE|2026-07-10|sell",
+    "Dan Newhouse|HON|2026-07-10|buy",
+    "Dan Newhouse|UPS|2026-07-10|sell",
+    "Robert E. Latta|FMAO|2026-07-20|buy",
+    "Dan Newhouse|ANET|2026-07-10|buy",
+    "Thomas H. Kean|ADI|2026-06-30|sell",
+    "Dan Newhouse|APH|2026-07-10|buy",
+    "Laurel Lee|NOK|2026-07-06|sell",
+    "James A. Himes|XOM|2026-07-20|sell",
+    "Dan Newhouse|AMCR|2026-07-10|buy",
+    "Dan Newhouse|FE|2026-07-10|buy",
+    "Dan Newhouse|MPC|2026-07-10|sell",
+    "Dan Newhouse|CSX|2026-07-10|sell",
+    "Dan Newhouse|FIS|2026-07-10|buy",
+    "Sam Liccardo|NVDA|2026-07-21|sell"
   ]
 }
