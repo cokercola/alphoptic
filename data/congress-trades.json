@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-29T01:53:26.000765Z",
+  "updated_at": "2026-07-29T01:57:29.430658Z",
   "lookback_days": 30,
   "lawmakers": [
     {
@@ -38,35 +38,53 @@
       "trades": []
     },
     {
-      "name": "Robert E. Latta",
+      "name": "Laurel Lee",
       "party": null,
       "chamber": "House",
       "pinned": false,
       "trades": [
         {
-          "symbol": "FMAO",
+          "symbol": "NOK",
           "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-20",
-          "filed_date": "2026-07-27",
-          "is_new": true,
+          "direction": "sell",
+          "trade_date": "2026-07-06",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "NOK",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-06",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "NOK",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-06",
+          "filed_date": "2026-07-20",
+          "is_new": false,
           "linked": false
         }
       ]
     },
     {
-      "name": "Debbie Dingell",
+      "name": "Thomas H. Kean",
       "party": null,
       "chamber": "House",
       "pinned": false,
       "trades": [
         {
-          "symbol": "FMCC",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-14",
-          "filed_date": "2026-07-23",
-          "is_new": true,
+          "symbol": "ADI",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-06-30",
+          "filed_date": "2026-07-16",
+          "is_new": false,
           "linked": false
         }
       ]
