@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-29T02:01:39.772538Z",
+  "updated_at": "2026-07-29T15:06:17.998235Z",
   "lookback_days": 30,
   "lawmakers": [
     {
@@ -38,23 +38,6 @@
       "trades": []
     },
     {
-      "name": "Sam Liccardo",
-      "party": null,
-      "chamber": "House",
-      "pinned": false,
-      "trades": [
-        {
-          "symbol": "NVDA",
-          "amount": 32500,
-          "direction": "sell",
-          "trade_date": "2026-07-21",
-          "filed_date": "2026-07-27",
-          "is_new": true,
-          "linked": false
-        }
-      ]
-    },
-    {
       "name": "Debbie Dingell",
       "party": null,
       "chamber": "House",
@@ -66,6 +49,23 @@
           "direction": "buy",
           "trade_date": "2026-07-14",
           "filed_date": "2026-07-23",
+          "is_new": true,
+          "linked": false
+        }
+      ]
+    },
+    {
+      "name": "Robert E. Latta",
+      "party": null,
+      "chamber": "House",
+      "pinned": false,
+      "trades": [
+        {
+          "symbol": "FMAO",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-20",
+          "filed_date": "2026-07-27",
           "is_new": true,
           "linked": false
         }
