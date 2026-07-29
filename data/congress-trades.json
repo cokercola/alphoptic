@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-28T21:33:34.527090Z",
+  "updated_at": "2026-07-29T01:53:26.000765Z",
   "lookback_days": 30,
   "lawmakers": [
     {
@@ -55,17 +55,17 @@
       ]
     },
     {
-      "name": "Sam Liccardo",
+      "name": "Debbie Dingell",
       "party": null,
       "chamber": "House",
       "pinned": false,
       "trades": [
         {
-          "symbol": "NVDA",
+          "symbol": "FMCC",
           "amount": 32500,
-          "direction": "sell",
-          "trade_date": "2026-07-21",
-          "filed_date": "2026-07-27",
+          "direction": "buy",
+          "trade_date": "2026-07-14",
+          "filed_date": "2026-07-23",
           "is_new": true,
           "linked": false
         }
