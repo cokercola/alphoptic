@@ -94,3 +94,20 @@
   border-color: var(--orange);
   color: var(--orange);
 }
+
+.donate-label-short {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .donate-label-full {
+    display: none;
+  }
+  .donate-label-short {
+    display: inline;
+  }
+  .donate-popover {
+    width: 180px;
+    max-width: calc(100vw - 28px);
+  }
+}

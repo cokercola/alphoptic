@@ -163,3 +163,25 @@
   padding-top: 8px;
   border-top: 1px solid var(--border);
 }
+
+@media (max-width: 640px) {
+  .trade-row {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+  .trade-date {
+    width: auto;
+    flex-basis: 100%;
+    justify-content: flex-start;
+    padding-left: 58px;
+  }
+  .trade-teaser-row {
+    flex-wrap: wrap;
+  }
+  .trade-teaser-person {
+    width: 100%;
+  }
+  .trade-card {
+    padding: 12px;
+  }
+}

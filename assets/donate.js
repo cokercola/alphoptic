@@ -35,7 +35,7 @@ function renderDonateWidget(containerId) {
           <path d="M8 1v2"></path>
           <path d="M11 1v2"></path>
         </svg>
-        Buy me a coffee
+        <span class="donate-label-full">Buy me a coffee</span><span class="donate-label-short">Coffee</span>
       </button>
       <div class="donate-popover" id="donate-popover">
         <div class="donate-popover-label">Support Alphoptic</div>
