@@ -1,0 +1,37 @@
+name: Update paper trading
+
+on:
+  schedule:
+    - cron: "30 13 * * 1-5"
+
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run paper trading strategy
+        env:
+          ALPACA_API_KEY_ID: ${{ secrets.ALPACA_API_KEY_ID }}
+          ALPACA_API_SECRET_KEY: ${{ secrets.ALPACA_API_SECRET_KEY }}
+        run: python scripts/paper_trade.py
+
+      - name: Commit updated portfolio
+        run: |
+          git config user.name "alphoptic-bot"
+          git config user.email "actions@github.com"
+          git add data/paper-portfolio.json
+          git diff --staged --quiet || git commit -m "Update paper trading portfolio"
+          git push
