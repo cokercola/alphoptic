@@ -186,6 +186,7 @@ body {
     flex-wrap: wrap;
     padding: 10px 14px;
     gap: 8px;
+    background: linear-gradient(90deg, #EDEFF2 0%, #0B1F3A 50%, #0B1F3A 100%);
   }
   .search {
     order: 3;
