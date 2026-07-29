@@ -177,7 +177,41 @@ body {
 
 @media (max-width: 900px) {
   .layout { grid-template-columns: 1fr; }
-  .sidebar { flex-direction: row; overflow-x: auto; }
+  .sidebar { flex-direction: row; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
+  .sidebar a { padding: 8px 12px; white-space: nowrap; }
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    flex-wrap: wrap;
+    padding: 10px 14px;
+    gap: 8px;
+  }
+  .search {
+    order: 3;
+    flex-basis: 100%;
+    max-width: 100%;
+    font-size: 16px;
+  }
+  .updated {
+    display: none;
+  }
+  .layout {
+    padding: 14px;
+    gap: 14px;
+  }
+  .explainer-strip {
+    padding: 8px 14px;
+  }
+  .stat-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .detail-header h1 {
+    font-size: 18px;
+  }
 }
 
 .layout.two-col { grid-template-columns: 160px 1fr; }
