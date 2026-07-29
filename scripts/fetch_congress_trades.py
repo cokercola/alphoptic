@@ -43,6 +43,7 @@ FMP_BASE = "https://financialmodelingprep.com/stable"
 
 BILLS_JSON_PATH = "data/bills.json"
 OUTPUT_PATH = "data/congress-trades.json"
+ALL_TRADES_OUTPUT_PATH = "data/congress-trades-all.json"
 
 # The 5 lawmakers we're always tracking. `match` is a list of substrings
 # checked against each record's actual firstName + lastName
@@ -239,6 +240,32 @@ def main():
           f"lawmakers to {OUTPUT_PATH}")
     if random_extras:
         print("Random extras this run: " + ", ".join(p["name"] for p in random_extras))
+
+    # Separate, unfiltered output: every qualifying trade from every
+    # lawmaker seen this run (not just the 5 pinned + 2 random extras
+    # shown on the site). This is what the paper trading strategy reads
+    # from, so it has a much larger signal pool to act on daily instead
+    # of being limited to just 5-7 specific people.
+    all_trade_records = []
+    for person in list(pinned.values()) + other_candidates:
+        for trade in person["trades"]:
+            all_trade_records.append({
+                "lawmaker": person["name"],
+                "chamber": person["chamber"],
+                **trade,
+            })
+
+    all_trades_output = {
+        "updated_at": datetime.datetime.utcnow().isoformat() + "Z",
+        "lookback_days": LOOKBACK_DAYS,
+        "trades": all_trade_records,
+    }
+
+    with open(ALL_TRADES_OUTPUT_PATH, "w") as f:
+        json.dump(all_trades_output, f, indent=2)
+
+    print(f"Wrote {len(all_trade_records)} total qualifying trades across "
+          f"{len(pinned) + len(other_candidates)} lawmakers to {ALL_TRADES_OUTPUT_PATH}")
 
 
 if __name__ == "__main__":

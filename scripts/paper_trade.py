@@ -1,11 +1,16 @@
 """
-Simulated "mirror the pinned lawmakers" strategy, run daily against an
+Simulated "mirror congressional trades" strategy, run daily against an
 Alpaca PAPER trading account (no real money - confirmed via the paper
 API base URL below).
 
+Signal source: data/congress-trades-all.json - the UNFILTERED daily
+batch from FMP (every lawmaker with a qualifying trade, not just the 5
+pinned lawmakers shown on the site). This is deliberately broader than
+what's displayed on the Trades page, so the strategy actually has
+something to react to most days instead of depending on 5 specific
+people happening to appear in FMP's small default batch.
+
 Strategy:
-  - Only follows the 5 pinned lawmakers from congress-trades.json
-    (ignores the 2 random extras - see fetch_congress_trades.py).
   - A BUY signal opens/keeps that symbol in the target portfolio.
   - A SELL signal closes that symbol IF currently held. If not held,
     it's ignored entirely - this strategy never shorts.
@@ -35,7 +40,7 @@ ALPACA_KEY_ID = os.environ["ALPACA_API_KEY_ID"]
 ALPACA_SECRET_KEY = os.environ["ALPACA_API_SECRET_KEY"]
 ALPACA_BASE = "https://paper-api.alpaca.markets"  # paper only, never live
 
-TRADES_JSON_PATH = "data/congress-trades.json"
+TRADES_JSON_PATH = "data/congress-trades-all.json"
 PORTFOLIO_JSON_PATH = "data/paper-portfolio.json"
 
 MIN_REBALANCE_DOLLARS = 1.00   # skip rebalancing noise smaller than this
@@ -90,10 +95,10 @@ def load_portfolio_state():
         }
 
 
-def load_pinned_signals():
-    """Every (lawmaker, symbol, trade_date, direction) tuple from the 5
-    pinned lawmakers in congress-trades.json - explicitly excludes the
-    2 random extras, per the strategy definition."""
+def load_all_signals():
+    """Every (lawmaker, symbol, trade_date, direction) tuple from the
+    unfiltered daily batch - no pinned/random distinction here, this
+    file already contains everyone with a qualifying trade."""
     try:
         with open(TRADES_JSON_PATH) as f:
             trades_data = json.load(f)
@@ -102,18 +107,15 @@ def load_pinned_signals():
         return []
 
     signals = []
-    for person in trades_data.get("lawmakers", []):
-        if person.get("pinned") is False:
-            continue  # skip random extras
-        for trade in person.get("trades", []):
-            key = f"{person['name']}|{trade['symbol']}|{trade['trade_date']}|{trade['direction']}"
-            signals.append({
-                "key": key,
-                "lawmaker": person["name"],
-                "symbol": trade["symbol"],
-                "direction": trade["direction"],
-                "trade_date": trade["trade_date"],
-            })
+    for trade in trades_data.get("trades", []):
+        key = f"{trade['lawmaker']}|{trade['symbol']}|{trade['trade_date']}|{trade['direction']}"
+        signals.append({
+            "key": key,
+            "lawmaker": trade["lawmaker"],
+            "symbol": trade["symbol"],
+            "direction": trade["direction"],
+            "trade_date": trade["trade_date"],
+        })
     return signals
 
 
@@ -127,7 +129,7 @@ def main():
     positions_raw = alpaca_get("/v2/positions")
     current_positions = {p["symbol"]: float(p["market_value"]) for p in positions_raw}
 
-    signals = load_pinned_signals()
+    signals = load_all_signals()
     new_signals = [s for s in signals if s["key"] not in processed]
 
     to_open = set()
