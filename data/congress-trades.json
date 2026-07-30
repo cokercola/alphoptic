@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-29T15:06:17.998235Z",
+  "updated_at": "2026-07-30T15:07:05.036165Z",
   "lookback_days": 30,
   "lawmakers": [
     {
@@ -38,23 +38,6 @@
       "trades": []
     },
     {
-      "name": "Debbie Dingell",
-      "party": null,
-      "chamber": "House",
-      "pinned": false,
-      "trades": [
-        {
-          "symbol": "FMCC",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-14",
-          "filed_date": "2026-07-23",
-          "is_new": true,
-          "linked": false
-        }
-      ]
-    },
-    {
       "name": "Robert E. Latta",
       "party": null,
       "chamber": "House",
@@ -67,6 +50,149 @@
           "trade_date": "2026-07-20",
           "filed_date": "2026-07-27",
           "is_new": true,
+          "linked": false
+        }
+      ]
+    },
+    {
+      "name": "Dan Newhouse",
+      "party": null,
+      "chamber": "House",
+      "pinned": false,
+      "trades": [
+        {
+          "symbol": "COST",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "ANET",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": true
+        },
+        {
+          "symbol": "AMCR",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "ADBE",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "APH",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "ACN",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "GOOGL",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": true
+        },
+        {
+          "symbol": "DE",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "AMD",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "AMAT",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "FIS",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "DUK",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "CSX",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "PANW",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": true
+        },
+        {
+          "symbol": "UBER",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
           "linked": false
         }
       ]
