@@ -7,33 +7,21 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-6P0HCH9X77');
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Signals — Alphoptic</title>
-<link rel="stylesheet" href="../assets/style.css">
-<link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
-<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 </head>
 <body>
-
-<header class="topbar">
-  <div class="brand">
-    <img src="../assets/logo.png" alt="Alphoptic" class="logo-mark">
-    <span><span class="brand-alph">ALPH</span><span class="brand-optic">OPTIC</span></span>
-  </div>
-  <input class="search" type="text" placeholder="Search bills, tickers, lawmakers..." style="display:none;">
-  <div id="donate-widget"></div>
-  <div class="updated" id="updated-at"></div>
-</header>
-
+<div id="site-header"></div>
 <div class="layout two-col">
   <nav class="sidebar" id="sidebar"></nav>
-
   <main>
-    <div class="breadcrumb"><a href="../index.html">Dashboard</a> / Signals</div>
+    <div class="breadcrumb"><a href="/index.html">Dashboard</a> / Signals</div>
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <div class="section-label" style="margin:0;">Current signals</div>
       <select id="sort-select" style="background:var(--panel); color:var(--text); border:1px solid var(--border); border-radius:6px; padding:6px 10px; font-size:12px;">
@@ -45,23 +33,21 @@
     <div id="signal-list"></div>
   </main>
 </div>
-
-<script src="../assets/site.js"></script>
+<script src="/assets/site.js"></script>
+<script src="/assets/donate.js"></script>
+<script src="/assets/header.js"></script>
 <script>
 let allSignals = [];
-
 function render(sortKey) {
   const keyMap = { impact: 'impact_score', probability: 'passage_probability', confidence: 'confidence' };
   const sorted = [...allSignals].sort((a, b) => b[keyMap[sortKey]] - a[keyMap[sortKey]]);
   const list = document.getElementById('signal-list');
-
   if (!sorted.length) {
     list.innerHTML = `<div class="empty-note">No signals yet.</div>`;
     return;
   }
-
   list.innerHTML = sorted.map(s => `
-    <a class="signal-card ${s.direction}" href="../bills/detail.html?id=${s.bill_id}">
+    <a class="signal-card ${s.direction}" href="/bills/detail.html?id=${s.bill_id}">
       <div class="signal-head">
         <span>${s.bill_id} — ${s.title}</span>
         <span class="prob ${s.direction}">${s.direction.toUpperCase()} ${s.passage_probability}%${infoIcon(TOOLTIP_TEXT.direction + ' ' + TOOLTIP_TEXT.probability)}</span>
@@ -71,7 +57,6 @@ function render(sortKey) {
   `).join('');
   initInfoTooltips();
 }
-
 async function init() {
   renderSidebar('signals');
   const data = await fetchSiteData();
