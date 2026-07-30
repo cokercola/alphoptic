@@ -7,7 +7,6 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-6P0HCH9X77');
 </script>
 <meta charset="UTF-8">
@@ -23,54 +22,27 @@
 <meta name="twitter:title" content="Alphoptic — First Sight">
 <meta name="twitter:description" content="Track bills in Congress, measure industry impact, and identify legislative signals before policy becomes law.">
 <meta name="twitter:image" content="https://alphoptic.com/assets/social-card.png">
-<link rel="stylesheet" href="assets/style.css">
-<link rel="stylesheet" href="assets/trades.css">
-<link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/donate.css">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/trades.css">
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/donate.css">
 </head>
- 
+
 <body>
-
-<header class="topbar">
-  <div class="brand">
-    <img src="assets/logo.png" alt="Alphoptic" class="logo-mark">
-    <span><span class="brand-alph">ALPH</span><span class="brand-optic">OPTIC</span></span>
-  </div>
-  
-  <input class="search" type="text" placeholder="Search bills, tickers, lawmakers..." style="display:none;">
-  <div id="donate-widget"></div>
-  <div class="updated" id="updated-at">Loading...</div>
-</header>
-
-<div class="explainer-strip">
-  <p>Alphoptic tracks bills in Congress, estimates their industry and company impact, and flags legislative signals — AI-assisted estimates, not predictions.</p>
-</div>
+<div id="site-header"></div>
 <div class="layout">
-
-  <nav class="sidebar">
-    <a class="active" href="index.html">Dashboard</a>
-    <a href="bills/index.html">Bills</a>
-    <a href="industries/index.html">Industries</a>
-    <a href="companies/index.html">Companies</a>
-    <a href="signals/index.html">Signals</a>
-    <a href="trades/index.html">Trades</a>
-    <a href="watchlist/index.html">Watchlist</a>
-  </nav>
-
+  <nav class="sidebar" id="sidebar"></nav>
   <main class="feed">
     <div class="stat-row" id="stat-row"></div>
-
     <div class="trades-teaser-header">
       <span class="section-label" style="margin-bottom:0;">Congress trades</span>
-      <a href="trades/index.html">View all trades →</a>
+      <a href="/trades/index.html">View all trades →</a>
     </div>
     <div id="trades-teaser" style="margin-bottom:20px;" data-trades-target></div>
-
     <div class="section-label">Top signals today</div>
     <div id="signal-list"></div>
   </main>
-
   <aside class="ticker-panel">
     <div class="section-label">Watchlist</div>
     <div id="watchlist"></div>
@@ -78,18 +50,19 @@
     <div class="upcoming-item">Mon — Senate hearing, S.881</div>
     <div class="upcoming-item">Wed — House floor vote, H.R.1842</div>
   </aside>
-
 </div>
-
-<script src="assets/site.js"></script>
-<script src="assets/app.js"></script>
-<script src="assets/trades.js"></script>
+<script src="/assets/site.js"></script>
+<script src="/assets/app.js"></script>
+<script src="/assets/trades.js"></script>
 <script>
 loadTradesData('data/congress-trades.json', function (data) {
   renderTeaser('trades-teaser', data, 3, '');
 });
 </script>
-  <script src="assets/donate.js"></script>
-<script>renderDonateWidget('donate-widget');</script>
+<script src="/assets/donate.js"></script>
+<script src="/assets/header.js"></script>
+<script>
+renderSidebar('dashboard');
+</script>
 </body>
 </html>
