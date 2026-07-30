@@ -21,7 +21,7 @@ const HEADER_HTML = `
   <div class="updated" id="updated-at">Loading...</div>
 </header>
 <div class="explainer-strip">
-  <p>Alphoptic tracks bills in Congress, estimates their industry and company impact, and flags legislative signals — AI-assisted estimates, not predictions.</p>
+  <p>Alphoptic tracks bills in Congress, estimates their industry and company impact, and flags legislative signals — AI-assisted estimates, not predictions. Alphoptic is early-stage and actively growing. Tips help cover data costs and fund new features as they're built.</p>
 </div>
 `;
 
