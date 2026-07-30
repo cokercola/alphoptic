@@ -52,6 +52,12 @@
   letter-spacing: 0.5px;
   margin-bottom: 8px;
 }
+.donate-popover-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
 
 .donate-amounts {
   display: grid;
