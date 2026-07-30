@@ -3,29 +3,23 @@
  * id="donate-widget". Edit DONATION_LINKS below with your actual Stripe
  * Payment Link URLs once created (Dashboard -> Payment Links).
  */
-
 const DONATION_LINKS = {
   5: "https://buy.stripe.com/6oU4gBce20oqgGkdPQebu00",
   10: "https://buy.stripe.com/aFacN73Hw3AC3Ty6noebu01",
   25: "https://buy.stripe.com/bJe7sNguigno4XCfXYebu02",
   custom: "https://buy.stripe.com/4gM9AV3Hwc78fCgbHIebu03",
 };
-
 function renderDonateWidget(containerId) {
   const el = document.getElementById(containerId);
   if (!el) return;
-
   const isReady = (url) => url && !url.includes("REPLACE_WITH");
-
   const amountButtons = [5, 10, 25]
     .filter((amt) => isReady(DONATION_LINKS[amt]))
     .map((amt) => `<a class="donate-amount-btn" href="${DONATION_LINKS[amt]}" target="_blank" rel="noopener">$${amt}</a>`)
     .join("");
-
   const customButton = isReady(DONATION_LINKS.custom)
     ? `<a class="donate-custom-btn" href="${DONATION_LINKS.custom}" target="_blank" rel="noopener">Custom amount</a>`
     : "";
-
   el.innerHTML = `
     <div class="donate-wrap">
       <button class="donate-btn" id="donate-toggle" type="button">
@@ -39,6 +33,7 @@ function renderDonateWidget(containerId) {
       </button>
       <div class="donate-popover" id="donate-popover">
         <div class="donate-popover-label">Support Alphoptic</div>
+        <div class="donate-popover-text">Helps cover API &amp; data costs to keep Alphoptic free and independent.</div>
         <div class="donate-amounts">
           ${amountButtons}
         </div>
@@ -46,15 +41,12 @@ function renderDonateWidget(containerId) {
       </div>
     </div>
   `;
-
   const toggle = document.getElementById("donate-toggle");
   const popover = document.getElementById("donate-popover");
-
   toggle.addEventListener("click", (e) => {
     e.stopPropagation();
     popover.classList.toggle("open");
   });
-
   document.addEventListener("click", () => {
     popover.classList.remove("open");
   });
