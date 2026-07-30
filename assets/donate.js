@@ -6,9 +6,9 @@
 
 const DONATION_LINKS = {
   5: "https://buy.stripe.com/6oU4gBce20oqgGkdPQebu00",
-  10: "https://buy.stripe.com/REPLACE_WITH_10_DOLLAR_LINK",
-  25: "https://buy.stripe.com/REPLACE_WITH_25_DOLLAR_LINK",
-  custom: "https://buy.stripe.com/REPLACE_WITH_CUSTOM_AMOUNT_LINK",
+  10: "https://buy.stripe.com/aFacN73Hw3AC3Ty6noebu01",
+  25: "https://buy.stripe.com/bJe7sNguigno4XCfXYebu02",
+  custom: "https://buy.stripe.com/4gM9AV3Hwc78fCgbHIebu03",
 };
 
 function renderDonateWidget(containerId) {
