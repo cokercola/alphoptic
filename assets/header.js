@@ -34,17 +34,8 @@ function initHeader() {
   if (typeof renderDonateWidget === "function") {
     renderDonateWidget("donate-widget");
   }
-
-  // Kick off the "Updated" timestamp if site.js exposes a function for it.
-  if (typeof setUpdatedTimestamp === "function") {
-    setUpdatedTimestamp();
-  } else {
-    // Fallback: just show current load time if no dedicated function exists.
-    const updatedEl = document.getElementById("updated-at");
-    if (updatedEl) {
-      updatedEl.textContent = "Updated " + new Date().toLocaleString();
-    }
-  }
+  // Note: the "Updated" timestamp is NOT set here — each page's own
+  // inline script sets it from real fetched data (e.g. data.updated_at).
 }
 
 document.addEventListener("DOMContentLoaded", initHeader);
