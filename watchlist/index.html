@@ -13,26 +13,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Watchlist — Alphoptic</title>
-<link rel="stylesheet" href="../assets/style.css">
-<link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
-<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 </head>
 <body>
 
-<header class="topbar">
-  <div class="brand">
-    <img src="../assets/logo.png" alt="Alphoptic" class="logo-mark">
-    <span><span class="brand-alph">ALPH</span><span class="brand-optic">OPTIC</span></span>
-  </div>
-  <input class="search" type="text" placeholder="Search bills, tickers, lawmakers...">
-  <div class="updated" id="updated-at"></div>
-</header>
+<div id="site-header"></div>
 
 <div class="layout two-col">
   <nav class="sidebar" id="sidebar"></nav>
 
   <main>
-    <div class="breadcrumb"><a href="../index.html">Dashboard</a> / Watchlist</div>
+    <div class="breadcrumb"><a href="/index.html">Dashboard</a> / Watchlist</div>
     <div class="empty-note" style="margin-bottom:16px;">
       Personalized, per-user watchlists (follow specific bills, tickers, or committees) aren't built yet —
       that needs accounts and sign-in, which this static-site architecture doesn't have. For now, this
@@ -49,7 +42,8 @@
   </main>
 </div>
 
-<script src="../assets/site.js"></script>
+<script src="/assets/site.js"></script>
+<script src="/assets/header.js"></script>
 <script>
 async function init() {
   renderSidebar('watchlist');
@@ -83,7 +77,7 @@ async function init() {
         <td>${t}</td>
         <td>${info.name}</td>
         <td>${directionPill(net)}</td>
-        <td>${info.bills.map(b => `<a href="../bills/detail.html?id=${b}">${b}</a>`).join(', ')}</td>
+        <td>${info.bills.map(b => `<a href="/bills/detail.html?id=${b}">${b}</a>`).join(', ')}</td>
       </tr>
     `;
   }).join('');
