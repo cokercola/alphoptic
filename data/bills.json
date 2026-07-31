@@ -1,10 +1,10 @@
 {
-  "updated_at": "2026-07-30T14:12:01.245989Z",
+  "updated_at": "2026-07-31T13:32:27.044220Z",
   "summary": {
-    "bills_tracked": 10,
+    "bills_tracked": 25,
     "high_impact": 2,
-    "new_signals_today": 10,
-    "industries_affected": 10
+    "new_signals_today": 25,
+    "industries_affected": 21
   },
   "signals": [
     {
@@ -361,6 +361,397 @@
           "exposure": 40
         }
       ]
+    },
+    {
+      "bill_id": "HRES27",
+      "title": "Expressing opposition to Central Business District Tolling Program of New York City.",
+      "industry": "Transportation & Infrastructure",
+      "direction": "mixed",
+      "passage_probability": 25,
+      "impact_score": 42,
+      "confidence": 55,
+      "status": "Referred to the House Committee on Transportation and Infrastructure.",
+      "sponsor": "Rep. LaLota, Nick [R-NY-1]",
+      "cosponsors": 3,
+      "last_action": "Referred to the House Committee on Transportation and Infrastructure.",
+      "next_event": "TBD",
+      "summary": "Congressional resolution opposes NYC congestion pricing, potentially halting tolls on Manhattan drivers but facing limited federal enforcement power.",
+      "companies": [
+        {
+          "ticker": "MTA",
+          "name": "Metropolitan Transportation Authority",
+          "effect": "negative",
+          "exposure": 80
+        },
+        {
+          "ticker": "UBER",
+          "name": "Uber Technologies",
+          "effect": "mixed",
+          "exposure": 50
+        },
+        {
+          "ticker": "LYFT",
+          "name": "Lyft Inc.",
+          "effect": "mixed",
+          "exposure": 45
+        },
+        {
+          "ticker": "PAC",
+          "name": "Global Indemnity Group",
+          "effect": "negative",
+          "exposure": 20
+        }
+      ]
+    },
+    {
+      "bill_id": "HR6",
+      "title": "Reserved for the Speaker.",
+      "industry": "unknown",
+      "direction": "mixed",
+      "passage_probability": 25,
+      "impact_score": 0,
+      "confidence": 0,
+      "status": "",
+      "sponsor": "Rep. Johnson, Mike [R-LA-4]",
+      "cosponsors": 0,
+      "last_action": "",
+      "next_event": "TBD",
+      "summary": "No information available to assess legislative impact on any industry or companies.",
+      "companies": []
+    },
+    {
+      "bill_id": "HR9",
+      "title": "Reserved for the Speaker.",
+      "industry": "unknown",
+      "direction": "mixed",
+      "passage_probability": 25,
+      "impact_score": 0,
+      "confidence": 0,
+      "status": "",
+      "sponsor": "Rep. Johnson, Mike [R-LA-4]",
+      "cosponsors": 0,
+      "last_action": "",
+      "next_event": "TBD",
+      "summary": "No information available to assess legislative impact or affected industries.",
+      "companies": []
+    },
+    {
+      "bill_id": "HR11",
+      "title": "Reserved for the Minority Leader.",
+      "industry": "Unknown",
+      "direction": "mixed",
+      "passage_probability": 25,
+      "impact_score": 0,
+      "confidence": 0,
+      "status": "",
+      "sponsor": "Rep. Jeffries, Hakeem S. [D-NY-8]",
+      "cosponsors": 0,
+      "last_action": "",
+      "next_event": "TBD",
+      "summary": "No information available to assess legislative impact or affected industries.",
+      "companies": []
+    },
+    {
+      "bill_id": "HR13",
+      "title": "Reserved for the Minority Leader.",
+      "industry": "Unknown",
+      "direction": "mixed",
+      "passage_probability": 25,
+      "impact_score": 0,
+      "confidence": 0,
+      "status": "",
+      "sponsor": "Rep. Jeffries, Hakeem S. [D-NY-8]",
+      "cosponsors": 0,
+      "last_action": "",
+      "next_event": "TBD",
+      "summary": "No information available to assess legislative impact or affected industries.",
+      "companies": []
+    },
+    {
+      "bill_id": "HR16",
+      "title": "Reserved for the Minority Leader.",
+      "industry": "Unknown",
+      "direction": "mixed",
+      "passage_probability": 25,
+      "impact_score": 0,
+      "confidence": 0,
+      "status": "",
+      "sponsor": "Rep. Jeffries, Hakeem S. [D-NY-8]",
+      "cosponsors": 0,
+      "last_action": "",
+      "next_event": "TBD",
+      "summary": "No information available to assess legislative impact or affected industries.",
+      "companies": []
+    },
+    {
+      "bill_id": "HR19",
+      "title": "Reserved for the Minority Leader.",
+      "industry": "Unknown",
+      "direction": "mixed",
+      "passage_probability": 25,
+      "impact_score": 0,
+      "confidence": 0,
+      "status": "",
+      "sponsor": "Rep. Jeffries, Hakeem S. [D-NY-8]",
+      "cosponsors": 0,
+      "last_action": "",
+      "next_event": "TBD",
+      "summary": "No information available to assess legislative impact or affected industries.",
+      "companies": []
+    },
+    {
+      "bill_id": "HJRES8",
+      "title": "Proposing an amendment to the Constitution of the United States to provide certain line item veto authority to the President.",
+      "industry": "Government/Public Finance",
+      "direction": "mixed",
+      "passage_probability": 25,
+      "impact_score": 45,
+      "confidence": 40,
+      "status": "Referred to the House Committee on the Judiciary.",
+      "sponsor": "Rep. McClintock, Tom [R-CA-5]",
+      "cosponsors": 1,
+      "last_action": "Referred to the House Committee on the Judiciary.",
+      "next_event": "TBD",
+      "summary": "Would give the President power to cut specific spending items, increasing budget uncertainty for government contractors and federally funded industries.",
+      "companies": [
+        {
+          "ticker": "LMT",
+          "name": "Lockheed Martin",
+          "effect": "negative",
+          "exposure": 55
+        },
+        {
+          "ticker": "BA",
+          "name": "Boeing",
+          "effect": "negative",
+          "exposure": 50
+        },
+        {
+          "ticker": "RTX",
+          "name": "RTX Corporation",
+          "effect": "negative",
+          "exposure": 48
+        },
+        {
+          "ticker": "GD",
+          "name": "General Dynamics",
+          "effect": "negative",
+          "exposure": 47
+        }
+      ]
+    },
+    {
+      "bill_id": "HRES9",
+      "title": "Reaffirming that the United States is not a party to the Rome Statute and does not recognize the jurisdiction of the International Criminal Court.",
+      "industry": "Defense & Government Policy",
+      "direction": "positive",
+      "passage_probability": 25,
+      "impact_score": 18,
+      "confidence": 45,
+      "status": "Referred to the House Committee on Foreign Affairs.",
+      "sponsor": "Rep. Biggs, Andy [R-AZ-5]",
+      "cosponsors": 0,
+      "last_action": "Referred to the House Committee on Foreign Affairs.",
+      "next_event": "TBD",
+      "summary": "Non-binding resolution affirming US rejection of ICC jurisdiction signals continued strong US-Israel alignment, minimally impacting defense sector.",
+      "companies": [
+        {
+          "ticker": "LMT",
+          "name": "Lockheed Martin",
+          "effect": "positive",
+          "exposure": 12
+        },
+        {
+          "ticker": "RTX",
+          "name": "RTX Corporation",
+          "effect": "positive",
+          "exposure": 10
+        }
+      ]
+    },
+    {
+      "bill_id": "HRES8",
+      "title": "Reaffirming the House of Representatives's commitment to ensuring secure elections throughout the United States by recognizing that the presentation of valid photograph identification is a fundamental component of secure elections.",
+      "industry": "Election Security & Identity Verification",
+      "direction": "positive",
+      "passage_probability": 25,
+      "impact_score": 30,
+      "confidence": 45,
+      "status": "Referred to the House Committee on House Administration.",
+      "sponsor": "Rep. Biggs, Andy [R-AZ-5]",
+      "cosponsors": 2,
+      "last_action": "Referred to the House Committee on House Administration.",
+      "next_event": "TBD",
+      "summary": "Non-binding resolution reaffirming voter photo ID support could modestly boost identity verification and election technology companies if it spurs legislation.",
+      "companies": [
+        {
+          "ticker": "IDEX",
+          "name": "Idex Biometrics",
+          "effect": "positive",
+          "exposure": 25
+        },
+        {
+          "ticker": "DIES",
+          "name": "Digimarc Corporation",
+          "effect": "positive",
+          "exposure": 20
+        },
+        {
+          "ticker": "NCIT",
+          "name": "NCI Information Systems",
+          "effect": "positive",
+          "exposure": 15
+        }
+      ]
+    },
+    {
+      "bill_id": "HRES19",
+      "title": "Providing the sense of the House of Representatives that the House should not adjourn until the annual appropriation bills within the jurisdiction of all the subcommittees of the Committee on Appropriations for the current fiscal year are enacted into law.",
+      "industry": "Government/Public Administration",
+      "direction": "mixed",
+      "passage_probability": 25,
+      "impact_score": 30,
+      "confidence": 55,
+      "status": "Referred to the House Committee on Appropriations.",
+      "sponsor": "Rep. Ogles, Andrew [R-TN-5]",
+      "cosponsors": 2,
+      "last_action": "Referred to the House Committee on Appropriations.",
+      "next_event": "TBD",
+      "summary": "Non-binding resolution urging Congress to stay in session until federal spending bills pass, reducing government shutdown risk.",
+      "companies": [
+        {
+          "ticker": "BAH",
+          "name": "Booz Allen Hamilton",
+          "effect": "positive",
+          "exposure": 40
+        },
+        {
+          "ticker": "CACI",
+          "name": "CACI International",
+          "effect": "positive",
+          "exposure": 35
+        },
+        {
+          "ticker": "LMT",
+          "name": "Lockheed Martin",
+          "effect": "positive",
+          "exposure": 30
+        },
+        {
+          "ticker": "GD",
+          "name": "General Dynamics",
+          "effect": "positive",
+          "exposure": 28
+        }
+      ]
+    },
+    {
+      "bill_id": "HRES7",
+      "title": "Recognizing the importance of access to comprehensive, high-quality, life-affirming medical care for women of all ages.",
+      "industry": "Healthcare",
+      "direction": "positive",
+      "passage_probability": 25,
+      "impact_score": 20,
+      "confidence": 30,
+      "status": "Referred to the House Committee on Energy and Commerce.",
+      "sponsor": "Rep. Biggs, Andy [R-AZ-5]",
+      "cosponsors": 1,
+      "last_action": "Referred to the House Committee on Energy and Commerce.",
+      "next_event": "TBD",
+      "summary": "Non-binding resolution supporting women's healthcare access; unlikely to directly affect industry regulations or company revenues.",
+      "companies": [
+        {
+          "ticker": "UHS",
+          "name": "Universal Health Services",
+          "effect": "positive",
+          "exposure": 15
+        },
+        {
+          "ticker": "HCA",
+          "name": "HCA Healthcare",
+          "effect": "positive",
+          "exposure": 12
+        },
+        {
+          "ticker": "CVS",
+          "name": "CVS Health",
+          "effect": "positive",
+          "exposure": 10
+        }
+      ]
+    },
+    {
+      "bill_id": "HJRES21",
+      "title": "Disapproving of the rule submitted by the Department of Homeland Security relating to \"Modernizing H-2 Program Requirements, Oversight, and Worker Protections\".",
+      "industry": "Agriculture & Seasonal Labor",
+      "direction": "mixed",
+      "passage_probability": 25,
+      "impact_score": 45,
+      "confidence": 62,
+      "status": "Referred to the House Committee on the Judiciary.",
+      "sponsor": "Rep. Arrington, Jodey C. [R-TX-19]",
+      "cosponsors": 2,
+      "last_action": "Referred to the House Committee on the Judiciary.",
+      "next_event": "TBD",
+      "summary": "Nullifying H-2 worker protections could ease employer compliance burdens but may increase labor instability and reputational risks for heavy H-2A/H-2B users.",
+      "companies": [
+        {
+          "ticker": "CALM",
+          "name": "Cal-Maine Foods",
+          "effect": "mixed",
+          "exposure": 55
+        },
+        {
+          "ticker": "FDP",
+          "name": "Fresh Del Monte Produce",
+          "effect": "mixed",
+          "exposure": 60
+        },
+        {
+          "ticker": "SFM",
+          "name": "Sprouts Farmers Market",
+          "effect": "mixed",
+          "exposure": 30
+        },
+        {
+          "ticker": "DOLE",
+          "name": "Dole plc",
+          "effect": "mixed",
+          "exposure": 50
+        }
+      ]
+    },
+    {
+      "bill_id": "SRES2",
+      "title": "A resolution informing the House of Representatives that a quorum of the Senate is assembled.",
+      "industry": "Government/Legislative Process",
+      "direction": "mixed",
+      "passage_probability": 25,
+      "impact_score": 1,
+      "confidence": "95",
+      "status": "Message on Senate action sent to the House.",
+      "sponsor": "Sen. Thune, John [R-SD]",
+      "cosponsors": 0,
+      "last_action": "Message on Senate action sent to the House.",
+      "next_event": "TBD",
+      "summary": "Routine procedural resolution notifying the House that the Senate has a quorum; no substantive policy or industry impact.",
+      "companies": []
+    },
+    {
+      "bill_id": "SRES3",
+      "title": "A resolution to elect Charles E. Grassley, a Senator from the State of Iowa, to be President pro tempore of the Senate of the United States.",
+      "industry": "Government/Political",
+      "direction": "mixed",
+      "passage_probability": 25,
+      "impact_score": 5,
+      "confidence": 85,
+      "status": "Submitted in the Senate, considered, and agreed to without amendment by Unanimous Consent. (consideration: CR S6; text: CR S6)",
+      "sponsor": "Sen. Thune, John [R-SD]",
+      "cosponsors": 0,
+      "last_action": "Submitted in the Senate, considered, and agreed to without amendment by Unanimous Consent. (consideration: CR S6; text: CR S6)",
+      "next_event": "TBD",
+      "summary": "Senate elects Chuck Grassley as President pro tempore, a ceremonial leadership role with minimal direct economic or industry impact.",
+      "companies": []
     }
   ]
 }
