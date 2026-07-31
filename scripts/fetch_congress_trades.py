@@ -1,7 +1,7 @@
 """
-Pulls stock trade disclosures for a fixed watchlist of lawmakers, plus 2
-randomly-selected additional lawmakers who happen to have recent trades,
-and writes data/congress-trades.json for the static site to read.
+Pulls stock trade disclosures for 15 randomly-selected lawmakers who
+have a qualifying trade in FMP's daily batch, and writes
+data/congress-trades.json for the static site to read.
 
 Uses FMP's senate-latest / house-latest endpoints (confirmed free-tier
 accessible - the by-name search endpoints and any explicit page/limit
@@ -9,16 +9,10 @@ params both return 402 Payment Required on the free plan, so this makes
 a single bare call per chamber and works with whatever batch FMP
 returns by default).
 
-Because senate-latest/house-latest return the most recent disclosures
-across ALL ~535 members of Congress rather than just our tracked ones,
-any given run's default batch may contain none, some, or all of them -
-that's a real limitation of the free tier, not a bug. To make sure the
-page still has something to show even on a quiet day for our tracked
-list, we also grab 2 random other lawmakers from whoever *does* have
-qualifying trades in that batch. The tracked lawmakers always appear on
-the page (with a "no disclosed trades this period" empty state if
-applicable); the 2 random extras only appear if they actually have
-trades to show.
+There is no pinned/guaranteed lawmaker list anymore - every run picks
+15 random lawmakers from whoever has a qualifying trade that day, so
+every lawmaker shown always has at least one real trade (no more "no
+disclosed trades this period" empty state).
 
 Ticker "linked" status is derived from data/bills.json (this repo's
 existing source of truth for company/ticker exposure) rather than a
@@ -46,26 +40,10 @@ BILLS_JSON_PATH = "data/bills.json"
 OUTPUT_PATH = "data/congress-trades.json"
 ALL_TRADES_OUTPUT_PATH = "data/congress-trades-all.json"
 
-# The lawmakers we're always tracking. `match` is a list of substrings
-# checked against each record's actual firstName + lastName
-# (case-insensitive). Add more entries here any time - just make sure
-# `match` is specific enough not to collide with another member's name.
-WATCHLIST = [
-    {"name": "Nancy Pelosi",    "party": "D", "chamber": "House",  "match": ["pelosi"]},
-    {"name": "Ro Khanna",       "party": "D", "chamber": "House",  "match": ["khanna"]},
-    {"name": "Ted Cruz",        "party": "R", "chamber": "Senate", "match": ["cruz"]},
-    {"name": "Michael McCaul",  "party": "R", "chamber": "House",  "match": ["mccaul"]},
-    {"name": "Dan Crenshaw",    "party": "R", "chamber": "House",  "match": ["crenshaw"]},
-    {"name": "Marjorie Taylor Greene", "party": "R", "chamber": "House", "match": ["greene"]},
-    {"name": "Mark Green",      "party": "R", "chamber": "House",  "match": ["mark green"]},
-    {"name": "Josh Gottheimer", "party": "D", "chamber": "House",  "match": ["gottheimer"]},
-    {"name": "Tommy Tuberville","party": "R", "chamber": "Senate", "match": ["tuberville"]},
-    {"name": "Susie Lee",       "party": "D", "chamber": "House",  "match": ["susie lee"]},
-    {"name": "Debbie Wasserman Schultz", "party": "D", "chamber": "House", "match": ["wasserman schultz"]},
-    {"name": "John Boozman",    "party": "R", "chamber": "Senate", "match": ["boozman"]},
-]
-
-RANDOM_EXTRA_COUNT = 2   # how many additional random lawmakers to add
+# How many lawmakers to show on the site's Trades page each run. This
+# is a random sample of whoever has a qualifying trade that day - not
+# a fixed/curated list. Raise this later once coverage grows.
+RANDOM_LAWMAKER_COUNT = 15
 
 LOOKBACK_DAYS = 30       # only show disclosures within this window
 NEW_WITHIN_DAYS = 7      # flag as "new" if filed within this many days
@@ -91,16 +69,6 @@ def load_known_tickers():
             if ticker:
                 tickers.add(ticker.upper())
     return tickers
-
-
-def match_watchlist(record_name, chamber):
-    name_lower = (record_name or "").lower()
-    for person in WATCHLIST:
-        if person["chamber"] != chamber:
-            continue
-        if any(fragment in name_lower for fragment in person["match"]):
-            return person
-    return None
 
 
 def normalize_direction(raw_type):
@@ -191,16 +159,9 @@ def main():
     print(f"Fetched {len(senate_raw)} Senate records, {len(house_raw)} House records "
           f"(FMP's default free-tier batch - no pagination available).")
 
-    # The pinned lawmakers - always present in the output, even empty.
-    pinned = {
-        p["name"]: {"name": p["name"], "party": p["party"], "chamber": p["chamber"],
-                     "pinned": True, "trades": []}
-        for p in WATCHLIST
-    }
-
-    # Everyone else who shows up with at least one qualifying trade -
-    # candidates for the 2 random extras.
-    others = {}
+    # Every lawmaker who shows up with at least one qualifying trade
+    # today, across both chambers.
+    all_candidates = {}
 
     for chamber, raw in (("Senate", senate_raw), ("House", house_raw)):
         for rec in raw:
@@ -213,50 +174,48 @@ def main():
             if entry is None:
                 continue
 
-            watchlisted = match_watchlist(record_name, chamber)
-            if watchlisted:
-                pinned[watchlisted["name"]]["trades"].append(entry)
-            else:
-                key = (record_name, chamber)
-                if key not in others:
-                    others[key] = {"name": record_name, "party": None, "chamber": chamber,
-                                    "pinned": False, "trades": []}
-                others[key]["trades"].append(entry)
+            key = (record_name, chamber)
+            if key not in all_candidates:
+                all_candidates[key] = {
+                    "name": record_name,
+                    "party": None,
+                    "chamber": chamber,
+                    "trades": [],
+                }
+            all_candidates[key]["trades"].append(entry)
 
-    # Pick a random 2 (or fewer, if not enough candidates) from everyone
-    # else who had qualifying trades this run.
-    other_candidates = list(others.values())
-    random_extras = random.sample(other_candidates, k=min(RANDOM_EXTRA_COUNT, len(other_candidates)))
+    candidate_list = list(all_candidates.values())
 
-    all_lawmakers = list(pinned.values()) + random_extras
+    # 15 random lawmakers from whoever has a qualifying trade today.
+    # No pinned/guaranteed names, so there's no "no disclosed trades"
+    # empty state - everyone shown has at least one real trade.
+    selected = random.sample(candidate_list, k=min(RANDOM_LAWMAKER_COUNT, len(candidate_list)))
 
-    for person in all_lawmakers:
+    for person in selected:
         person["trades"].sort(key=lambda t: t["amount"], reverse=True)
         person["trades"] = person["trades"][:MAX_TRADES_PER_PERSON]
 
     output = {
         "updated_at": datetime.datetime.utcnow().isoformat() + "Z",
         "lookback_days": LOOKBACK_DAYS,
-        "lawmakers": all_lawmakers,
+        "lawmakers": selected,
     }
 
     os.makedirs("data", exist_ok=True)
     with open(OUTPUT_PATH, "w") as f:
         json.dump(output, f, indent=2)
 
-    total = sum(len(p["trades"]) for p in all_lawmakers)
-    print(f"Wrote {total} trades across {len(pinned)} pinned + {len(random_extras)} random "
-          f"lawmakers to {OUTPUT_PATH}")
-    if random_extras:
-        print("Random extras this run: " + ", ".join(p["name"] for p in random_extras))
+    total = sum(len(p["trades"]) for p in selected)
+    print(f"Wrote {total} trades across {len(selected)} randomly-selected lawmakers "
+          f"(from {len(candidate_list)} candidates with qualifying trades today) to {OUTPUT_PATH}")
 
     # Separate, unfiltered output: every qualifying trade from every
-    # lawmaker seen this run (not just the pinned + 2 random extras
-    # shown on the site). This is what the paper trading strategy reads
-    # from, so it has a much larger signal pool to act on daily instead
-    # of being limited to just the pinned names.
+    # lawmaker seen this run (not just the 15 shown on the site). This
+    # is what the paper trading strategy reads from, so it has a much
+    # larger signal pool to act on daily instead of being limited to
+    # just the 15 shown on the Trades page.
     all_trade_records = []
-    for person in list(pinned.values()) + other_candidates:
+    for person in candidate_list:
         for trade in person["trades"]:
             all_trade_records.append({
                 "lawmaker": person["name"],
@@ -274,7 +233,7 @@ def main():
         json.dump(all_trades_output, f, indent=2)
 
     print(f"Wrote {len(all_trade_records)} total qualifying trades across "
-          f"{len(pinned) + len(other_candidates)} lawmakers to {ALL_TRADES_OUTPUT_PATH}")
+          f"{len(candidate_list)} lawmakers to {ALL_TRADES_OUTPUT_PATH}")
 
 
 if __name__ == "__main__":
