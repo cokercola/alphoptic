@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6P0HCH9X77"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6P0HCH9X77');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Alphoptic</title>
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<style>
+  .contact-wrap {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 32px 20px;
+  }
+  .contact-wrap h1 {
+    font-size: 20px;
+    margin-bottom: 6px;
+  }
+  .contact-wrap .sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+  .form-group {
+    margin-bottom: 16px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+  .submit-btn {
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .submit-btn:hover {
+    filter: brightness(1.08);
+  }
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  .form-status {
+    margin-top: 14px;
+    font-size: 13px;
+  }
+  .form-status.success { color: var(--green); }
+  .form-status.error { color: var(--red); }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="contact-wrap">
+  <h1>Contact Alphoptic</h1>
+  <div class="sub">Questions, feedback, or bug reports — all welcome.</div>
+  <form id="contact-form">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    <div class="form-group">
+      <label for="reason">Reason</label>
+      <select id="reason" name="reason" required>
+        <option value="">Select one</option>
+        <option value="Feedback">Feedback</option>
+        <option value="Bug report">Bug report</option>
+        <option value="Feature request">Feature request</option>
+        <option value="Data question">Data question</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="message">Message</label>
+      <textarea id="message" name="message" required></textarea>
+    </div>
+    <button type="submit" class="submit-btn" id="submit-btn">Send message</button>
+    <div id="form-status" class="form-status"></div>
+  </form>
+</div>
+<div id="site-footer"></div>
+<script src="/assets/site.js"></script>
+<script src="/assets/donate.js"></script>
+<script src="/assets/header.js"></script>
+<script src="/assets/footer.js"></script>
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJZ_AOHR4fwC2Wc53eoicl40XamVirElEk5Dz-9jJDGBcT3Ha3bcKyHJqbhVTrcekx/exec";
+
+document.getElementById("contact-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const btn = document.getElementById("submit-btn");
+  const status = document.getElementById("form-status");
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+  status.textContent = "";
+  status.className = "form-status";
+
+  const payload = {
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    reason: document.getElementById("reason").value,
+    message: document.getElementById("message").value,
+    page: window.location.href
+  };
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify(payload)
+    });
+    status.textContent = "Message sent — thanks for reaching out.";
+    status.classList.add("success");
+    document.getElementById("contact-form").reset();
+  } catch (err) {
+    console.error(err);
+    status.textContent = "Something went wrong. Please try again.";
+    status.classList.add("error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Send message";
+  }
+});
+</script>
+</body>
+</html>
