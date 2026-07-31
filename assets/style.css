@@ -334,7 +334,33 @@ table.data-table a { color: var(--blue); text-decoration: none; }
   cursor: default;
 }
 .tooltip-popover.open { display: block; }
-
+/* Widen popover for the two-bullet signal breakdown */
+.tooltip-popover-wide {
+  width: 260px;
+}
+.tooltip-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+.tooltip-bullet {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: flex-start;
+}
+.tooltip-bullet:last-child {
+  margin-bottom: 0;
+}
+.tooltip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
 /* ============================================
    Donate button + popover (merged from donate.css)
    ============================================ */
