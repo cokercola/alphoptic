@@ -13,10 +13,10 @@
  */
 const HEADER_HTML = `
 <header class="topbar">
-  <div class="brand">
+  <a href="/index.html" class="brand" style="text-decoration:none;">
     <img src="/assets/logo.png" alt="Alphoptic" class="logo-mark">
     <span><span class="brand-alph">ALPH</span><span class="brand-optic">OPTIC</span></span>
-  </div>
+  </a>
   <div id="donate-widget"></div>
   <div class="updated" id="updated-at">Loading...</div>
 </header>
