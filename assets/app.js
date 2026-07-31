@@ -38,12 +38,12 @@ async function loadDashboard() {
   data.signals.forEach(s => (Array.isArray(s.companies) ? s.companies : []).forEach(c => { tickers[c.ticker] = c; }));
   const watchlist = document.getElementById('watchlist');
   const exposureNote = hasTooltips
-    ? `<div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Exposure score, not price change${infoIcon(TOOLTIP_TEXT.exposure)}</div>`
+    ? `<div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Exposure score, not price change${exposureInfoIcon()}</div>`
     : `<div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Exposure score, not price change</div>`;
   watchlist.innerHTML = exposureNote + Object.values(tickers).slice(0, 6).map(c => `
     <div class="ticker-row">
       <span>${c.ticker}</span>
-      <span class="change ${c.effect || 'mixed'}">${c.exposure}</span>
+      <span class="change ${c.effect || 'mixed'}">${exposureSquare(c.exposure)}${c.exposure}</span>
     </div>
   `).join('');
   if (hasTooltips) initInfoTooltips();
