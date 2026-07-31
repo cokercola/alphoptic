@@ -23,6 +23,7 @@
   <nav class="sidebar" id="sidebar"></nav>
   <main>
     <div class="breadcrumb"><a href="/index.html">Dashboard</a> / Trades</div>
+    <div class="info-banner">This is a small, evolving set of tracked lawmakers — expect this list to grow.</div>
     <div class="section-label" id="section-title">Congress trades</div>
     <div id="trades-full" data-trades-target></div>
   </main>
@@ -38,7 +39,5 @@ loadTradesData('/data/congress-trades.json', function (data) {
   renderFullTrades('trades-full', data, '/');
 });
 </script>
-  <div id="site-footer"></div>
-  <script src="/assets/footer.js"></script>
 </body>
 </html>
