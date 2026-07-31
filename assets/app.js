@@ -43,7 +43,7 @@ async function loadDashboard() {
   watchlist.innerHTML = exposureNote + Object.values(tickers).slice(0, 6).map(c => `
     <div class="ticker-row">
       <span>${c.ticker}</span>
-      <span class="change ${c.effect || 'mixed'}">${exposureSquare(c.exposure)}${c.exposure}</span>
+      <span class="change">${exposureSquare(c.exposure)}<span class="exposure-num">${c.exposure}</span></span>
     </div>
   `).join('');
   if (hasTooltips) initInfoTooltips();
