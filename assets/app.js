@@ -23,7 +23,7 @@ async function loadDashboard() {
   list.innerHTML = topSignals.map(s => {
     const companies = Array.isArray(s.companies) ? s.companies : [];
     const direction = s.direction || 'mixed';
-    const probIcon = hasTooltips ? infoIcon(TOOLTIP_TEXT.direction + ' ' + TOOLTIP_TEXT.probability) : '';
+    const probIcon = hasTooltips ? signalInfoIcon(direction, s.passage_probability) : '';
     return `
     <a class="signal-card ${direction}" href="bills/detail.html?id=${s.bill_id}">
       <div class="signal-head">
