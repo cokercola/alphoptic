@@ -361,6 +361,33 @@ table.data-table a { color: var(--blue); text-decoration: none; }
   flex-shrink: 0;
   margin-top: 5px;
 }
+.tooltip-legend {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-left: 18px;
+  margin-top: 2px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.legend-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.exposure-square {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  display: inline-block;
+  margin-right: 6px;
+}
 /* ============================================
    Donate button + popover (merged from donate.css)
    ============================================ */
