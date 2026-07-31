@@ -18,6 +18,7 @@ from collections import defaultdict
 PORTFOLIO_PATH = "data/paper-portfolio.json"
 TRADES_ALL_PATH = "data/congress-trades-all.json"
 BILLS_PATH = "data/bills.json"
+HISTORY_PATH = "data/performance-analysis-history.json"
 
 
 def load(path):
@@ -127,6 +128,42 @@ def main():
     else:
         print("Not enough of both linked and unlinked positions yet for a "
               "meaningful comparison. Keep collecting data.")
+
+    # Append this run's summary to a running history file, so the
+    # linked-vs-unlinked comparison builds into an actual trend over
+    # weeks instead of disconnected one-off snapshots.
+    try:
+        with open(HISTORY_PATH) as f:
+            history = json.load(f)
+    except FileNotFoundError:
+        history = {"runs": []}
+
+    history["runs"].append({
+        "date": portfolio.get("updated_at"),
+        "total_positions": len(rows),
+        "linked_count": len(linked_rows),
+        "unlinked_count": len(unlinked_rows),
+        "linked_avg_return_pct": avg_return(linked_rows),
+        "unlinked_avg_return_pct": avg_return(unlinked_rows),
+        "positions": [
+            {"symbol": r["symbol"], "linked": r["linked"], "return_pct": r["return_pct"]}
+            for r in rows
+        ],
+    })
+    history["runs"] = history["runs"][-180:]  # keep ~6 months of daily runs
+
+    with open(HISTORY_PATH, "w") as f:
+        json.dump(history, f, indent=2)
+
+    print(f"\nAppended this run to {HISTORY_PATH} ({len(history['runs'])} runs recorded so far).")
+
+    if len(history["runs"]) >= 3:
+        print("\nTrend across recorded runs (linked avg % - unlinked avg %):")
+        for run in history["runs"][-10:]:
+            l = run["linked_avg_return_pct"]
+            u = run["unlinked_avg_return_pct"]
+            if l is not None and u is not None:
+                print(f"  {run['date']}: linked {l:>6.2f}%  |  unlinked {u:>6.2f}%  |  diff {l - u:>6.2f}pp")
 
 
 if __name__ == "__main__":
