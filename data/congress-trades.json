@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-30T15:07:05.036165Z",
+  "updated_at": "2026-07-31T13:32:52.291694Z",
   "lookback_days": 30,
   "lawmakers": [
     {
@@ -38,161 +38,102 @@
       "trades": []
     },
     {
-      "name": "Robert E. Latta",
+      "name": "Marjorie Taylor Greene",
+      "party": "R",
+      "chamber": "House",
+      "pinned": true,
+      "trades": []
+    },
+    {
+      "name": "Mark Green",
+      "party": "R",
+      "chamber": "House",
+      "pinned": true,
+      "trades": []
+    },
+    {
+      "name": "Josh Gottheimer",
+      "party": "D",
+      "chamber": "House",
+      "pinned": true,
+      "trades": []
+    },
+    {
+      "name": "Tommy Tuberville",
+      "party": "R",
+      "chamber": "Senate",
+      "pinned": true,
+      "trades": []
+    },
+    {
+      "name": "Susie Lee",
+      "party": "D",
+      "chamber": "House",
+      "pinned": true,
+      "trades": []
+    },
+    {
+      "name": "Debbie Wasserman Schultz",
+      "party": "D",
+      "chamber": "House",
+      "pinned": true,
+      "trades": []
+    },
+    {
+      "name": "John Boozman",
+      "party": "R",
+      "chamber": "Senate",
+      "pinned": true,
+      "trades": []
+    },
+    {
+      "name": "Laurel Lee",
       "party": null,
       "chamber": "House",
       "pinned": false,
       "trades": [
         {
-          "symbol": "FMAO",
+          "symbol": "NOK",
           "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-20",
-          "filed_date": "2026-07-27",
-          "is_new": true,
+          "direction": "sell",
+          "trade_date": "2026-07-06",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "NOK",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-06",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "NOK",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-06",
+          "filed_date": "2026-07-20",
+          "is_new": false,
           "linked": false
         }
       ]
     },
     {
-      "name": "Dan Newhouse",
+      "name": "Pete Sessions",
       "party": null,
       "chamber": "House",
       "pinned": false,
       "trades": [
         {
-          "symbol": "COST",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "ANET",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": true
-        },
-        {
-          "symbol": "AMCR",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "ADBE",
+          "symbol": "ARCC",
           "amount": 8000,
           "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "APH",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "ACN",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "GOOGL",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": true
-        },
-        {
-          "symbol": "DE",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "AMD",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "AMAT",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "FIS",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "DUK",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "CSX",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "PANW",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": true
-        },
-        {
-          "symbol": "UBER",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-07-27",
+          "is_new": true,
           "linked": false
         }
       ]
