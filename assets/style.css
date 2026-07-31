@@ -313,6 +313,16 @@ table.data-table a { color: var(--blue); text-decoration: none; }
   vertical-align: middle;
 }
 .info-icon:hover { background: rgba(255,255,255,0.28); color: var(--text); }
+.info-banner {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
 
 .tooltip-popover {
   display: none;
