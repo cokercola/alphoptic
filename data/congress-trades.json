@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-31T13:32:52.291694Z",
+  "updated_at": "2026-07-31T15:14:08.614120Z",
   "lookback_days": 30,
   "lawmakers": [
     {
@@ -122,16 +122,16 @@
       ]
     },
     {
-      "name": "Pete Sessions",
+      "name": "Robert E. Latta",
       "party": null,
       "chamber": "House",
       "pinned": false,
       "trades": [
         {
-          "symbol": "ARCC",
+          "symbol": "FMAO",
           "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-24",
+          "direction": "buy",
+          "trade_date": "2026-07-20",
           "filed_date": "2026-07-27",
           "is_new": true,
           "linked": false
