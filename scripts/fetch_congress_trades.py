@@ -10,14 +10,15 @@ a single bare call per chamber and works with whatever batch FMP
 returns by default).
 
 Because senate-latest/house-latest return the most recent disclosures
-across ALL ~535 members of Congress rather than just our 5 tracked ones,
+across ALL ~535 members of Congress rather than just our tracked ones,
 any given run's default batch may contain none, some, or all of them -
 that's a real limitation of the free tier, not a bug. To make sure the
-page still has something to show even on a quiet day for our 5, we also
-grab 2 random other lawmakers from whoever *does* have qualifying trades
-in that batch. The 5 tracked lawmakers always appear on the page
-(with a "no disclosed trades this period" empty state if applicable);
-the 2 random extras only appear if they actually have trades to show.
+page still has something to show even on a quiet day for our tracked
+list, we also grab 2 random other lawmakers from whoever *does* have
+qualifying trades in that batch. The tracked lawmakers always appear on
+the page (with a "no disclosed trades this period" empty state if
+applicable); the 2 random extras only appear if they actually have
+trades to show.
 
 Ticker "linked" status is derived from data/bills.json (this repo's
 existing source of truth for company/ticker exposure) rather than a
@@ -26,7 +27,7 @@ somewhere in the tracked bills' company exposure lists, in which case it
 points at companies/index.html?ticker=XXX, matching how that page already
 filters.
 
-Run twice daily via .github/workflows/update-congress-trades.yml
+Run once daily via .github/workflows/update-congress-trades.yml
 
 Required environment variable (set as a GitHub Actions secret):
   FMP_API_KEY  - from financialmodelingprep.com (free tier)
@@ -45,15 +46,23 @@ BILLS_JSON_PATH = "data/bills.json"
 OUTPUT_PATH = "data/congress-trades.json"
 ALL_TRADES_OUTPUT_PATH = "data/congress-trades-all.json"
 
-# The 5 lawmakers we're always tracking. `match` is a list of substrings
+# The lawmakers we're always tracking. `match` is a list of substrings
 # checked against each record's actual firstName + lastName
-# (case-insensitive).
+# (case-insensitive). Add more entries here any time - just make sure
+# `match` is specific enough not to collide with another member's name.
 WATCHLIST = [
     {"name": "Nancy Pelosi",    "party": "D", "chamber": "House",  "match": ["pelosi"]},
     {"name": "Ro Khanna",       "party": "D", "chamber": "House",  "match": ["khanna"]},
     {"name": "Ted Cruz",        "party": "R", "chamber": "Senate", "match": ["cruz"]},
     {"name": "Michael McCaul",  "party": "R", "chamber": "House",  "match": ["mccaul"]},
     {"name": "Dan Crenshaw",    "party": "R", "chamber": "House",  "match": ["crenshaw"]},
+    {"name": "Marjorie Taylor Greene", "party": "R", "chamber": "House", "match": ["greene"]},
+    {"name": "Mark Green",      "party": "R", "chamber": "House",  "match": ["mark green"]},
+    {"name": "Josh Gottheimer", "party": "D", "chamber": "House",  "match": ["gottheimer"]},
+    {"name": "Tommy Tuberville","party": "R", "chamber": "Senate", "match": ["tuberville"]},
+    {"name": "Susie Lee",       "party": "D", "chamber": "House",  "match": ["susie lee"]},
+    {"name": "Debbie Wasserman Schultz", "party": "D", "chamber": "House", "match": ["wasserman schultz"]},
+    {"name": "John Boozman",    "party": "R", "chamber": "Senate", "match": ["boozman"]},
 ]
 
 RANDOM_EXTRA_COUNT = 2   # how many additional random lawmakers to add
@@ -182,7 +191,7 @@ def main():
     print(f"Fetched {len(senate_raw)} Senate records, {len(house_raw)} House records "
           f"(FMP's default free-tier batch - no pagination available).")
 
-    # The 5 pinned lawmakers - always present in the output, even empty.
+    # The pinned lawmakers - always present in the output, even empty.
     pinned = {
         p["name"]: {"name": p["name"], "party": p["party"], "chamber": p["chamber"],
                      "pinned": True, "trades": []}
@@ -242,10 +251,10 @@ def main():
         print("Random extras this run: " + ", ".join(p["name"] for p in random_extras))
 
     # Separate, unfiltered output: every qualifying trade from every
-    # lawmaker seen this run (not just the 5 pinned + 2 random extras
+    # lawmaker seen this run (not just the pinned + 2 random extras
     # shown on the site). This is what the paper trading strategy reads
     # from, so it has a much larger signal pool to act on daily instead
-    # of being limited to just 5-7 specific people.
+    # of being limited to just the pinned names.
     all_trade_records = []
     for person in list(pinned.values()) + other_candidates:
         for trade in person["trades"]:
