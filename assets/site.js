@@ -56,8 +56,38 @@ function signalInfoIcon(direction, probability) {
 const TOOLTIP_TEXT = {
   probability: "a rough estimate based on the bill's current stage and cosponsor count. Not a calibrated prediction.",
   direction: "Claude's read of the bill's summary text, judging who it likely helps or hurts. A qualitative AI assessment, not a market signal.",
-  exposure: "Exposure score (0-100) reflects how directly this company's business is affected by the bill, as assessed by Claude. It is not a stock price or performance change."
+  exposure: "how directly this company's business is affected by the bill, as assessed by Claude. Not a stock price or performance change."
 };
+
+// Single-hue intensity scale for exposure score, deliberately NOT using
+// green/red/amber (those are reserved for bill direction elsewhere on
+// the site) since a company can have high exposure to a positive OR
+// negative bill - reusing direction colors here would be misleading.
+function exposureColor(score) {
+  if (score >= 67) return 'var(--blue)';
+  if (score >= 34) return 'rgba(90,155,255,0.55)';
+  return 'var(--border)';
+}
+
+function exposureSquare(score) {
+  return `<span class="exposure-square" style="background:${exposureColor(score)}"></span>`;
+}
+
+function exposureInfoIcon() {
+  const html = `
+    <div class="tooltip-label">What this means</div>
+    <div class="tooltip-bullet">
+      <span class="tooltip-dot" style="background:var(--blue)"></span>
+      <span><strong style="color:var(--blue)">Exposure score (0–100)</strong> — ${TOOLTIP_TEXT.exposure}</span>
+    </div>
+    <div class="tooltip-legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--border)"></span>0–33 low</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:rgba(90,155,255,0.55)"></span>34–66 medium</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--blue)"></span>67–100 high</span>
+    </div>
+  `;
+  return `<span class="info-icon">i<span class="tooltip-popover tooltip-popover-wide">${html}</span></span>`;
+}
 
 function initInfoTooltips() {
   document.querySelectorAll('.info-icon').forEach(icon => {
