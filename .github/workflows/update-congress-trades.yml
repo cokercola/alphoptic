@@ -26,6 +26,13 @@ jobs:
         env:
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
         run: python scripts/fetch_congress_trades.py
+      - name: Fetch congress trades
+        env:
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+        run: python scripts/fetch_congress_trades.py
+
+      - name: Analyze trade performance
+        run: python scripts/analyze_trade_performance.py
 
       - name: Commit updated data
         run: |
