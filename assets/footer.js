@@ -17,7 +17,7 @@ const FOOTER_HTML = `
     <a href="/about.html">About</a>
     <a href="/privacy.html">Privacy Policy</a>
     <a href="/terms.html">Terms</a>
-    <a href="/contact.html">Contact</a>
+    <a href="/contactalphoptic.html">Contact</a>
   </nav>
   <div class="footer-disclaimer">
     Not financial or legislative advice. Bill data is pulled from Congress.gov;
