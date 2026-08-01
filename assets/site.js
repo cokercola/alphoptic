@@ -53,7 +53,79 @@ function signalInfoIcon(direction, probability) {
   return `<span class="info-icon">i<span class="tooltip-popover tooltip-popover-wide">${html}</span></span>`;
 }
 
-const TOOLTIP_TEXT = {
+// Stage colors for the Bills page breakdown bar/tabs. Deliberately
+// distinct from the direction colors (green/red/amber) and from the
+// exposure blue-intensity scale, to avoid a fourth color language
+// clashing with the other three already in use across the site.
+const STAGE_COLOR = {
+  introduced: 'var(--border)',
+  committee: 'rgba(90,155,255,0.5)',
+  passed_one_chamber: 'var(--blue)',
+  passed_both: 'var(--blue)',
+  became_law: 'var(--green)',
+  failed_vetoed: 'var(--red)',
+};
+
+function stagePill(stage, label) {
+  const color = STAGE_COLOR[stage] || 'var(--border)';
+  const bg = stage === 'introduced' ? 'rgba(39,66,100,0.6)'
+    : stage === 'became_law' ? 'rgba(76,181,107,0.15)'
+    : stage === 'failed_vetoed' ? 'rgba(224,82,82,0.15)'
+    : 'rgba(90,155,255,0.15)';
+  return `<span class="stage-pill" style="color:${color};background:${bg};">${label}</span>`;
+}
+
+function renderStageBreakdown(containerId, summary, onFilterChange) {
+  const el = document.getElementById(containerId);
+  if (!el || !summary || !Array.isArray(summary.stage_breakdown)) return;
+
+  const bar = summary.stage_breakdown.map(s => {
+    const total = summary.bills_tracked || 1;
+    const pct = Math.max((s.count / total) * 100, s.count > 0 ? 2 : 0);
+    return `<div style="background:${STAGE_COLOR[s.stage]};width:${pct}%;"></div>`;
+  }).join('');
+
+  const legend = summary.stage_breakdown.map(s => {
+    const sub = s.full_coverage
+      ? 'full coverage'
+      : (summary.total_bills_this_congress
+          ? `of ~${summary.total_bills_this_congress.toLocaleString()} total this Congress`
+          : 'sampled');
+    return `
+      <div class="stage-legend-row">
+        <div class="stage-legend-label">
+          <span class="stage-dot" style="background:${STAGE_COLOR[s.stage]}"></span>
+          ${s.label}
+        </div>
+        <div class="stage-legend-count">
+          <div class="stage-legend-num">${s.count} tracked</div>
+          <div class="stage-legend-sub">${sub}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  const tabs = ['<button class="stage-tab active" data-stage="all">All (' + summary.bills_tracked + ')</button>']
+    .concat(summary.stage_breakdown
+      .filter(s => s.count > 0)
+      .map(s => `<button class="stage-tab" data-stage="${s.stage}">${s.label} (${s.count})</button>`))
+    .join('');
+
+  el.innerHTML = `
+    <div class="stage-bar">${bar}</div>
+    <div class="stage-legend">${legend}</div>
+    <div class="stage-tabs">${tabs}</div>
+  `;
+
+  if (typeof onFilterChange === 'function') {
+    el.querySelectorAll('.stage-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        el.querySelectorAll('.stage-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        onFilterChange(btn.dataset.stage);
+      });
+    });
+  }
+}
   probability: "a rough estimate based on the bill's current stage and cosponsor count. Not a calibrated prediction.",
   direction: "Claude's read of the bill's summary text, judging who it likely helps or hurts. A qualitative AI assessment, not a market signal.",
   exposure: "how directly this company's business is affected by the bill, as assessed by Claude. Not a stock price or performance change."
