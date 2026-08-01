@@ -126,6 +126,7 @@ function renderStageBreakdown(containerId, summary, onFilterChange) {
     });
   }
 }
+const TOOLTIP_TEXT = {
   probability: "a rough estimate based on the bill's current stage and cosponsor count. Not a calibrated prediction.",
   direction: "Claude's read of the bill's summary text, judging who it likely helps or hurts. A qualitative AI assessment, not a market signal.",
   exposure: "how directly this company's business is affected by the bill, as assessed by Claude. Not a stock price or performance change."
