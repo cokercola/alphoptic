@@ -149,6 +149,81 @@
           "return_pct": -0.17
         }
       ]
+    },
+    {
+      "date": "2026-07-29T15:30:02.812211Z",
+      "total_positions": 13,
+      "linked_count": 2,
+      "unlinked_count": 11,
+      "linked_avg_return_pct": -1.8,
+      "unlinked_avg_return_pct": -0.21,
+      "positions": [
+        {
+          "symbol": "ACN",
+          "linked": false,
+          "return_pct": 5.86
+        },
+        {
+          "symbol": "AMCR",
+          "linked": false,
+          "return_pct": -0.94
+        },
+        {
+          "symbol": "ANET",
+          "linked": true,
+          "return_pct": -3.44
+        },
+        {
+          "symbol": "APH",
+          "linked": false,
+          "return_pct": -2.32
+        },
+        {
+          "symbol": "COST",
+          "linked": false,
+          "return_pct": 0.61
+        },
+        {
+          "symbol": "DUK",
+          "linked": false,
+          "return_pct": -0.04
+        },
+        {
+          "symbol": "FE",
+          "linked": false,
+          "return_pct": 0.1
+        },
+        {
+          "symbol": "FIS",
+          "linked": false,
+          "return_pct": 2.43
+        },
+        {
+          "symbol": "FMAO",
+          "linked": false,
+          "return_pct": 2.07
+        },
+        {
+          "symbol": "HON",
+          "linked": false,
+          "return_pct": -1.48
+        },
+        {
+          "symbol": "MS",
+          "linked": false,
+          "return_pct": -2.95
+        },
+        {
+          "symbol": "MU",
+          "linked": false,
+          "return_pct": -5.66
+        },
+        {
+          "symbol": "UBER",
+          "linked": true,
+          "return_pct": -0.17
+        }
+      ]
     }
   ]
 }
