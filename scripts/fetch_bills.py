@@ -138,6 +138,51 @@ def classify(title, status, summary):
     return json.loads(text)
 
 
+def bill_stage(latest_action_text):
+    """Buckets a bill into one of five stages based on its latest
+    action text. Order matters here - check more-advanced stages
+    first, since a bill that "became law" will also match "Passed
+    House" if checked in the wrong order (it passed both chambers on
+    its way to becoming law)."""
+    text = (latest_action_text or "").lower()
+
+    if "vetoed" in text or "failed" in text or "rejected" in text:
+        return "failed_vetoed"
+    if "became public law" in text or "signed by president" in text:
+        return "became_law"
+    if "presented to president" in text or "enrolled" in text:
+        return "passed_both"
+    if "passed house" in text or "passed senate" in text or "passed/agreed to in senate" in text or "passed/agreed to in house" in text:
+        return "passed_one_chamber"
+    if "reported" in text or "committee" in text or "markup" in text or "ordered to be reported" in text:
+        return "committee"
+    return "introduced"
+
+
+STAGE_LABELS = {
+    "introduced": "Introduced",
+    "committee": "Committee action",
+    "passed_one_chamber": "Passed one chamber",
+    "passed_both": "Passed both chambers",
+    "became_law": "Became law",
+    "failed_vetoed": "Failed / vetoed",
+}
+
+
+def fetch_total_bill_count():
+    """A lightweight call (limit=1) purely to read the total bill count
+    for the current Congress from the response's pagination info. This
+    is the honest denominator for the 'Introduced' bucket - most bills
+    never advance past introduced, so this total is a reasonable stand-in
+    for 'how many are sitting at introduced' even though a small number
+    of them have moved further."""
+    url = f"{CONGRESS_BASE}/bill/{CURRENT_CONGRESS}"
+    params = {"api_key": CONGRESS_API_KEY, "format": "json", "limit": 1}
+    resp = requests.get(url, params=params, timeout=30)
+    resp.raise_for_status()
+    return resp.json().get("pagination", {}).get("count")
+
+
 def passage_probability(bill):
     # Placeholder heuristic - swap in a real model later.
     # For now: bump probability based on cosponsor count and latest action stage.
@@ -223,6 +268,7 @@ def main():
             "impact_score": classification["impact_score"],
             "confidence": classification["confidence"],
             "status": status,
+            "stage": bill_stage(status),
             "sponsor": bill.get("sponsors", [{}])[0].get("fullName", "Unknown"),
             "cosponsors": bill.get("cosponsors", {}).get("count", 0),
             "last_action": status,
@@ -231,6 +277,16 @@ def main():
             "companies": classification["companies"],
         })
 
+    try:
+        total_bills_this_congress = fetch_total_bill_count()
+    except requests.HTTPError as e:
+        print(f"WARNING: couldn't fetch total bill count ({e}); omitting from output.")
+        total_bills_this_congress = None
+
+    stage_counts = {stage: 0 for stage in STAGE_LABELS}
+    for s in signals:
+        stage_counts[s["stage"]] = stage_counts.get(s["stage"], 0) + 1
+
     output = {
         "updated_at": datetime.datetime.utcnow().isoformat() + "Z",
         "summary": {
@@ -238,6 +294,19 @@ def main():
             "high_impact": sum(1 for s in signals if s["impact_score"] >= 70),
             "new_signals_today": len(signals),
             "industries_affected": len({s["industry"] for s in signals}),
+            "total_bills_this_congress": total_bills_this_congress,
+            "stage_breakdown": [
+                {
+                    "stage": stage,
+                    "label": STAGE_LABELS[stage],
+                    "count": stage_counts[stage],
+                    # Only "introduced" is a sample of a much larger
+                    # population - every later stage is small enough
+                    # that what we track IS the full picture.
+                    "full_coverage": stage != "introduced",
+                }
+                for stage in STAGE_LABELS
+            ],
         },
         "signals": signals,
     }
