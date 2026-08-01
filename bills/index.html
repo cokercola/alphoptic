@@ -22,10 +22,12 @@
   <nav class="sidebar" id="sidebar"></nav>
   <main>
     <div class="breadcrumb"><a href="/index.html">Dashboard</a> / Bills</div>
+    <div class="section-label">Bills by stage</div>
+    <div id="stage-breakdown"></div>
     <div class="section-label">All tracked bills</div>
     <table class="data-table" id="bills-table">
       <thead>
-        <tr><th>Bill</th><th>Industry</th><th>Direction</th><th>Passage odds</th><th>Impact</th><th>Status</th></tr>
+        <tr><th>Bill</th><th>Industry</th><th>Direction</th><th>Passage odds</th><th>Impact</th><th>Stage</th></tr>
       </thead>
       <tbody id="bills-body"></tbody>
     </table>
@@ -35,26 +37,51 @@
 <script src="/assets/donate.js"></script>
 <script src="/assets/header.js"></script>
 <script>
-async function init() {
-  renderSidebar('bills');
-  const data = await fetchSiteData();
-  document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
+let allSignals = [];
+
+function renderBillsTable(stageFilter) {
   const body = document.getElementById('bills-body');
-  if (!data.signals.length) {
-    body.innerHTML = `<tr><td colspan="6" class="empty-note">No bills tracked yet.</td></tr>`;
+  const filtered = stageFilter === 'all'
+    ? allSignals
+    : allSignals.filter(s => s.stage === stageFilter);
+
+  if (!filtered.length) {
+    body.innerHTML = `<tr><td colspan="6" class="empty-note">No bills in this stage.</td></tr>`;
     return;
   }
-  body.innerHTML = data.signals.map(s => `
+
+  body.innerHTML = filtered.map(s => `
     <tr>
       <td><a href="detail.html?id=${s.bill_id}">${s.bill_id}</a> — ${s.title}</td>
       <td>${s.industry}</td>
       <td>${directionPill(s.direction)}</td>
       <td>${s.passage_probability}%</td>
       <td>${s.impact_score}/100</td>
-      <td>${s.status}</td>
+      <td>${stagePill(s.stage, s.stageLabel)}</td>
     </tr>
   `).join('');
 }
+
+async function init() {
+  renderSidebar('bills');
+  const data = await fetchSiteData();
+  document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
+
+  if (!data.signals.length) {
+    document.getElementById('bills-body').innerHTML = `<tr><td colspan="6" class="empty-note">No bills tracked yet.</td></tr>`;
+    return;
+  }
+
+  // Attach a display label per signal for the stage pill, derived from
+  // the summary's stage_breakdown (same source the bar/tabs use).
+  const labelByStage = {};
+  (data.summary.stage_breakdown || []).forEach(s => { labelByStage[s.stage] = s.label; });
+  allSignals = data.signals.map(s => ({ ...s, stageLabel: labelByStage[s.stage] || s.stage }));
+
+  renderStageBreakdown('stage-breakdown', data.summary, (stage) => renderBillsTable(stage));
+  renderBillsTable('all');
+}
+
 init().catch(err => {
   console.error(err);
   document.getElementById('bills-body').innerHTML = `<tr><td colspan="6" class="empty-note">Could not load bill data.</td></tr>`;
