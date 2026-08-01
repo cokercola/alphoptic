@@ -634,3 +634,87 @@ table.data-table a { color: var(--blue); text-decoration: none; }
   font-size: 10px;
   font-weight: 600;
 }
+/* ============================================
+   Dashboard onboarding card
+   ============================================ */
+.onboarding-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 22px;
+  position: relative;
+  margin-bottom: 16px;
+}
+.onboarding-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  color: var(--text-muted);
+  font-size: 12px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+.onboarding-close:hover {
+  background: rgba(255,255,255,0.16);
+  color: var(--text);
+}
+.onboarding-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+  padding-right: 24px;
+}
+.onboarding-bullet {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: flex-start;
+}
+.onboarding-bullet:last-of-type {
+  margin-bottom: 16px;
+}
+.onboarding-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+.onboarding-bullet span:last-child {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.55;
+}
+.info-icon-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  color: var(--text-muted);
+  font-size: 9px;
+  margin: 0 2px;
+  vertical-align: middle;
+}
+.onboarding-link {
+  font-size: 12px;
+}
+.onboarding-link a {
+  color: var(--blue);
+  text-decoration: none;
+}
+.onboarding-link a:hover {
+  text-decoration: underline;
+}
