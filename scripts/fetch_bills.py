@@ -183,23 +183,29 @@ def fetch_total_bill_count():
     return resp.json().get("pagination", {}).get("count")
 
 
-def passage_probability(bill):
-    # Placeholder heuristic - swap in a real model later.
-    # For now: bump probability based on cosponsor count and latest action stage.
-    cosponsors = bill.get("cosponsors", {}).get("count", 0)
-    stage_scores = {
-        "Introduced": 15,
-        "Reported": 40,
-        "Passed House": 65,
-        "Passed Senate": 65,
-        "Presented to President": 90,
-        "Became Law": 100,
+def passage_probability(bill, stage):
+    # Derived from the SAME stage bucketing as bill_stage(), so the
+    # displayed stage and the passage odds can never disagree with each
+    # other. (Previously this had its own separate keyword-matching
+    # logic that used a different phrase for "became law" than
+    # bill_stage() does, so a bill like "Became Public Law No: 119-86"
+    # would show the correct stage but the wrong odds - fixed by having
+    # one source of truth instead of two.)
+    stage_base = {
+        "introduced": 15,
+        "committee": 30,
+        "passed_one_chamber": 65,
+        "passed_both": 90,
+        "became_law": 100,
+        "failed_vetoed": 2,
     }
-    latest_action = bill.get("latestAction", {}).get("text", "")
-    base = 25
-    for stage, score in stage_scores.items():
-        if stage.lower() in latest_action.lower():
-            base = score
+    if stage == "became_law":
+        return 100
+    if stage == "failed_vetoed":
+        return 2
+
+    cosponsors = bill.get("cosponsors", {}).get("count", 0)
+    base = stage_base.get(stage, 25)
     bump = min(cosponsors // 5, 20)
     return min(base + bump, 97)
 
@@ -259,16 +265,18 @@ def main():
             classification = classify(title, status, summary_text)
             classified += 1
 
+        stage = bill_stage(status)
+
         signals.append({
             "bill_id": bill_id,
             "title": title,
             "industry": classification["industry"],
             "direction": classification["direction"],
-            "passage_probability": passage_probability(bill),
+            "passage_probability": passage_probability(bill, stage),
             "impact_score": classification["impact_score"],
             "confidence": classification["confidence"],
             "status": status,
-            "stage": bill_stage(status),
+            "stage": stage,
             "sponsor": bill.get("sponsors", [{}])[0].get("fullName", "Unknown"),
             "cosponsors": bill.get("cosponsors", {}).get("count", 0),
             "last_action": status,
