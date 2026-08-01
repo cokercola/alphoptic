@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-31T14:18:23.845070Z",
+  "updated_at": "2026-08-01T13:36:17.372584Z",
   "summary": {
     "bills_tracked": 25,
     "high_impact": 2,
@@ -324,41 +324,41 @@
     {
       "bill_id": "HR9393",
       "title": "Lower Costs, More Transparency Act of 2026",
-      "industry": "Healthcare / Pharmacy Benefit Management",
+      "industry": "Healthcare / Pharmacy Benefits",
       "direction": "negative",
-      "passage_probability": 25,
-      "impact_score": 62,
-      "confidence": 40,
-      "status": "Forwarded by Subcommittee to Full Committee by Voice Vote.",
+      "passage_probability": 40,
+      "impact_score": 65,
+      "confidence": 42,
+      "status": "Ordered to be Reported in the Nature of a Substitute by the Yeas and Nays: 45 - 0.",
       "sponsor": "Rep. Guthrie, Brett [R-KY-2]",
       "cosponsors": 1,
-      "last_action": "Forwarded by Subcommittee to Full Committee by Voice Vote.",
+      "last_action": "Ordered to be Reported in the Nature of a Substitute by the Yeas and Nays: 45 - 0.",
       "next_event": "TBD",
-      "summary": "Likely targets drug pricing and PBM transparency, pressuring pharmacy benefit managers and insurers while potentially benefiting consumers and generic drugmakers.",
+      "summary": "Likely mandates pricing transparency in drug and healthcare markets, pressuring pharmacy benefit managers and insurers with new disclosure requirements.",
       "companies": [
         {
           "ticker": "CVS",
-          "name": "CVS Health (Caremark)",
+          "name": "CVS Health",
           "effect": "negative",
-          "exposure": 70
+          "exposure": 72
         },
         {
           "ticker": "CI",
-          "name": "Cigna Group (Express Scripts)",
+          "name": "Cigna Group",
           "effect": "negative",
           "exposure": 68
         },
         {
           "ticker": "UNH",
-          "name": "UnitedHealth Group (OptumRx)",
+          "name": "UnitedHealth Group",
           "effect": "negative",
           "exposure": 65
         },
         {
-          "ticker": "MRK",
-          "name": "Merck & Co.",
-          "effect": "mixed",
-          "exposure": 40
+          "ticker": "ESRX",
+          "name": "Express Scripts (Cigna)",
+          "effect": "negative",
+          "exposure": 75
         }
       ]
     },
