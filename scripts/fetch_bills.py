@@ -161,7 +161,38 @@ Summary: {summary}
 """
 
 
-def classify(title, status, summary):
+def extract_json_object(text):
+    """Finds and returns the first balanced {...} object in text, using
+    bracket-depth counting rather than assuming the whole string is
+    clean JSON. More robust than a plain json.loads() when Claude's
+    response has stray text, an extra trailing comma, or anything else
+    slightly off around the actual JSON object."""
+    start = text.find("{")
+    if start == -1:
+        raise ValueError("No '{' found in response text")
+    depth = 0
+    for i in range(start, len(text)):
+        if text[i] == "{":
+            depth += 1
+        elif text[i] == "}":
+            depth -= 1
+            if depth == 0:
+                return text[start:i + 1]
+    raise ValueError("No balanced '}' found to close the JSON object")
+
+
+FALLBACK_CLASSIFICATION = {
+    "industry": "Unknown (classification failed)",
+    "direction": "mixed",
+    "impact_score": 0,
+    "confidence": 0,
+    "summary": "Classification failed for this bill this run - will retry next run.",
+    "companies": [],
+    "_classification_failed": True,  # never cache this - see main() loop
+}
+
+
+def classify(title, status, summary, bill_id="unknown"):
     message = client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=600,
@@ -174,7 +205,22 @@ def classify(title, status, summary):
     )
     text = message.content[0].text.strip()
     text = text.replace("```json", "").replace("```", "").strip()
-    return json.loads(text)
+
+    try:
+        json_str = extract_json_object(text)
+        return json.loads(json_str)
+    except (ValueError, json.JSONDecodeError) as e:
+        # Don't let one malformed response take down the entire run -
+        # log enough to debug later, fall back to a placeholder for
+        # this bill, and let every other bill still get processed.
+        # Since this fallback doesn't count as a "real" classification,
+        # next run's cache check will naturally retry it (the fallback
+        # summary text differs from whatever a real classification
+        # would produce, so status-based caching won't accidentally
+        # treat this as settled).
+        print(f"WARNING: failed to parse classification JSON for {bill_id}: {e}")
+        print(f"  Raw response (first 300 chars): {text[:300]!r}")
+        return dict(FALLBACK_CLASSIFICATION)
 
 
 def bill_stage(latest_action_text):
@@ -404,7 +450,7 @@ def main():
             reused += 1
         else:
             summary_text = fetch_bill_summary(ref["congress"], ref["type"], ref["number"])
-            classification = classify(title, status, summary_text)
+            classification = classify(title, status, summary_text, bill_id=bill_id)
             classified += 1
 
         stage = bill_stage(status)
@@ -412,6 +458,14 @@ def main():
         # bill's live policyArea every run, regardless of whether the
         # rest of the classification came from cache.
         community_category = derive_community_category(bill.get("policyArea", {}).get("name"))
+
+        # If this run's classification failed and fell back to the
+        # placeholder, don't stamp a valid schema_version - that keeps
+        # next run's cache check from treating this as "already
+        # classified," so it automatically retries instead of staying
+        # broken forever.
+        failed_this_run = classification.get("_classification_failed", False)
+        record_schema_version = None if failed_this_run else CLASSIFICATION_SCHEMA_VERSION
 
         signals.append({
             "bill_id": bill_id,
@@ -423,7 +477,7 @@ def main():
             "confidence": classification["confidence"],
             "status": status,
             "stage": stage,
-            "schema_version": CLASSIFICATION_SCHEMA_VERSION,
+            "schema_version": record_schema_version,
             "community_category": community_category,
             "community_category_label": COMMUNITY_CATEGORY_LABELS.get(community_category, "None"),
             "sponsor": bill.get("sponsors", [{}])[0].get("fullName", "Unknown"),
