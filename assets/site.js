@@ -12,6 +12,7 @@ function renderSidebar(activePage) {
     { href: '/signals/index.html', label: 'Signals', key: 'signals' },
     { href: '/trades/index.html', label: 'Trades', key: 'trades' },
     { href: '/watchlist/index.html', label: 'Watchlist', key: 'watchlist' },
+    { href: '/community/index.html', label: 'Community', key: 'community' },
   ];
   const nav = document.getElementById('sidebar');
   nav.innerHTML = items.map(i =>
@@ -160,6 +161,75 @@ function exposureInfoIcon() {
     </div>
   `;
   return `<span class="info-icon">i<span class="tooltip-popover tooltip-popover-wide">${html}</span></span>`;
+}
+
+// Renders the full Community page: every category from
+// summary.community_categories gets its own card, INCLUDING categories
+// with zero bills right now (deliberate - see EMPTY_CATEGORY_TEXT).
+const EMPTY_CATEGORY_TEXT = "No bills currently tracked in this category — coverage is still growing, check back soon.";
+
+function renderCommunityPage(containerId, data) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const categories = (data.summary && data.summary.community_categories) || [];
+  const byCategory = {};
+  data.signals.forEach(s => {
+    if (s.community_category === 'none') return;
+    (byCategory[s.community_category] = byCategory[s.community_category] || []).push(s);
+  });
+
+  el.innerHTML = categories.map(cat => {
+    const bills = byCategory[cat.category] || [];
+    const body = bills.length
+      ? bills.map(s => `
+          <div class="community-bill-row">
+            <div><a href="/bills/detail.html?id=${s.bill_id}">${s.bill_id}</a> — ${s.title}</div>
+            <div class="community-bill-meta">${s.status || 'No status available'}</div>
+          </div>
+        `).join('')
+      : `<div class="community-empty">${EMPTY_CATEGORY_TEXT}</div>`;
+
+    return `
+      <div class="industry-card">
+        <div class="community-card-head">
+          <h3>${cat.label}</h3>
+          <span class="community-count">${cat.count} bill${cat.count === 1 ? '' : 's'}</span>
+        </div>
+        ${body}
+      </div>
+    `;
+  }).join('');
+}
+
+// Renders the small "Community impact" highlight box on the dashboard:
+// up to `limit` bills with a non-"none" category. Since we're not
+// tracking a real "date introduced" yet, this just takes the first
+// `limit` qualifying bills in signals order (roughly recency-ordered,
+// since auto-discovered bills are pulled sorted by updateDate desc).
+function renderCommunityHighlight(containerId, data, limit) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const qualifying = data.signals.filter(s => s.community_category && s.community_category !== 'none');
+  if (!qualifying.length) {
+    el.innerHTML = '';
+    return;
+  }
+  const shown = qualifying.slice(0, limit || 3);
+
+  el.innerHTML = `
+    <div class="community-highlight">
+      <div class="community-highlight-head">
+        <span>Community impact</span>
+        <a href="/community/index.html">View all →</a>
+      </div>
+      ${shown.map(s => `
+        <div class="community-highlight-row">
+          <div class="community-highlight-title">${s.bill_id} — ${s.title}</div>
+          <div class="community-highlight-meta"><span class="community-highlight-cat">${s.community_category_label}</span> · ${s.status || 'No status available'}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
 }
 
 function initInfoTooltips() {
