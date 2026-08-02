@@ -718,3 +718,83 @@ table.data-table a { color: var(--blue); text-decoration: none; }
 .onboarding-link a:hover {
   text-decoration: underline;
 }
+/* ============================================
+   Community impact (page + dashboard highlight)
+   ============================================ */
+.community-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.community-count {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.community-bill-row {
+  font-size: 13px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+}
+.community-bill-row a {
+  color: var(--blue);
+  text-decoration: none;
+}
+.community-bill-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.community-empty {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 8px 0;
+  line-height: 1.5;
+}
+.community-highlight {
+  background: rgba(232,98,44,0.06);
+  border: 1px solid var(--orange);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-top: 16px;
+}
+.community-highlight-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.community-highlight-head span {
+  color: var(--orange);
+  font-weight: 600;
+}
+.community-highlight-head a {
+  color: var(--blue);
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.community-highlight-row {
+  background: var(--panel);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+.community-highlight-row:last-child { margin-bottom: 0; }
+.community-highlight-title {
+  color: var(--text);
+  font-weight: 600;
+}
+.community-highlight-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+.community-highlight-cat {
+  color: var(--blue);
+  font-weight: 600;
+}
