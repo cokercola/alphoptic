@@ -1,180 +1,54 @@
 {
-  "updated_at": "2026-08-01T14:23:44.583474Z",
+  "updated_at": "2026-08-02T14:25:30.548714Z",
   "lookback_days": 30,
   "lawmakers": [
     {
-      "name": "Laurel Lee",
+      "name": "Cleo Fields",
       "party": null,
       "chamber": "House",
       "trades": [
         {
-          "symbol": "NOK",
+          "symbol": "TSM",
           "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-06",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "NOK",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-06",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "NOK",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-06",
-          "filed_date": "2026-07-20",
-          "is_new": false,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-31",
+          "is_new": true,
           "linked": false
         }
       ]
     },
     {
-      "name": "Dan Newhouse",
+      "name": "James A. Himes",
       "party": null,
       "chamber": "House",
       "trades": [
         {
-          "symbol": "ANET",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
+          "symbol": "XOM",
+          "amount": 32500,
+          "direction": "sell",
+          "trade_date": "2026-07-20",
+          "filed_date": "2026-07-21",
           "is_new": false,
-          "linked": true
+          "linked": false
         },
         {
-          "symbol": "AMD",
+          "symbol": "HD",
+          "amount": 32500,
+          "direction": "sell",
+          "trade_date": "2026-07-20",
+          "filed_date": "2026-07-21",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "BAC",
           "amount": 8000,
           "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
+          "trade_date": "2026-07-20",
+          "filed_date": "2026-07-21",
           "is_new": false,
           "linked": false
-        },
-        {
-          "symbol": "FE",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "APH",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "COST",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "ACN",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "GOOGL",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": true
-        },
-        {
-          "symbol": "UPS",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "UNH",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": true
-        },
-        {
-          "symbol": "AMCR",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "DE",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "ADBE",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "AMAT",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "UBER",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": true
-        },
-        {
-          "symbol": "PANW",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": true
         }
       ]
     },
@@ -211,51 +85,143 @@
       ]
     },
     {
-      "name": "James A. Himes",
+      "name": "Dan Newhouse",
       "party": null,
       "chamber": "House",
       "trades": [
         {
-          "symbol": "HD",
-          "amount": 32500,
-          "direction": "sell",
-          "trade_date": "2026-07-20",
-          "filed_date": "2026-07-21",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "XOM",
-          "amount": 32500,
-          "direction": "sell",
-          "trade_date": "2026-07-20",
-          "filed_date": "2026-07-21",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "BAC",
+          "symbol": "AMD",
           "amount": 8000,
           "direction": "sell",
-          "trade_date": "2026-07-20",
-          "filed_date": "2026-07-21",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
           "is_new": false,
           "linked": false
-        }
-      ]
-    },
-    {
-      "name": "Cleo Fields",
-      "party": null,
-      "chamber": "House",
-      "trades": [
+        },
         {
-          "symbol": "TSM",
+          "symbol": "GOOGL",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": true
+        },
+        {
+          "symbol": "AMCR",
           "amount": 8000,
           "direction": "buy",
           "trade_date": "2026-07-10",
-          "filed_date": "2026-07-31",
-          "is_new": true,
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "COST",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "ANET",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": true
+        },
+        {
+          "symbol": "UPS",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "UNH",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": true
+        },
+        {
+          "symbol": "APH",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "DE",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "ADBE",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "ACN",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "UBER",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": true
+        },
+        {
+          "symbol": "PANW",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": true
+        },
+        {
+          "symbol": "FE",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "AMAT",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
           "linked": false
         }
       ]
@@ -272,6 +238,40 @@
           "trade_date": "2026-07-20",
           "filed_date": "2026-07-27",
           "is_new": true,
+          "linked": false
+        }
+      ]
+    },
+    {
+      "name": "Laurel Lee",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "NOK",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-06",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "NOK",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-06",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "NOK",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-06",
+          "filed_date": "2026-07-20",
+          "is_new": false,
           "linked": false
         }
       ]

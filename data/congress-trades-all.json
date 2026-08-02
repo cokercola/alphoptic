@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-01T14:23:44.583976Z",
+  "updated_at": "2026-08-02T14:25:30.549614Z",
   "lookback_days": 30,
   "trades": [
     {
@@ -10,6 +10,17 @@
       "direction": "buy",
       "trade_date": "2026-07-10",
       "filed_date": "2026-07-31",
+      "is_new": true,
+      "linked": false
+    },
+    {
+      "lawmaker": "Pete Sessions",
+      "chamber": "House",
+      "symbol": "ARCC",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-24",
+      "filed_date": "2026-07-27",
       "is_new": true,
       "linked": false
     },
@@ -36,17 +47,6 @@
       "linked": false
     },
     {
-      "lawmaker": "Pete Sessions",
-      "chamber": "House",
-      "symbol": "ARCC",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-24",
-      "filed_date": "2026-07-27",
-      "is_new": true,
-      "linked": false
-    },
-    {
       "lawmaker": "Debbie Dingell",
       "chamber": "House",
       "symbol": "FMCC",
@@ -60,7 +60,7 @@
     {
       "lawmaker": "James A. Himes",
       "chamber": "House",
-      "symbol": "HD",
+      "symbol": "XOM",
       "amount": 32500,
       "direction": "sell",
       "trade_date": "2026-07-20",
@@ -71,7 +71,7 @@
     {
       "lawmaker": "James A. Himes",
       "chamber": "House",
-      "symbol": "XOM",
+      "symbol": "HD",
       "amount": 32500,
       "direction": "sell",
       "trade_date": "2026-07-20",
@@ -91,50 +91,6 @@
       "linked": false
     },
     {
-      "lawmaker": "Laurel Lee",
-      "chamber": "House",
-      "symbol": "NOK",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-06",
-      "filed_date": "2026-07-20",
-      "is_new": false,
-      "linked": false
-    },
-    {
-      "lawmaker": "Laurel Lee",
-      "chamber": "House",
-      "symbol": "NOK",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-06",
-      "filed_date": "2026-07-20",
-      "is_new": false,
-      "linked": false
-    },
-    {
-      "lawmaker": "Laurel Lee",
-      "chamber": "House",
-      "symbol": "NOK",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-06",
-      "filed_date": "2026-07-20",
-      "is_new": false,
-      "linked": false
-    },
-    {
-      "lawmaker": "Dan Newhouse",
-      "chamber": "House",
-      "symbol": "ANET",
-      "amount": 8000,
-      "direction": "buy",
-      "trade_date": "2026-07-10",
-      "filed_date": "2026-07-20",
-      "is_new": false,
-      "linked": true
-    },
-    {
       "lawmaker": "Dan Newhouse",
       "chamber": "House",
       "symbol": "AMD",
@@ -148,18 +104,18 @@
     {
       "lawmaker": "Dan Newhouse",
       "chamber": "House",
-      "symbol": "FE",
+      "symbol": "GOOGL",
       "amount": 8000,
-      "direction": "buy",
+      "direction": "sell",
       "trade_date": "2026-07-10",
       "filed_date": "2026-07-20",
       "is_new": false,
-      "linked": false
+      "linked": true
     },
     {
       "lawmaker": "Dan Newhouse",
       "chamber": "House",
-      "symbol": "APH",
+      "symbol": "AMCR",
       "amount": 8000,
       "direction": "buy",
       "trade_date": "2026-07-10",
@@ -181,20 +137,9 @@
     {
       "lawmaker": "Dan Newhouse",
       "chamber": "House",
-      "symbol": "ACN",
+      "symbol": "ANET",
       "amount": 8000,
       "direction": "buy",
-      "trade_date": "2026-07-10",
-      "filed_date": "2026-07-20",
-      "is_new": false,
-      "linked": false
-    },
-    {
-      "lawmaker": "Dan Newhouse",
-      "chamber": "House",
-      "symbol": "GOOGL",
-      "amount": 8000,
-      "direction": "sell",
       "trade_date": "2026-07-10",
       "filed_date": "2026-07-20",
       "is_new": false,
@@ -225,7 +170,7 @@
     {
       "lawmaker": "Dan Newhouse",
       "chamber": "House",
-      "symbol": "AMCR",
+      "symbol": "APH",
       "amount": 8000,
       "direction": "buy",
       "trade_date": "2026-07-10",
@@ -258,9 +203,9 @@
     {
       "lawmaker": "Dan Newhouse",
       "chamber": "House",
-      "symbol": "AMAT",
+      "symbol": "ACN",
       "amount": 8000,
-      "direction": "sell",
+      "direction": "buy",
       "trade_date": "2026-07-10",
       "filed_date": "2026-07-20",
       "is_new": false,
@@ -287,6 +232,61 @@
       "filed_date": "2026-07-20",
       "is_new": false,
       "linked": true
+    },
+    {
+      "lawmaker": "Dan Newhouse",
+      "chamber": "House",
+      "symbol": "FE",
+      "amount": 8000,
+      "direction": "buy",
+      "trade_date": "2026-07-10",
+      "filed_date": "2026-07-20",
+      "is_new": false,
+      "linked": false
+    },
+    {
+      "lawmaker": "Dan Newhouse",
+      "chamber": "House",
+      "symbol": "AMAT",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-10",
+      "filed_date": "2026-07-20",
+      "is_new": false,
+      "linked": false
+    },
+    {
+      "lawmaker": "Laurel Lee",
+      "chamber": "House",
+      "symbol": "NOK",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-06",
+      "filed_date": "2026-07-20",
+      "is_new": false,
+      "linked": false
+    },
+    {
+      "lawmaker": "Laurel Lee",
+      "chamber": "House",
+      "symbol": "NOK",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-06",
+      "filed_date": "2026-07-20",
+      "is_new": false,
+      "linked": false
+    },
+    {
+      "lawmaker": "Laurel Lee",
+      "chamber": "House",
+      "symbol": "NOK",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-06",
+      "filed_date": "2026-07-20",
+      "is_new": false,
+      "linked": false
     }
   ]
 }
