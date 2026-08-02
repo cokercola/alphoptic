@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6P0HCH9X77"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6P0HCH9X77');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community Impact — Alphoptic</title>
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+</head>
+<body>
+<div id="site-header"></div>
+<div class="layout two-col">
+  <nav class="sidebar" id="sidebar"></nav>
+  <main>
+    <div class="breadcrumb"><a href="/index.html">Dashboard</a> / Community</div>
+    <div class="info-banner">Bills grouped by who they directly affect — separate from the industry/financial impact tracked elsewhere on the site. Categories always show, even with zero bills currently tracked.</div>
+    <div class="section-label">Community impact by category</div>
+    <div id="community-page"></div>
+  </main>
+</div>
+<script src="/assets/site.js"></script>
+<script src="/assets/donate.js"></script>
+<script src="/assets/header.js"></script>
+<script>
+async function init() {
+  renderSidebar('community');
+  const data = await fetchSiteData();
+  document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
+  renderCommunityPage('community-page', data);
+}
+init().catch(err => {
+  console.error(err);
+  document.getElementById('community-page').innerHTML = `<div class="empty-note">Could not load community data.</div>`;
+});
+</script>
+  <div id="site-footer"></div>
+  <script src="/assets/footer.js"></script>
+</body>
+</html>
