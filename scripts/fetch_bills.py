@@ -31,6 +31,12 @@ CONGRESS_API_KEY = os.environ["CONGRESS_API_KEY"]
 CONGRESS_BASE = "https://api.congress.gov/v3"
 BILLS_JSON_PATH = "data/bills.json"
 
+# Bump this any time the CLASSIFY_PROMPT changes in a way that should
+# force every bill to be re-classified (new field, reworded guidance,
+# etc.) rather than reusing stale cached values. A cached record only
+# gets reused if its own schema_version matches this one.
+CLASSIFICATION_SCHEMA_VERSION = 3  # v3: community_category is now derived deterministically from Congress.gov's official policyArea field, not asked of Claude
+
 client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
 
 # Hand-picked bills you always want tracked, regardless of whether
@@ -132,36 +138,26 @@ COMMUNITY_CATEGORY_LABELS = {
     "none": "None",
 }
 
-CATEGORY_LIST_STR = " | ".join(f'"{c}"' for c in COMMUNITY_CATEGORIES)
-
-CLASSIFY_PROMPT = f"""You are a legislative impact analyst. Given a bill's
+CLASSIFY_PROMPT = """You are a legislative impact analyst. Given a bill's
 title, status, and summary, respond with ONLY a JSON object (no markdown
 fences, no preamble) matching this schema:
 
-{{{{
+{{
   "industry": "primary industry affected",
   "direction": "positive" | "negative" | "mixed",
   "impact_score": integer 0-100,
   "confidence": integer 0-100,
   "summary": "one sentence, plain language, under 30 words",
-  "community_category": one of {CATEGORY_LIST_STR} or "none",
   "companies": [
-    {{{{"ticker": "XXX", "name": "Company Name", "effect": "positive"|"negative"|"mixed", "exposure": integer 0-100}}}}
+    {{"ticker": "XXX", "name": "Company Name", "effect": "positive"|"negative"|"mixed", "exposure": integer 0-100}}
   ]
-}}}}
-
-community_category should reflect who this bill DIRECTLY affects as
-ordinary people, not businesses - e.g. a bill primarily about corporate
-tax policy or government appropriations should usually be "none", even
-if it has secondary effects on regular people. Only pick a category
-when the bill's core subject is that kind of community impact. Choose
-"none" whenever uncertain rather than forcing a fit.
+}}
 
 List at most 4 companies, only ones with real, explainable exposure.
 
-Bill title: {{title}}
-Status: {{status}}
-Summary: {{summary}}
+Bill title: {title}
+Status: {status}
+Summary: {summary}
 """
 
 
@@ -226,6 +222,93 @@ def fetch_total_bill_count():
     return resp.json().get("pagination", {}).get("count")
 
 
+def derive_community_category(policy_area_name):
+    """Maps Congress.gov's own official policyArea term (assigned by
+    CRS, one of ~32 controlled terms, returned for free on every bill
+    detail response) to our fixed community category taxonomy.
+
+    This is DETERMINISTIC - not a Claude judgment call - since
+    policyArea is authoritative government metadata, not a guess. This
+    also sidesteps the earlier problem where asking Claude to infer
+    community relevance came back overly conservative (everything
+    landed on "none").
+
+    The exact wording of all ~32 official policy area terms isn't
+    memorized with full confidence here, so this uses substring
+    matching on lowercased text rather than exact string equality -
+    more forgiving of minor wording variance. Any policyArea that
+    doesn't match anything below falls through to "none" and gets
+    logged, so real unmapped values show up in the Action logs and the
+    mapping can be refined from actual data over time.
+    """
+    name = (policy_area_name or "").lower()
+    if not name:
+        return "none"
+
+    checks = [
+        ("healthcare_access", ["health"]),
+        ("housing", ["housing", "community development"]),
+        ("wages_labor", ["labor", "employment"]),
+        ("consumer_protection", ["consumer affairs"]),
+        ("safety", ["crime and law enforcement", "law enforcement"]),
+        ("education", ["education"]),
+        ("civil_rights", ["civil rights", "civil liberties"]),
+        ("environment", ["environmental protection", "public lands", "natural resources"]),
+        ("veterans", ["veteran"]),
+        ("immigration", ["immigration"]),
+    ]
+    for category, keywords in checks:
+        if any(kw in name for kw in keywords):
+            return category
+
+    print(f"NOTE: policyArea '{policy_area_name}' didn't match any community "
+          f"category mapping - defaulting to 'none'. Consider adding a keyword "
+          f"for it in derive_community_category() if this looks like it should map somewhere.")
+    return "none"
+
+
+COMMUNITY_SCAN_BATCH = 60   # how many recently-updated bills to scan for policyArea when looking for new community-relevant bills
+COMMUNITY_FETCH_LIMIT = 20  # stop once we've found this many NEW community-relevant bills not already tracked
+
+
+def find_community_candidate_refs(existing_bill_ids, bill_cache):
+    """Scans a batch of recently-updated bills (separate from the main
+    WATCHED_BILLS/AUTO_FETCH_LIMIT pool, which is built around
+    industry/stock relevance) purely to find bills with a
+    community-relevant policyArea that aren't already being tracked.
+
+    Populates `bill_cache` with every full bill object fetched during
+    the scan, so the main loop in main() can reuse them instead of
+    re-fetching the same bill from Congress.gov twice.
+
+    Returns a dict of {bill_id: ref} for newly-found community bills,
+    in the same shape as WATCHED_BILLS entries.
+    """
+    found = {}
+    try:
+        candidates = fetch_recent_bill_refs(COMMUNITY_SCAN_BATCH)
+    except requests.HTTPError as e:
+        print(f"WARNING: community candidate scan failed to fetch recent bills ({e}); skipping scan.")
+        return found
+
+    for ref in candidates:
+        if len(found) >= COMMUNITY_FETCH_LIMIT:
+            break
+        bill_id = f"{ref['type'].upper()}{ref['number']}"
+        if bill_id in existing_bill_ids or bill_id in found:
+            continue
+        try:
+            bill = fetch_bill(ref["congress"], ref["type"], ref["number"])
+        except requests.HTTPError:
+            continue
+        bill_cache[bill_id] = bill
+        policy_area = bill.get("policyArea", {}).get("name")
+        if derive_community_category(policy_area) != "none":
+            found[bill_id] = ref
+
+    return found
+
+
 def passage_probability(bill, stage):
     # Derived from the SAME stage bucketing as bill_stage(), so the
     # displayed stage and the passage odds can never disagree with each
@@ -281,23 +364,33 @@ def main():
         print(f"WARNING: auto-fetch of recent bills failed ({e}); "
               f"continuing with WATCHED_BILLS only.")
 
+    # Separate discovery pass: scans a wider batch of recent bills
+    # specifically looking for community-relevant ones (by official
+    # policyArea) that aren't already in the industry/stock-focused
+    # pool above. bill_cache holds full bill objects fetched during
+    # the scan so we don't re-fetch them in the main loop below.
+    bill_cache = {}
+    community_refs = find_community_candidate_refs(set(all_refs.keys()), bill_cache)
+    all_refs.update(community_refs)
+    if community_refs:
+        print(f"Found {len(community_refs)} new community-relevant bills via policyArea scan: "
+              f"{', '.join(community_refs.keys())}")
+
     signals = []
     reused = 0
     classified = 0
 
     for bill_id, ref in all_refs.items():
-        bill = fetch_bill(ref["congress"], ref["type"], ref["number"])
+        bill = bill_cache.get(bill_id) or fetch_bill(ref["congress"], ref["type"], ref["number"])
         title = bill.get("title", "")
         status = bill.get("latestAction", {}).get("text", "")
 
         cached = previous_by_id.get(bill_id)
-        # The "community_category" in cached check is a one-time,
-        # self-resetting cache-bust: any bill classified before this
-        # field existed won't have it in its cached record, so it gets
-        # re-classified exactly once to backfill it. After that run,
-        # the field is present and normal caching resumes automatically
-        # - no manual flag to remember to revert later.
-        if cached and cached.get("status") == status and "community_category" in cached:
+        # Cache is only reused if the status is unchanged AND the
+        # cached record's schema_version matches CLASSIFICATION_SCHEMA_VERSION
+        # above - bump that constant any time CLASSIFY_PROMPT changes in
+        # a way that should force fresh classification for everyone.
+        if cached and cached.get("status") == status and cached.get("schema_version") == CLASSIFICATION_SCHEMA_VERSION:
             # Nothing has changed since last run - reuse the existing
             # classification instead of calling Claude again.
             classification = {
@@ -307,7 +400,6 @@ def main():
                 "confidence": cached["confidence"],
                 "summary": cached["summary"],
                 "companies": cached["companies"],
-                "community_category": cached.get("community_category", "none"),
             }
             reused += 1
         else:
@@ -316,9 +408,10 @@ def main():
             classified += 1
 
         stage = bill_stage(status)
-        community_category = classification.get("community_category", "none")
-        if community_category not in COMMUNITY_CATEGORIES:
-            community_category = "none"  # guard against Claude drifting off the fixed list
+        # Deterministic, not from Claude - derived fresh from this
+        # bill's live policyArea every run, regardless of whether the
+        # rest of the classification came from cache.
+        community_category = derive_community_category(bill.get("policyArea", {}).get("name"))
 
         signals.append({
             "bill_id": bill_id,
@@ -330,6 +423,7 @@ def main():
             "confidence": classification["confidence"],
             "status": status,
             "stage": stage,
+            "schema_version": CLASSIFICATION_SCHEMA_VERSION,
             "community_category": community_category,
             "community_category_label": COMMUNITY_CATEGORY_LABELS.get(community_category, "None"),
             "sponsor": bill.get("sponsors", [{}])[0].get("fullName", "Unknown"),
