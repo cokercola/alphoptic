@@ -23,7 +23,7 @@ async function loadDashboard() {
   list.innerHTML = topSignals.map(s => {
     const companies = Array.isArray(s.companies) ? s.companies : [];
     const direction = s.direction || 'mixed';
-    const probIcon = hasTooltips ? signalInfoIcon(direction, s.passage_probability) : '';
+    const probIcon = hasTooltips ? infoIcon(TOOLTIP_TEXT.direction + ' ' + TOOLTIP_TEXT.probability) : '';
     return `
     <a class="signal-card ${direction}" href="bills/detail.html?id=${s.bill_id}">
       <div class="signal-head">
@@ -34,16 +34,19 @@ async function loadDashboard() {
     </a>
   `;
   }).join('');
+
+  renderCommunityHighlight('community-highlight', data, 3);
+
   const tickers = {};
   data.signals.forEach(s => (Array.isArray(s.companies) ? s.companies : []).forEach(c => { tickers[c.ticker] = c; }));
   const watchlist = document.getElementById('watchlist');
   const exposureNote = hasTooltips
-    ? `<div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Exposure score, not price change${exposureInfoIcon()}</div>`
+    ? `<div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Exposure score, not price change${infoIcon(TOOLTIP_TEXT.exposure)}</div>`
     : `<div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Exposure score, not price change</div>`;
   watchlist.innerHTML = exposureNote + Object.values(tickers).slice(0, 6).map(c => `
     <div class="ticker-row">
       <span>${c.ticker}</span>
-      <span class="change">${exposureSquare(c.exposure)}<span class="exposure-num">${c.exposure}</span></span>
+      <span class="change ${c.effect || 'mixed'}">${c.exposure}</span>
     </div>
   `).join('');
   if (hasTooltips) initInfoTooltips();
