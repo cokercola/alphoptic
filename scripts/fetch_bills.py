@@ -291,7 +291,13 @@ def main():
         status = bill.get("latestAction", {}).get("text", "")
 
         cached = previous_by_id.get(bill_id)
-        if cached and cached.get("status") == status:
+        # The "community_category" in cached check is a one-time,
+        # self-resetting cache-bust: any bill classified before this
+        # field existed won't have it in its cached record, so it gets
+        # re-classified exactly once to backfill it. After that run,
+        # the field is present and normal caching resumes automatically
+        # - no manual flag to remember to revert later.
+        if cached and cached.get("status") == status and "community_category" in cached:
             # Nothing has changed since last run - reuse the existing
             # classification instead of calling Claude again.
             classification = {
