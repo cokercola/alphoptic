@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-02T14:25:30.549614Z",
+  "updated_at": "2026-08-03T15:39:55.969575Z",
   "lookback_days": 30,
   "trades": [
     {
@@ -14,14 +14,14 @@
       "linked": false
     },
     {
-      "lawmaker": "Pete Sessions",
+      "lawmaker": "Robert E. Latta",
       "chamber": "House",
-      "symbol": "ARCC",
+      "symbol": "FMAO",
       "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-24",
+      "direction": "buy",
+      "trade_date": "2026-07-20",
       "filed_date": "2026-07-27",
-      "is_new": true,
+      "is_new": false,
       "linked": false
     },
     {
@@ -32,18 +32,18 @@
       "direction": "sell",
       "trade_date": "2026-07-21",
       "filed_date": "2026-07-27",
-      "is_new": true,
+      "is_new": false,
       "linked": false
     },
     {
-      "lawmaker": "Robert E. Latta",
+      "lawmaker": "Pete Sessions",
       "chamber": "House",
-      "symbol": "FMAO",
+      "symbol": "ARCC",
       "amount": 8000,
-      "direction": "buy",
-      "trade_date": "2026-07-20",
+      "direction": "sell",
+      "trade_date": "2026-07-24",
       "filed_date": "2026-07-27",
-      "is_new": true,
+      "is_new": false,
       "linked": false
     },
     {
@@ -88,14 +88,14 @@
       "trade_date": "2026-07-20",
       "filed_date": "2026-07-21",
       "is_new": false,
-      "linked": false
+      "linked": true
     },
     {
       "lawmaker": "Dan Newhouse",
       "chamber": "House",
-      "symbol": "AMD",
+      "symbol": "FE",
       "amount": 8000,
-      "direction": "sell",
+      "direction": "buy",
       "trade_date": "2026-07-10",
       "filed_date": "2026-07-20",
       "is_new": false,
@@ -115,7 +115,18 @@
     {
       "lawmaker": "Dan Newhouse",
       "chamber": "House",
-      "symbol": "AMCR",
+      "symbol": "ADBE",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-10",
+      "filed_date": "2026-07-20",
+      "is_new": false,
+      "linked": false
+    },
+    {
+      "lawmaker": "Dan Newhouse",
+      "chamber": "House",
+      "symbol": "ACN",
       "amount": 8000,
       "direction": "buy",
       "trade_date": "2026-07-10",
@@ -137,20 +148,9 @@
     {
       "lawmaker": "Dan Newhouse",
       "chamber": "House",
-      "symbol": "ANET",
+      "symbol": "APH",
       "amount": 8000,
       "direction": "buy",
-      "trade_date": "2026-07-10",
-      "filed_date": "2026-07-20",
-      "is_new": false,
-      "linked": true
-    },
-    {
-      "lawmaker": "Dan Newhouse",
-      "chamber": "House",
-      "symbol": "UPS",
-      "amount": 8000,
-      "direction": "sell",
       "trade_date": "2026-07-10",
       "filed_date": "2026-07-20",
       "is_new": false,
@@ -159,18 +159,7 @@
     {
       "lawmaker": "Dan Newhouse",
       "chamber": "House",
-      "symbol": "UNH",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-10",
-      "filed_date": "2026-07-20",
-      "is_new": false,
-      "linked": true
-    },
-    {
-      "lawmaker": "Dan Newhouse",
-      "chamber": "House",
-      "symbol": "APH",
+      "symbol": "ANET",
       "amount": 8000,
       "direction": "buy",
       "trade_date": "2026-07-10",
@@ -192,7 +181,18 @@
     {
       "lawmaker": "Dan Newhouse",
       "chamber": "House",
-      "symbol": "ADBE",
+      "symbol": "AMCR",
+      "amount": 8000,
+      "direction": "buy",
+      "trade_date": "2026-07-10",
+      "filed_date": "2026-07-20",
+      "is_new": false,
+      "linked": false
+    },
+    {
+      "lawmaker": "Dan Newhouse",
+      "chamber": "House",
+      "symbol": "AMD",
       "amount": 8000,
       "direction": "sell",
       "trade_date": "2026-07-10",
@@ -203,9 +203,20 @@
     {
       "lawmaker": "Dan Newhouse",
       "chamber": "House",
-      "symbol": "ACN",
+      "symbol": "HON",
       "amount": 8000,
       "direction": "buy",
+      "trade_date": "2026-07-10",
+      "filed_date": "2026-07-20",
+      "is_new": false,
+      "linked": false
+    },
+    {
+      "lawmaker": "Dan Newhouse",
+      "chamber": "House",
+      "symbol": "CSX",
+      "amount": 8000,
+      "direction": "sell",
       "trade_date": "2026-07-10",
       "filed_date": "2026-07-20",
       "is_new": false,
@@ -236,18 +247,7 @@
     {
       "lawmaker": "Dan Newhouse",
       "chamber": "House",
-      "symbol": "FE",
-      "amount": 8000,
-      "direction": "buy",
-      "trade_date": "2026-07-10",
-      "filed_date": "2026-07-20",
-      "is_new": false,
-      "linked": false
-    },
-    {
-      "lawmaker": "Dan Newhouse",
-      "chamber": "House",
-      "symbol": "AMAT",
+      "symbol": "TMO",
       "amount": 8000,
       "direction": "sell",
       "trade_date": "2026-07-10",
