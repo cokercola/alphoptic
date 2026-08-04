@@ -23,6 +23,11 @@ on:
           - both
           - house
           - senate
+      debug:
+        description: "Debug mode: dump raw XML structure instead of processing filings"
+        required: false
+        default: false
+        type: boolean
 permissions:
   contents: write
 jobs:
@@ -44,6 +49,7 @@ jobs:
           END_YEAR: ${{ github.event.inputs.end_year }}
           FILING_LIMIT: ${{ github.event.inputs.limit }}
           SOURCE: ${{ github.event.inputs.source }}
+          DEBUG_MODE: ${{ github.event.inputs.debug }}
         run: |
           ARGS=(--start-year "${START_YEAR:-2012}" --source "${SOURCE:-both}")
           if [ -n "$END_YEAR" ]; then
@@ -51,6 +57,9 @@ jobs:
           fi
           if [ -n "$FILING_LIMIT" ]; then
             ARGS+=(--limit "$FILING_LIMIT")
+          fi
+          if [ "$DEBUG_MODE" = "true" ]; then
+            ARGS+=(--debug)
           fi
           echo "Running: python scripts/backfill_congress_trades_history.py ${ARGS[*]}"
           python scripts/backfill_congress_trades_history.py "${ARGS[@]}"
