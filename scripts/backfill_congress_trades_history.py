@@ -207,40 +207,67 @@ def fetch_house_pdf_text(doc_id, year):
 
 
 TRANSACTION_LINE_RE = re.compile(
-    r"(?P<asset>[A-Za-z0-9&,.\-\s]+?)\s+"
-    r"(?P<type>Purchase|Sale|Exchange)\s+"
-    r"(?P<date>\d{2}/\d{2}/\d{4})\s+"
-    r".*?"
-    r"\$(?P<low>[\d,]+)\s*-\s*\$(?P<high>[\d,]+)",
+    r'^\s*(?:(?P<owner>SP|DC|JT)\s+)?'
+    r'(?P<asset>[^()]+?)\s*'
+    r'\(\s*(?P<ticker>[A-Za-z.]{1,6})\s*\)\s+'
+    r'(?P<type>[A-Za-z])\s+'
+    r'(?P<trade_date>\d{1,2}/\d{1,2}/\d{4})\s+'
+    r'(?P<notify_date>\d{1,2}/\d{1,2}/\d{4})\s+'
+    r'\$(?P<low>[\d,]+)\s*-\s*\$(?P<high>[\d,]+)',
     re.IGNORECASE
 )
+
+TYPE_MAP = {"p": "buy", "s": "sell", "e": "exchange"}
 
 
 def parse_house_pdf_transactions(pdf_text, filer_name, doc_id, filing_date, ticker_map):
     """
-    House PTR PDFs are semi-structured tables. This regex-based parse is a
-    best-effort first pass -- expect to refine TRANSACTION_LINE_RE after
-    inspecting real extracted text, since layout varies by filer/year.
+    House PTR PDFs list one transaction per line once the header/labels are
+    stripped away, in the order: [id] [owner] asset (ticker) type date
+    notification_date $low - $high. Matched line by line rather than as one
+    block regex, since the amount/notification fields are separated by
+    variable whitespace that a whole-text regex would otherwise treat as
+    crossing into the next line.
+
+    The PDF text extraction renders some fields (owner code, ticker letters)
+    with inconsistent case -- uppercasing on the way out fixes this, since
+    real tickers and owner codes are always uppercase in the actual filing.
     """
     records = []
-    for match in TRANSACTION_LINE_RE.finditer(pdf_text):
-        asset_name = match.group("asset").strip()
-        direction_raw = match.group("type").lower()
-        direction = "buy" if direction_raw == "purchase" else "sell" if direction_raw == "sale" else "exchange"
+    for line in pdf_text.splitlines():
+        match = TRANSACTION_LINE_RE.match(line)
+        if not match:
+            continue
+
+        asset_name = match.group("asset").strip().rstrip(",")
+        ticker = match.group("ticker").strip().upper()
+        # a handful of PTR lines put a fund/plan abbreviation in parens
+        # instead of a real ticker (e.g. "(TSP)" for Thrift Savings Plan) --
+        # treat anything that isn't 1-5 letters as not a real ticker
+        if not re.fullmatch(r"[A-Z]{1,5}", ticker):
+            ticker = None
+
+        direction = TYPE_MAP.get(match.group("type").lower(), "unknown")
+
         low = int(match.group("low").replace(",", ""))
         high = int(match.group("high").replace(",", ""))
         midpoint = (low + high) // 2
 
         try:
-            trade_date = datetime.strptime(match.group("date"), "%m/%d/%Y").date().isoformat()
+            trade_date = datetime.strptime(match.group("trade_date"), "%m/%d/%Y").date().isoformat()
         except ValueError:
             trade_date = None
 
-        ticker = resolve_ticker(asset_name, ticker_map)
+        owner = (match.group("owner") or "self").upper()
+
+        # fall back to the name map only if no ticker was found in parens
+        if ticker is None:
+            ticker = resolve_ticker(asset_name, ticker_map)
 
         records.append({
             "lawmaker": filer_name,
             "chamber": "House",
+            "owner": owner,
             "symbol": ticker,
             "asset_name_raw": asset_name,
             "amount_range_raw": f"${low:,} - ${high:,}",
@@ -360,7 +387,8 @@ def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False
             print("  ----- BEGIN RAW PDF TEXT -----")
             print(text[:5000])
             print("  ----- END RAW PDF TEXT (first 5000 chars) -----")
-            print(f"  DEBUG: regex found {len(TRANSACTION_LINE_RE.findall(text))} matches in this text")
+            match_count = sum(1 for line in text.splitlines() if TRANSACTION_LINE_RE.match(line))
+            print(f"  DEBUG: regex found {match_count} matching lines in this text")
             checkpoint["last_completed_year"] = year - 1  # do not advance checkpoint on a debug run
             return all_records
 
