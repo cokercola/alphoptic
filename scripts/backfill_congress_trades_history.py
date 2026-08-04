@@ -1,0 +1,456 @@
+"""
+Backfill historical congressional stock trades from the two official
+STOCK Act disclosure sources:
+
+  - House Clerk financial disclosure system (disclosures-clerk.house.gov)
+    Annual bulk index (XML) + per-filing PDFs. PDFs must be parsed with
+    text extraction; asset descriptions are free text, not tickers.
+
+  - Senate electronic financial disclosure system (efdsearch.senate.gov)
+    Search API returns filing metadata; electronic PTRs filed since the
+    STOCK Act (2012) are itemized HTML pages, which are far easier to
+    parse reliably than the House PDFs.
+
+Output: data/congress-trades-history.json
+  Same core fields as the existing daily congress-trades.json
+  (lawmaker, chamber, symbol, amount, direction, trade_date, filed_date)
+  plus fields the Performance page needs:
+    - amount_range_raw       the disclosed bracket as filed, e.g. "$1,001 - $15,000"
+    - amount_estimated       midpoint of that bracket
+    - source                 "house" or "senate"
+    - needs_review           true if the asset name could not be matched to a ticker
+    - source_doc_id          filing identifier, for traceability back to the PDF/page
+
+Unmatched names are also written to data/congress-trades-history-review.csv
+so they can be triaged by hand. This is deliberately NOT fuzzy-matched --
+see project notes: manual review first, fuzzy matching only if the
+review backlog proves too large.
+
+NOTE ON TESTING: this script was written without live network access to
+disclosures-clerk.house.gov or efdsearch.senate.gov (outside this
+sandbox's allowlist). The endpoint paths and HTML/XML structure below
+are based on the publicly documented structure of both systems as of
+early 2026, but real-world runs may need small adjustments to selectors
+if either site has changed its markup. Run with --limit 20 first and
+inspect data/congress-trades-history.json before a full run.
+"""
+
+import argparse
+import csv
+import json
+import os
+import re
+import sys
+import time
+from datetime import date, datetime
+from pathlib import Path
+
+import requests
+
+DATA_DIR = Path("data")
+HISTORY_FILE = DATA_DIR / "congress-trades-history.json"
+REVIEW_FILE = DATA_DIR / "congress-trades-history-review.csv"
+TICKER_MAP_FILE = DATA_DIR / "ticker-name-map.json"
+CHECKPOINT_HOUSE = DATA_DIR / ".backfill-checkpoint-house.json"
+CHECKPOINT_SENATE = DATA_DIR / ".backfill-checkpoint-senate.json"
+
+HOUSE_BASE = "https://disclosures-clerk.house.gov"
+SENATE_SEARCH_URL = "https://efdsearch.senate.gov/search/report/data/"
+SENATE_BASE = "https://efdsearch.senate.gov"
+
+REQUEST_TIMEOUT = 30
+RETRY_ATTEMPTS = 3
+RETRY_BACKOFF_SECONDS = 5
+POLITE_DELAY_SECONDS = 1.0  # between requests to either source, be a good citizen
+
+STOCK_ACT_START_YEAR = 2012  # electronic disclosure begins here; earlier data is not reliably trade-level
+
+session = requests.Session()
+session.headers.update({
+    "User-Agent": "AlphopticBackfill/1.0 (contact: your-contact-email-here)"
+})
+
+
+def load_json(path, default):
+    if path.exists():
+        with open(path, "r") as f:
+            return json.load(f)
+    return default
+
+
+def save_json(path, obj):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(obj, f, indent=2, default=str)
+
+
+def load_ticker_map():
+    """
+    data/ticker-name-map.json is a manually maintained lookup, e.g.:
+      { "apple inc": "AAPL", "microsoft corporation": "MSFT", ... }
+    Keys should be lowercased, punctuation-stripped company names.
+    Start this file empty; it grows as you triage review rows.
+    """
+    return load_json(TICKER_MAP_FILE, {})
+
+
+def normalize_name(raw_name):
+    if not raw_name:
+        return ""
+    n = raw_name.lower()
+    n = re.sub(r"[^\w\s]", "", n)
+    n = re.sub(r"\b(inc|corp|corporation|co|ltd|llc|plc|common stock|class a|class b)\b", "", n)
+    n = re.sub(r"\s+", " ", n).strip()
+    return n
+
+
+def resolve_ticker(asset_name, ticker_map):
+    key = normalize_name(asset_name)
+    return ticker_map.get(key)
+
+
+def request_with_retry(method, url, **kwargs):
+    last_err = None
+    for attempt in range(1, RETRY_ATTEMPTS + 1):
+        try:
+            resp = session.request(method, url, timeout=REQUEST_TIMEOUT, **kwargs)
+            resp.raise_for_status()
+            return resp
+        except requests.RequestException as e:
+            last_err = e
+            print(f"  request failed (attempt {attempt}/{RETRY_ATTEMPTS}): {e}", file=sys.stderr)
+            time.sleep(RETRY_BACKOFF_SECONDS * attempt)
+    raise RuntimeError(f"giving up on {url}: {last_err}")
+
+
+# ---------------------------------------------------------------------------
+# House Clerk
+# ---------------------------------------------------------------------------
+
+def fetch_house_year_index(year):
+    """
+    House Clerk publishes an annual ZIP with an XML index of every filer
+    and filing for that year: /public_disc/financial-pdfs/{year}FD.zip
+    The XML lists DocID, filer name, filing type (P = Periodic Transaction
+    Report is what we want), and state/district.
+    Returns a list of dicts: {doc_id, filer_name, filing_type, filing_date}
+    """
+    url = f"{HOUSE_BASE}/public_disc/financial-pdfs/{year}FD.zip"
+    print(f"House: fetching index for {year}")
+    resp = request_with_retry("GET", url)
+
+    import io
+    import zipfile
+    import xml.etree.ElementTree as ET
+
+    filings = []
+    with zipfile.ZipFile(io.BytesIO(resp.content)) as zf:
+        xml_names = [n for n in zf.namelist() if n.lower().endswith(".xml")]
+        if not xml_names:
+            print(f"  no XML index found in {year}FD.zip", file=sys.stderr)
+            return filings
+        with zf.open(xml_names[0]) as f:
+            tree = ET.parse(f)
+            root = tree.getroot()
+            for member in root.findall(".//Member"):
+                filing_type = (member.findtext("FilingType") or "").strip()
+                if filing_type != "P":  # P = Periodic Transaction Report
+                    continue
+                filings.append({
+                    "doc_id": (member.findtext("DocID") or "").strip(),
+                    "filer_name": f"{(member.findtext('First') or '').strip()} {(member.findtext('Last') or '').strip()}".strip(),
+                    "filing_date": (member.findtext("FilingDate") or "").strip(),
+                    "year": year,
+                })
+    print(f"  found {len(filings)} PTR filings in {year}")
+    return filings
+
+
+def fetch_house_pdf_text(doc_id, year):
+    """
+    Individual PTR PDFs live at a predictable path once you have the DocID.
+    Uses pdftotext (poppler-utils) for extraction, matching the approach
+    your existing scripts likely already use for other PDF-based sources.
+    """
+    url = f"{HOUSE_BASE}/public_disc/ptr-pdfs/{year}/{doc_id}.pdf"
+    resp = request_with_retry("GET", url)
+
+    import subprocess
+    import tempfile
+
+    with tempfile.NamedTemporaryFile(suffix=".pdf") as tmp:
+        tmp.write(resp.content)
+        tmp.flush()
+        result = subprocess.run(
+            ["pdftotext", "-layout", tmp.name, "-"],
+            capture_output=True, text=True, timeout=30
+        )
+        if result.returncode != 0:
+            print(f"  pdftotext failed for {doc_id}: {result.stderr}", file=sys.stderr)
+            return ""
+        return result.stdout
+
+
+TRANSACTION_LINE_RE = re.compile(
+    r"(?P<asset>[A-Za-z0-9&,.\-\s]+?)\s+"
+    r"(?P<type>Purchase|Sale|Exchange)\s+"
+    r"(?P<date>\d{2}/\d{2}/\d{4})\s+"
+    r".*?"
+    r"\$(?P<low>[\d,]+)\s*-\s*\$(?P<high>[\d,]+)",
+    re.IGNORECASE
+)
+
+
+def parse_house_pdf_transactions(pdf_text, filer_name, doc_id, filing_date, ticker_map):
+    """
+    House PTR PDFs are semi-structured tables. This regex-based parse is a
+    best-effort first pass -- expect to refine TRANSACTION_LINE_RE after
+    inspecting real extracted text, since layout varies by filer/year.
+    """
+    records = []
+    for match in TRANSACTION_LINE_RE.finditer(pdf_text):
+        asset_name = match.group("asset").strip()
+        direction_raw = match.group("type").lower()
+        direction = "buy" if direction_raw == "purchase" else "sell" if direction_raw == "sale" else "exchange"
+        low = int(match.group("low").replace(",", ""))
+        high = int(match.group("high").replace(",", ""))
+        midpoint = (low + high) // 2
+
+        try:
+            trade_date = datetime.strptime(match.group("date"), "%m/%d/%Y").date().isoformat()
+        except ValueError:
+            trade_date = None
+
+        ticker = resolve_ticker(asset_name, ticker_map)
+
+        records.append({
+            "lawmaker": filer_name,
+            "chamber": "House",
+            "symbol": ticker,
+            "asset_name_raw": asset_name,
+            "amount_range_raw": f"${low:,} - ${high:,}",
+            "amount_estimated": midpoint,
+            "direction": direction,
+            "trade_date": trade_date,
+            "filed_date": filing_date,
+            "source": "house",
+            "source_doc_id": doc_id,
+            "needs_review": ticker is None,
+        })
+    return records
+
+
+# ---------------------------------------------------------------------------
+# Senate PTR
+# ---------------------------------------------------------------------------
+
+def fetch_senate_filings_page(start_date, end_date, offset, ticker_map, page_size=100):
+    """
+    Senate eFD search returns paginated JSON. Filing type 11 = Periodic
+    Transaction Report in their internal type system as of early 2026 --
+    verify this against a live response and adjust if their type codes
+    have changed.
+    """
+    payload = {
+        "report_types": "[11]",
+        "submitted_start_date": start_date,
+        "submitted_end_date": end_date,
+        "start": offset,
+        "length": page_size,
+    }
+    resp = request_with_retry("POST", SENATE_SEARCH_URL, data=payload)
+    return resp.json()
+
+
+def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map):
+    """
+    Electronic Senate PTRs render as an HTML table of transactions.
+    """
+    resp = request_with_retry("GET", report_url)
+
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(resp.text, "html.parser")
+    records = []
+
+    rows = soup.select("table tbody tr")
+    for row in rows:
+        cells = [c.get_text(strip=True) for c in row.find_all("td")]
+        if len(cells) < 5:
+            continue
+
+        asset_name = cells[0]
+        direction_raw = cells[2].lower() if len(cells) > 2 else ""
+        direction = "buy" if "purchase" in direction_raw else "sell" if "sale" in direction_raw else "exchange"
+
+        date_match = re.search(r"\d{2}/\d{2}/\d{4}", cells[1]) if len(cells) > 1 else None
+        trade_date = None
+        if date_match:
+            trade_date = datetime.strptime(date_match.group(), "%m/%d/%Y").date().isoformat()
+
+        amount_match = re.search(r"\$([\d,]+)\s*-\s*\$([\d,]+)", " ".join(cells))
+        amount_range_raw = None
+        midpoint = None
+        if amount_match:
+            low = int(amount_match.group(1).replace(",", ""))
+            high = int(amount_match.group(2).replace(",", ""))
+            amount_range_raw = f"${low:,} - ${high:,}"
+            midpoint = (low + high) // 2
+
+        ticker = resolve_ticker(asset_name, ticker_map)
+
+        records.append({
+            "lawmaker": filer_name,
+            "chamber": "Senate",
+            "symbol": ticker,
+            "asset_name_raw": asset_name,
+            "amount_range_raw": amount_range_raw,
+            "amount_estimated": midpoint,
+            "direction": direction,
+            "trade_date": trade_date,
+            "filed_date": filing_date,
+            "source": "senate",
+            "source_doc_id": report_url.rstrip("/").split("/")[-1],
+            "needs_review": ticker is None,
+        })
+    return records
+
+
+# ---------------------------------------------------------------------------
+# Orchestration
+# ---------------------------------------------------------------------------
+
+def run_house_backfill(start_year, end_year, ticker_map, limit=None):
+    checkpoint = load_json(CHECKPOINT_HOUSE, {"last_completed_year": start_year - 1})
+    all_records = []
+
+    for year in range(max(start_year, checkpoint["last_completed_year"] + 1), end_year + 1):
+        try:
+            filings = fetch_house_year_index(year)
+        except Exception as e:
+            print(f"House: failed to fetch index for {year}, stopping here: {e}", file=sys.stderr)
+            break
+
+        if limit:
+            filings = filings[:limit]
+
+        for i, filing in enumerate(filings):
+            print(f"  [{i + 1}/{len(filings)}] {filing['filer_name']} ({filing['doc_id']})")
+            try:
+                text = fetch_house_pdf_text(filing["doc_id"], year)
+                records = parse_house_pdf_transactions(
+                    text, filing["filer_name"], filing["doc_id"], filing["filing_date"], ticker_map
+                )
+                all_records.extend(records)
+            except Exception as e:
+                print(f"    skipping {filing['doc_id']}: {e}", file=sys.stderr)
+            time.sleep(POLITE_DELAY_SECONDS)
+
+        checkpoint["last_completed_year"] = year
+        save_json(CHECKPOINT_HOUSE, checkpoint)
+
+        if limit:
+            break  # test mode: just do one partial year
+
+    return all_records
+
+
+def run_senate_backfill(start_date, end_date, ticker_map, limit=None):
+    checkpoint = load_json(CHECKPOINT_SENATE, {"last_offset": 0})
+    all_records = []
+    offset = checkpoint["last_offset"]
+    page_size = 100
+
+    while True:
+        print(f"Senate: fetching filings at offset {offset}")
+        try:
+            page = fetch_senate_filings_page(start_date, end_date, offset, ticker_map, page_size)
+        except Exception as e:
+            print(f"Senate: failed at offset {offset}, stopping here: {e}", file=sys.stderr)
+            break
+
+        rows = page.get("data", [])
+        if not rows:
+            print("Senate: no more filings, backfill complete for this date range")
+            break
+
+        for row in rows:
+            filer_name = row.get("name", "unknown")
+            filing_date = row.get("filed_date")
+            report_url = SENATE_BASE + row.get("report_url", "")
+            try:
+                records = parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map)
+                all_records.extend(records)
+            except Exception as e:
+                print(f"    skipping {report_url}: {e}", file=sys.stderr)
+            time.sleep(POLITE_DELAY_SECONDS)
+
+        offset += page_size
+        checkpoint["last_offset"] = offset
+        save_json(CHECKPOINT_SENATE, checkpoint)
+
+        if limit and offset >= limit:
+            break
+
+    return all_records
+
+
+def write_review_csv(records):
+    review_rows = [r for r in records if r["needs_review"]]
+    REVIEW_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with open(REVIEW_FILE, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=[
+            "asset_name_raw", "lawmaker", "chamber", "trade_date", "source", "source_doc_id"
+        ])
+        writer.writeheader()
+        for r in review_rows:
+            writer.writerow({k: r.get(k, "") for k in writer.fieldnames})
+    print(f"\n{len(review_rows)} rows need manual ticker review -> {REVIEW_FILE}")
+    if len(review_rows) > 100:
+        print("That's over 100 -- worth considering fuzzy matching for the bulk of these,")
+        print("with a clear methodology note on the Performance chart if you do.")
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--start-year", type=int, default=STOCK_ACT_START_YEAR)
+    parser.add_argument("--end-year", type=int, default=date.today().year)
+    parser.add_argument("--limit", type=int, default=None,
+                         help="cap filings per source, for a small test run")
+    parser.add_argument("--source", choices=["house", "senate", "both"], default="both")
+    args = parser.parse_args()
+
+    ticker_map = load_ticker_map()
+    existing = load_json(HISTORY_FILE, {"records": []})
+    new_records = []
+
+    if args.source in ("house", "both"):
+        new_records.extend(run_house_backfill(args.start_year, args.end_year, ticker_map, args.limit))
+
+    if args.source in ("senate", "both"):
+        start_date = f"{args.start_year}-01-01"
+        end_date = f"{args.end_year}-12-31"
+        new_records.extend(run_senate_backfill(start_date, end_date, ticker_map, args.limit))
+
+    combined = existing["records"] + new_records
+    seen = set()
+    deduped = []
+    for r in combined:
+        key = (r["source"], r["source_doc_id"], r.get("asset_name_raw"), r.get("trade_date"))
+        if key not in seen:
+            seen.add(key)
+            deduped.append(r)
+
+    output = {
+        "updated_at": datetime.utcnow().isoformat() + "Z",
+        "record_count": len(deduped),
+        "needs_review_count": sum(1 for r in deduped if r["needs_review"]),
+        "records": deduped,
+    }
+    save_json(HISTORY_FILE, output)
+    write_review_csv(deduped)
+
+    print(f"\nDone. {len(new_records)} new records this run, {len(deduped)} total in history file.")
+
+
+if __name__ == "__main__":
+    main()
