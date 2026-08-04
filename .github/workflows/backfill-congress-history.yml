@@ -62,6 +62,7 @@ jobs:
           DEBUG_MODE: ${{ github.event.inputs.debug }}
           DUMP_PDF_TEXT: ${{ github.event.inputs.dump_pdf_text }}
           DUMP_SENATE_PAGE: ${{ github.event.inputs.dump_senate_page }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
         run: |
           ARGS=(--start-year "${START_YEAR:-2012}" --source "${SOURCE:-both}")
           if [ -n "$END_YEAR" ]; then
@@ -82,10 +83,11 @@ jobs:
           echo "Running: python scripts/backfill_congress_trades_history.py ${ARGS[*]}"
           python scripts/backfill_congress_trades_history.py "${ARGS[@]}"
       - name: Commit updated data
+        if: always()
         run: |
           git config user.name "alphoptic-bot"
           git config user.email "actions@github.com"
-          for f in data/congress-trades-history.json data/congress-trades-history-review.csv data/.backfill-checkpoint-house.json data/.backfill-checkpoint-senate.json; do
+          for f in data/congress-trades-history.json data/congress-trades-history-review.csv data/.backfill-checkpoint-house.json data/.backfill-checkpoint-senate.json data/ticker-name-map-auto.json; do
             [ -f "$f" ] && git add "$f"
           done
           git diff --staged --quiet || git commit -m "Backfill congress trades history"
