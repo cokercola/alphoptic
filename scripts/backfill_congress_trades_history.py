@@ -67,7 +67,7 @@ STOCK_ACT_START_YEAR = 2012  # electronic disclosure begins here; earlier data i
 
 session = requests.Session()
 session.headers.update({
-    "User-Agent": "AlphopticBackfill/1.0 (contact: myblocknews@gmail.com)"
+    "User-Agent": "AlphopticBackfill/1.0 (contact: your-contact-email-here)"
 })
 
 
@@ -127,7 +127,7 @@ def request_with_retry(method, url, **kwargs):
 # House Clerk
 # ---------------------------------------------------------------------------
 
-def fetch_house_year_index(year):
+def fetch_house_year_index(year, debug=False):
     """
     House Clerk publishes an annual ZIP with an XML index of every filer
     and filing for that year: /public_disc/financial-pdfs/{year}FD.zip
@@ -146,12 +146,27 @@ def fetch_house_year_index(year):
     filings = []
     with zipfile.ZipFile(io.BytesIO(resp.content)) as zf:
         xml_names = [n for n in zf.namelist() if n.lower().endswith(".xml")]
+        if debug:
+            print(f"  DEBUG: files in zip: {zf.namelist()}")
         if not xml_names:
             print(f"  no XML index found in {year}FD.zip", file=sys.stderr)
             return filings
         with zf.open(xml_names[0]) as f:
-            tree = ET.parse(f)
-            root = tree.getroot()
+            raw = f.read()
+            if debug:
+                print(f"  DEBUG: raw XML first 3000 chars:\n{raw[:3000].decode('utf-8', errors='replace')}")
+            root = ET.fromstring(raw)
+            if debug:
+                child_tags = {}
+                for elem in root.iter():
+                    child_tags[elem.tag] = child_tags.get(elem.tag, 0) + 1
+                print(f"  DEBUG: root tag = {root.tag}")
+                print(f"  DEBUG: all tag names found and counts: {child_tags}")
+                first_records = list(root)[:3]
+                for i, rec in enumerate(first_records):
+                    print(f"  DEBUG: sample record {i} tag={rec.tag}, children={[c.tag for c in rec]}")
+                    for c in rec:
+                        print(f"    {c.tag} = {c.text!r}")
             for member in root.findall(".//Member"):
                 filing_type = (member.findtext("FilingType") or "").strip()
                 if filing_type != "P":  # P = Periodic Transaction Report
@@ -319,16 +334,21 @@ def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map):
 # Orchestration
 # ---------------------------------------------------------------------------
 
-def run_house_backfill(start_year, end_year, ticker_map, limit=None):
+def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False):
     checkpoint = load_json(CHECKPOINT_HOUSE, {"last_completed_year": start_year - 1})
     all_records = []
 
     for year in range(max(start_year, checkpoint["last_completed_year"] + 1), end_year + 1):
         try:
-            filings = fetch_house_year_index(year)
+            filings = fetch_house_year_index(year, debug=debug)
         except Exception as e:
             print(f"House: failed to fetch index for {year}, stopping here: {e}", file=sys.stderr)
             break
+
+        if debug:
+            print("  DEBUG: stopping after first year's index dump, no PDFs fetched")
+            checkpoint["last_completed_year"] = year - 1  # do not advance checkpoint on a debug run
+            return all_records
 
         if limit:
             filings = filings[:limit]
@@ -417,6 +437,8 @@ def main():
     parser.add_argument("--limit", type=int, default=None,
                          help="cap filings per source, for a small test run")
     parser.add_argument("--source", choices=["house", "senate", "both"], default="both")
+    parser.add_argument("--debug", action="store_true",
+                         help="dump raw XML/HTML structure from the first fetch instead of guessing field names")
     args = parser.parse_args()
 
     ticker_map = load_ticker_map()
@@ -424,7 +446,7 @@ def main():
     new_records = []
 
     if args.source in ("house", "both"):
-        new_records.extend(run_house_backfill(args.start_year, args.end_year, ticker_map, args.limit))
+        new_records.extend(run_house_backfill(args.start_year, args.end_year, ticker_map, args.limit, args.debug))
 
     if args.source in ("senate", "both"):
         start_date = f"{args.start_year}-01-01"
