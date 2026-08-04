@@ -361,7 +361,12 @@ def fetch_senate_filings_page(start_date, end_date, offset, csrf_token, page_siz
 
 def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map):
     """
-    Electronic Senate PTRs render as an HTML table of transactions.
+    Electronic Senate PTRs render as an HTML table with one transaction per
+    row, in this column order (confirmed against a real filing):
+      [0] row id, [1] transaction date, [2] owner, [3] ticker (or "--"),
+      [4] asset description, [5] asset type, [6] transaction type
+      (e.g. "Purchase", "Sale (Full)", "Sale (Partial)", "Exchange"),
+      [7] amount range, [8] comment
     """
     resp = request_with_retry("GET", report_url)
 
@@ -372,19 +377,33 @@ def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map):
     rows = soup.select("table tbody tr")
     for row in rows:
         cells = [c.get_text(strip=True) for c in row.find_all("td")]
-        if len(cells) < 5:
+        if len(cells) < 8:
             continue
 
-        asset_name = cells[0]
-        direction_raw = cells[2].lower() if len(cells) > 2 else ""
-        direction = "buy" if "purchase" in direction_raw else "sell" if "sale" in direction_raw else "exchange"
+        trade_date_raw = cells[1]
+        owner = cells[2].upper() if cells[2] else "SELF"
+        ticker_cell = cells[3].strip()
+        asset_name = cells[4]
+        transaction_type_raw = cells[6].lower()
+        amount_raw = cells[7]
 
-        date_match = re.search(r"\d{2}/\d{2}/\d{4}", cells[1]) if len(cells) > 1 else None
+        ticker = None if ticker_cell in ("--", "") else ticker_cell.upper()
+
+        if "purchase" in transaction_type_raw:
+            direction = "buy"
+        elif "sale" in transaction_type_raw:
+            direction = "sell"
+        elif "exchange" in transaction_type_raw:
+            direction = "exchange"
+        else:
+            direction = "unknown"
+
         trade_date = None
+        date_match = re.search(r"\d{1,2}/\d{1,2}/\d{4}", trade_date_raw)
         if date_match:
             trade_date = datetime.strptime(date_match.group(), "%m/%d/%Y").date().isoformat()
 
-        amount_match = re.search(r"\$([\d,]+)\s*-\s*\$([\d,]+)", " ".join(cells))
+        amount_match = re.search(r"\$([\d,]+)\s*-\s*\$([\d,]+)", amount_raw)
         amount_range_raw = None
         midpoint = None
         if amount_match:
@@ -393,11 +412,13 @@ def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map):
             amount_range_raw = f"${low:,} - ${high:,}"
             midpoint = (low + high) // 2
 
-        ticker = resolve_ticker(asset_name, ticker_map)
+        if ticker is None:
+            ticker = resolve_ticker(asset_name, ticker_map)
 
         records.append({
             "lawmaker": filer_name,
             "chamber": "Senate",
+            "owner": owner,
             "symbol": ticker,
             "asset_name_raw": asset_name,
             "amount_range_raw": amount_range_raw,
