@@ -334,7 +334,7 @@ def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map):
 # Orchestration
 # ---------------------------------------------------------------------------
 
-def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False):
+def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False, dump_pdf_text=False):
     checkpoint = load_json(CHECKPOINT_HOUSE, {"last_completed_year": start_year - 1})
     all_records = []
 
@@ -352,6 +352,17 @@ def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False
 
         if limit:
             filings = filings[:limit]
+
+        if dump_pdf_text:
+            filing = filings[0]
+            print(f"  DEBUG: dumping raw pdftotext output for {filing['filer_name']} ({filing['doc_id']})")
+            text = fetch_house_pdf_text(filing["doc_id"], year)
+            print("  ----- BEGIN RAW PDF TEXT -----")
+            print(text[:5000])
+            print("  ----- END RAW PDF TEXT (first 5000 chars) -----")
+            print(f"  DEBUG: regex found {len(TRANSACTION_LINE_RE.findall(text))} matches in this text")
+            checkpoint["last_completed_year"] = year - 1  # do not advance checkpoint on a debug run
+            return all_records
 
         for i, filing in enumerate(filings):
             print(f"  [{i + 1}/{len(filings)}] {filing['filer_name']} ({filing['doc_id']})")
@@ -439,6 +450,8 @@ def main():
     parser.add_argument("--source", choices=["house", "senate", "both"], default="both")
     parser.add_argument("--debug", action="store_true",
                          help="dump raw XML/HTML structure from the first fetch instead of guessing field names")
+    parser.add_argument("--dump-pdf-text", action="store_true",
+                         help="dump raw pdftotext output for the first House filing instead of parsing it")
     args = parser.parse_args()
 
     ticker_map = load_ticker_map()
@@ -446,7 +459,7 @@ def main():
     new_records = []
 
     if args.source in ("house", "both"):
-        new_records.extend(run_house_backfill(args.start_year, args.end_year, ticker_map, args.limit, args.debug))
+        new_records.extend(run_house_backfill(args.start_year, args.end_year, ticker_map, args.limit, args.debug, args.dump_pdf_text))
 
     if args.source in ("senate", "both"):
         start_date = f"{args.start_year}-01-01"
