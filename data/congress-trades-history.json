@@ -1,6 +1,7 @@
 {
-  "updated_at": "2026-08-04T18:31:19.207677Z",
+  "updated_at": "2026-08-04T18:41:50.795111Z",
   "record_count": 0,
   "needs_review_count": 0,
+  "coverage_note": "House data begins 2014 -- earlier House filings were scanned paper forms with no electronically extractable trade data. Senate data begins 2012 (STOCK Act electronic filing start), with no equivalent gap.",
   "records": []
 }
