@@ -1,0 +1,54 @@
+name: Backfill congress trades history
+on:
+  workflow_dispatch:
+    inputs:
+      start_year:
+        description: "First year to backfill (STOCK Act electronic filing starts 2012)"
+        required: false
+        default: "2012"
+      end_year:
+        description: "Last year to backfill"
+        required: false
+        default: ""
+      limit:
+        description: "Optional cap on filings per source, for a small test run"
+        required: false
+        default: ""
+      source:
+        description: "Which source to backfill"
+        required: false
+        default: "both"
+        type: choice
+        options:
+          - both
+          - house
+          - senate
+permissions:
+  contents: write
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+      - name: Install python dependencies
+        run: pip install requests beautifulsoup4
+      - name: Run backfill
+        run: |
+          python scripts/backfill_congress_trades_history.py \
+            --start-year "${{ github.event.inputs.start_year || '2012' }}" \
+            --end-year "${{ github.event.inputs.end_year }}" \
+            --source "${{ github.event.inputs.source || 'both' }}" \
+            ${{ github.event.inputs.limit && format('--limit {0}', github.event.inputs.limit) || '' }}
+      - name: Commit updated data
+        run: |
+          git config user.name "alphoptic-bot"
+          git config user.email "actions@github.com"
+          git add data/congress-trades-history.json data/congress-trades-history-review.csv data/.backfill-checkpoint-house.json data/.backfill-checkpoint-senate.json
+          git diff --staged --quiet || git commit -m "Backfill congress trades history"
+          git push
