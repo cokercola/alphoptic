@@ -286,7 +286,32 @@ def parse_house_pdf_transactions(pdf_text, filer_name, doc_id, filing_date, tick
 # Senate PTR
 # ---------------------------------------------------------------------------
 
-def fetch_senate_filings_page(start_date, end_date, offset, ticker_map, page_size=100):
+def init_senate_session():
+    """
+    efdsearch.senate.gov requires accepting a terms-of-use agreement in
+    session before the search API will respond -- hitting the search
+    endpoint cold returns 403. This replicates the handshake a browser
+    does automatically on first visit: load the search page to get a CSRF
+    cookie, then POST acceptance of the agreement using that token.
+    Returns the CSRF token to use on subsequent search requests.
+    """
+    print("Senate: establishing session (loading search page, accepting terms)")
+    session.get(f"{SENATE_BASE}/search/", timeout=REQUEST_TIMEOUT)
+    csrf_token = session.cookies.get("csrftoken")
+    if not csrf_token:
+        raise RuntimeError("Senate: no csrftoken cookie returned from /search/ -- site behavior may have changed")
+
+    resp = request_with_retry(
+        "POST",
+        f"{SENATE_BASE}/search/home/",
+        data={"csrfmiddlewaretoken": csrf_token, "prohibition_agreement": "1"},
+        headers={"Referer": f"{SENATE_BASE}/search/"},
+    )
+    # the token sometimes rotates after the agreement POST; use whatever is current
+    return session.cookies.get("csrftoken") or csrf_token
+
+
+def fetch_senate_filings_page(start_date, end_date, offset, csrf_token, page_size=100):
     """
     Senate eFD search returns paginated JSON. Filing type 11 = Periodic
     Transaction Report in their internal type system as of early 2026 --
@@ -299,8 +324,17 @@ def fetch_senate_filings_page(start_date, end_date, offset, ticker_map, page_siz
         "submitted_end_date": end_date,
         "start": offset,
         "length": page_size,
+        "csrfmiddlewaretoken": csrf_token,
     }
-    resp = request_with_retry("POST", SENATE_SEARCH_URL, data=payload)
+    resp = request_with_retry(
+        "POST",
+        SENATE_SEARCH_URL,
+        data=payload,
+        headers={
+            "Referer": f"{SENATE_BASE}/search/",
+            "X-CSRFToken": csrf_token,
+        },
+    )
     return resp.json()
 
 
@@ -413,19 +447,30 @@ def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False
     return all_records
 
 
-def run_senate_backfill(start_date, end_date, ticker_map, limit=None):
+def run_senate_backfill(start_date, end_date, ticker_map, limit=None, debug=False):
     checkpoint = load_json(CHECKPOINT_SENATE, {"last_offset": 0})
     all_records = []
     offset = checkpoint["last_offset"]
     page_size = 100
 
+    try:
+        csrf_token = init_senate_session()
+    except Exception as e:
+        print(f"Senate: failed to establish session, stopping here: {e}", file=sys.stderr)
+        return all_records
+
     while True:
         print(f"Senate: fetching filings at offset {offset}")
         try:
-            page = fetch_senate_filings_page(start_date, end_date, offset, ticker_map, page_size)
+            page = fetch_senate_filings_page(start_date, end_date, offset, csrf_token, page_size)
         except Exception as e:
             print(f"Senate: failed at offset {offset}, stopping here: {e}", file=sys.stderr)
             break
+
+        if debug:
+            print(f"  DEBUG: raw response keys: {list(page.keys()) if isinstance(page, dict) else type(page)}")
+            print(f"  DEBUG: raw response (first 3000 chars): {json.dumps(page, indent=2)[:3000]}")
+            return all_records
 
         rows = page.get("data", [])
         if not rows:
@@ -492,7 +537,7 @@ def main():
     if args.source in ("senate", "both"):
         start_date = f"{args.start_year}-01-01"
         end_date = f"{args.end_year}-12-31"
-        new_records.extend(run_senate_backfill(start_date, end_date, ticker_map, args.limit))
+        new_records.extend(run_senate_backfill(start_date, end_date, ticker_map, args.limit, args.debug))
 
     combined = existing["records"] + new_records
     seen = set()
