@@ -468,7 +468,7 @@ def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False
     return all_records
 
 
-def run_senate_backfill(start_date, end_date, ticker_map, limit=None, debug=False):
+def run_senate_backfill(start_date, end_date, ticker_map, limit=None, debug=False, dump_page=False):
     checkpoint = load_json(CHECKPOINT_SENATE, {"last_offset": 0})
     all_records = []
     offset = checkpoint["last_offset"]
@@ -498,16 +498,56 @@ def run_senate_backfill(start_date, end_date, ticker_map, limit=None, debug=Fals
             print("Senate: no more filings, backfill complete for this date range")
             break
 
+        href_re = re.compile(r'href="([^"]+)"')
+        paper_skipped = 0
+
         for row in rows:
-            filer_name = row.get("name", "unknown")
-            filing_date = row.get("filed_date")
-            report_url = SENATE_BASE + row.get("report_url", "")
+            if len(row) < 5:
+                continue
+            first_name, last_name, display_name, link_html, filed_date = row[:5]
+            filer_name = f"{first_name} {last_name}".strip()
+
+            href_match = href_re.search(link_html)
+            if not href_match:
+                continue
+            relative_url = href_match.group(1)
+
+            if "/paper/" in relative_url:
+                # scanned paper filing, not an electronic HTML report -- can't
+                # be table-parsed the same way. Skipped for now; these are a
+                # small minority. Revisit later if the skip count is significant.
+                paper_skipped += 1
+                continue
+
+            report_url = SENATE_BASE + relative_url
+
+            if dump_page:
+                print(f"  DEBUG: dumping raw HTML for {filer_name} -> {report_url}")
+                resp = request_with_retry("GET", report_url)
+                print("  ----- BEGIN RAW HTML (first 5000 chars) -----")
+                print(resp.text[:5000])
+                print("  ----- END RAW HTML -----")
+                from bs4 import BeautifulSoup
+                soup = BeautifulSoup(resp.text, "html.parser")
+                tables = soup.find_all("table")
+                print(f"  DEBUG: found {len(tables)} <table> elements on page")
+                if tables:
+                    rows_found = tables[0].select("tbody tr")
+                    print(f"  DEBUG: first table has {len(rows_found)} tbody rows")
+                    if rows_found:
+                        cells = [c.get_text(strip=True) for c in rows_found[0].find_all("td")]
+                        print(f"  DEBUG: first row cells: {cells}")
+                return all_records
+
             try:
-                records = parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map)
+                records = parse_senate_ptr_page(report_url, filer_name, filed_date, ticker_map)
                 all_records.extend(records)
             except Exception as e:
                 print(f"    skipping {report_url}: {e}", file=sys.stderr)
             time.sleep(POLITE_DELAY_SECONDS)
+
+        if paper_skipped:
+            print(f"  skipped {paper_skipped} paper (non-electronic) filings this page")
 
         offset += page_size
         checkpoint["last_offset"] = offset
@@ -546,6 +586,8 @@ def main():
                          help="dump raw XML/HTML structure from the first fetch instead of guessing field names")
     parser.add_argument("--dump-pdf-text", action="store_true",
                          help="dump raw pdftotext output for the first House filing instead of parsing it")
+    parser.add_argument("--dump-senate-page", action="store_true",
+                         help="dump raw HTML for the first electronic Senate PTR page instead of parsing it")
     args = parser.parse_args()
 
     ticker_map = load_ticker_map()
@@ -558,7 +600,7 @@ def main():
     if args.source in ("senate", "both"):
         start_date = f"{args.start_year}-01-01"
         end_date = f"{args.end_year}-12-31"
-        new_records.extend(run_senate_backfill(start_date, end_date, ticker_map, args.limit, args.debug))
+        new_records.extend(run_senate_backfill(start_date, end_date, ticker_map, args.limit, args.debug, args.dump_senate_page))
 
     combined = existing["records"] + new_records
     seen = set()
