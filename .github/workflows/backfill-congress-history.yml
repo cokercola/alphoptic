@@ -39,12 +39,21 @@ jobs:
       - name: Install python dependencies
         run: pip install requests beautifulsoup4
       - name: Run backfill
+        env:
+          START_YEAR: ${{ github.event.inputs.start_year }}
+          END_YEAR: ${{ github.event.inputs.end_year }}
+          FILING_LIMIT: ${{ github.event.inputs.limit }}
+          SOURCE: ${{ github.event.inputs.source }}
         run: |
-          python scripts/backfill_congress_trades_history.py \
-            --start-year "${{ github.event.inputs.start_year || '2012' }}" \
-            --end-year "${{ github.event.inputs.end_year }}" \
-            --source "${{ github.event.inputs.source || 'both' }}" \
-            ${{ github.event.inputs.limit && format('--limit {0}', github.event.inputs.limit) || '' }}
+          ARGS=(--start-year "${START_YEAR:-2012}" --source "${SOURCE:-both}")
+          if [ -n "$END_YEAR" ]; then
+            ARGS+=(--end-year "$END_YEAR")
+          fi
+          if [ -n "$FILING_LIMIT" ]; then
+            ARGS+=(--limit "$FILING_LIMIT")
+          fi
+          echo "Running: python scripts/backfill_congress_trades_history.py ${ARGS[*]}"
+          python scripts/backfill_congress_trades_history.py "${ARGS[@]}"
       - name: Commit updated data
         run: |
           git config user.name "alphoptic-bot"
