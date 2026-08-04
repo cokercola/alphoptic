@@ -1,6 +1,82 @@
 {
-  "updated_at": "2026-08-04T16:45:16.181903Z",
-  "record_count": 0,
+  "updated_at": "2026-08-04T16:47:07.724458Z",
+  "record_count": 5,
   "needs_review_count": 0,
-  "records": []
+  "records": [
+    {
+      "lawmaker": "Robert E. Andrews",
+      "chamber": "House",
+      "owner": "SP",
+      "symbol": "HIL",
+      "asset_name_raw": "Hill International, Inc.",
+      "amount_range_raw": "$15,001 - $50,000",
+      "amount_estimated": 32500,
+      "direction": "sell",
+      "trade_date": "2013-12-26",
+      "filed_date": "1/13/2014",
+      "source": "house",
+      "source_doc_id": "20000077",
+      "needs_review": false
+    },
+    {
+      "lawmaker": "Lou Barletta",
+      "chamber": "House",
+      "owner": "JT",
+      "symbol": "DNKN",
+      "asset_name_raw": "Dunkin' Brands group, Inc.",
+      "amount_range_raw": "$1,001 - $15,000",
+      "amount_estimated": 8000,
+      "direction": "sell",
+      "trade_date": "2014-05-22",
+      "filed_date": "5/22/2014",
+      "source": "house",
+      "source_doc_id": "20000998",
+      "needs_review": false
+    },
+    {
+      "lawmaker": "Lou Barletta",
+      "chamber": "House",
+      "owner": "JT",
+      "symbol": "GIMO",
+      "asset_name_raw": "gigamon Inc.",
+      "amount_range_raw": "$1,001 - $15,000",
+      "amount_estimated": 8000,
+      "direction": "sell",
+      "trade_date": "2014-05-22",
+      "filed_date": "5/22/2014",
+      "source": "house",
+      "source_doc_id": "20000998",
+      "needs_review": false
+    },
+    {
+      "lawmaker": "Lou Barletta",
+      "chamber": "House",
+      "owner": "JT",
+      "symbol": "AAPL",
+      "asset_name_raw": "Apple Inc.",
+      "amount_range_raw": "$15,001 - $50,000",
+      "amount_estimated": 32500,
+      "direction": "sell",
+      "trade_date": "2014-10-01",
+      "filed_date": "10/3/2014",
+      "source": "house",
+      "source_doc_id": "20001787",
+      "needs_review": false
+    },
+    {
+      "lawmaker": "Lou Barletta",
+      "chamber": "House",
+      "owner": "SELF",
+      "symbol": "DDD",
+      "asset_name_raw": "3D Systems Corporation",
+      "amount_range_raw": "$1,001 - $15,000",
+      "amount_estimated": 8000,
+      "direction": "sell",
+      "trade_date": "2014-10-22",
+      "filed_date": "10/22/2014",
+      "source": "house",
+      "source_doc_id": "20001934",
+      "needs_review": false
+    }
+  ]
 }
