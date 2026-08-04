@@ -117,8 +117,11 @@ def request_with_retry(method, url, **kwargs):
             resp.raise_for_status()
             return resp
         except requests.RequestException as e:
+            body_snippet = ""
+            if getattr(e, "response", None) is not None:
+                body_snippet = f" | response body: {e.response.text[:500]!r}"
             last_err = e
-            print(f"  request failed (attempt {attempt}/{RETRY_ATTEMPTS}): {e}", file=sys.stderr)
+            print(f"  request failed (attempt {attempt}/{RETRY_ATTEMPTS}): {e}{body_snippet}", file=sys.stderr)
             time.sleep(RETRY_BACKOFF_SECONDS * attempt)
     raise RuntimeError(f"giving up on {url}: {last_err}")
 
@@ -317,13 +320,29 @@ def fetch_senate_filings_page(start_date, end_date, offset, csrf_token, page_siz
     Transaction Report in their internal type system as of early 2026 --
     verify this against a live response and adjust if their type codes
     have changed.
+
+    This mirrors the exact form the site's own search page submits
+    (a DataTables-backed endpoint), including fields that are empty by
+    default but still expected to be present, and the X-Requested-With
+    header that marks this as a legitimate AJAX call rather than a bare
+    POST -- omitting either has been observed to produce a 503 rather
+    than a clean error.
     """
+    start_fmt = datetime.strptime(start_date, "%Y-%m-%d").strftime("%m/%d/%Y")
+    end_fmt = datetime.strptime(end_date, "%Y-%m-%d").strftime("%m/%d/%Y")
+
     payload = {
+        "start": str(offset),
+        "length": str(page_size),
         "report_types": "[11]",
-        "submitted_start_date": start_date,
-        "submitted_end_date": end_date,
-        "start": offset,
-        "length": page_size,
+        "filer_types": "[]",
+        "submitted_start_date": f"{start_fmt} 00:00:00",
+        "submitted_end_date": f"{end_fmt} 00:00:00",
+        "candidate_state": "",
+        "senator_state": "",
+        "office_id": "",
+        "first_name": "",
+        "last_name": "",
         "csrfmiddlewaretoken": csrf_token,
     }
     resp = request_with_retry(
@@ -333,6 +352,8 @@ def fetch_senate_filings_page(start_date, end_date, offset, csrf_token, page_siz
         headers={
             "Referer": f"{SENATE_BASE}/search/",
             "X-CSRFToken": csrf_token,
+            "X-Requested-With": "XMLHttpRequest",
+            "Accept": "application/json, text/javascript, */*; q=0.01",
         },
     )
     return resp.json()
