@@ -1,69 +1,193 @@
 {
-  "updated_at": "2026-08-03T15:39:55.968791Z",
+  "updated_at": "2026-08-04T15:21:00.617892Z",
   "lookback_days": 30,
   "lawmakers": [
     {
-      "name": "Debbie Dingell",
+      "name": "April Delaney",
       "party": null,
       "chamber": "House",
       "trades": [
         {
-          "symbol": "FMCC",
+          "symbol": "FWONK",
           "amount": 32500,
           "direction": "buy",
-          "trade_date": "2026-07-14",
-          "filed_date": "2026-07-23",
-          "is_new": false,
-          "linked": false
-        }
-      ]
-    },
-    {
-      "name": "James A. Himes",
-      "party": null,
-      "chamber": "House",
-      "trades": [
-        {
-          "symbol": "XOM",
-          "amount": 32500,
-          "direction": "sell",
-          "trade_date": "2026-07-20",
-          "filed_date": "2026-07-21",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "HD",
-          "amount": 32500,
-          "direction": "sell",
-          "trade_date": "2026-07-20",
-          "filed_date": "2026-07-21",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "BAC",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-20",
-          "filed_date": "2026-07-21",
-          "is_new": false,
-          "linked": true
-        }
-      ]
-    },
-    {
-      "name": "Cleo Fields",
-      "party": null,
-      "chamber": "House",
-      "trades": [
-        {
-          "symbol": "TSM",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-31",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-04",
           "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "MLM",
+          "amount": 32500,
+          "direction": "buy",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "SGI",
+          "amount": 32500,
+          "direction": "buy",
+          "trade_date": "2026-07-30",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "BWXT",
+          "amount": 32500,
+          "direction": "buy",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "FWONK",
+          "amount": 32500,
+          "direction": "buy",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "WAB",
+          "amount": 32500,
+          "direction": "sell",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "CHRW",
+          "amount": 32500,
+          "direction": "buy",
+          "trade_date": "2026-07-27",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "HUBB",
+          "amount": 32500,
+          "direction": "buy",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "SCI",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-20",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "VIK",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "FLT",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "CLH",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "CHRW",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-22",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "MKL",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "MKL",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-27",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        }
+      ]
+    },
+    {
+      "name": "Sam Liccardo",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "NVDA",
+          "amount": 32500,
+          "direction": "sell",
+          "trade_date": "2026-07-21",
+          "filed_date": "2026-07-27",
+          "is_new": false,
+          "linked": false
+        }
+      ]
+    },
+    {
+      "name": "Robert E. Latta",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "FMAO",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-20",
+          "filed_date": "2026-07-27",
+          "is_new": false,
+          "linked": false
+        }
+      ]
+    },
+    {
+      "name": "Pete Sessions",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "ARCC",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-07-27",
+          "is_new": false,
           "linked": false
         }
       ]
@@ -103,12 +227,73 @@
       ]
     },
     {
+      "name": "Sheldon Whitehouse",
+      "party": null,
+      "chamber": "Senate",
+      "trades": [
+        {
+          "symbol": "LOW",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-20",
+          "filed_date": "2026-08-03",
+          "is_new": true,
+          "linked": false
+        }
+      ]
+    },
+    {
       "name": "Dan Newhouse",
       "party": null,
       "chamber": "House",
       "trades": [
         {
+          "symbol": "AMD",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "ANET",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "ACN",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
           "symbol": "FE",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "DE",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "APH",
           "amount": 8000,
           "direction": "buy",
           "trade_date": "2026-07-10",
@@ -135,7 +320,7 @@
           "linked": false
         },
         {
-          "symbol": "ACN",
+          "symbol": "AMCR",
           "amount": 8000,
           "direction": "buy",
           "trade_date": "2026-07-10",
@@ -153,79 +338,7 @@
           "linked": false
         },
         {
-          "symbol": "APH",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "ANET",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "DE",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "AMCR",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "AMD",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "HON",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "CSX",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        },
-        {
-          "symbol": "UBER",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": true
-        },
-        {
-          "symbol": "PANW",
+          "symbol": "FMC",
           "amount": 8000,
           "direction": "sell",
           "trade_date": "2026-07-10",
@@ -233,62 +346,107 @@
           "is_new": false,
           "linked": true
         },
-        {
-          "symbol": "TMO",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-10",
-          "filed_date": "2026-07-20",
-          "is_new": false,
-          "linked": false
-        }
-      ]
-    },
-    {
-      "name": "Sam Liccardo",
-      "party": null,
-      "chamber": "House",
-      "trades": [
         {
           "symbol": "NVDA",
-          "amount": 32500,
-          "direction": "sell",
-          "trade_date": "2026-07-21",
-          "filed_date": "2026-07-27",
-          "is_new": false,
-          "linked": false
-        }
-      ]
-    },
-    {
-      "name": "Pete Sessions",
-      "party": null,
-      "chamber": "House",
-      "trades": [
-        {
-          "symbol": "ARCC",
           "amount": 8000,
           "direction": "sell",
-          "trade_date": "2026-07-24",
-          "filed_date": "2026-07-27",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "HSY",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "UNH",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
+          "is_new": false,
+          "linked": true
+        },
+        {
+          "symbol": "MPC",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-20",
           "is_new": false,
           "linked": false
         }
       ]
     },
     {
-      "name": "Robert E. Latta",
+      "name": "Debbie Dingell",
       "party": null,
       "chamber": "House",
       "trades": [
         {
-          "symbol": "FMAO",
+          "symbol": "FMCC",
+          "amount": 32500,
+          "direction": "buy",
+          "trade_date": "2026-07-14",
+          "filed_date": "2026-07-23",
+          "is_new": false,
+          "linked": false
+        }
+      ]
+    },
+    {
+      "name": "Cleo Fields",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "TSM",
           "amount": 8000,
           "direction": "buy",
+          "trade_date": "2026-07-10",
+          "filed_date": "2026-07-31",
+          "is_new": true,
+          "linked": false
+        }
+      ]
+    },
+    {
+      "name": "James A. Himes",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "XOM",
+          "amount": 32500,
+          "direction": "sell",
           "trade_date": "2026-07-20",
-          "filed_date": "2026-07-27",
+          "filed_date": "2026-07-21",
           "is_new": false,
           "linked": false
+        },
+        {
+          "symbol": "HD",
+          "amount": 32500,
+          "direction": "sell",
+          "trade_date": "2026-07-20",
+          "filed_date": "2026-07-21",
+          "is_new": false,
+          "linked": false
+        },
+        {
+          "symbol": "BAC",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-20",
+          "filed_date": "2026-07-21",
+          "is_new": false,
+          "linked": true
         }
       ]
     }
