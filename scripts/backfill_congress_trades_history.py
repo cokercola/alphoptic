@@ -527,6 +527,9 @@ def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False
             filings = filings[:limit]
 
         if dump_pdf_text:
+            if not filings:
+                print(f"  DEBUG: no filings in {year}, moving to next year")
+                continue
             filing = filings[0]
             print(f"  DEBUG: dumping raw pdftotext output for {filing['filer_name']} ({filing['doc_id']})")
             text = fetch_house_pdf_text(filing["doc_id"], year)
