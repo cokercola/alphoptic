@@ -67,7 +67,7 @@ STOCK_ACT_START_YEAR = 2012  # electronic disclosure begins here; earlier data i
 
 session = requests.Session()
 session.headers.update({
-    "User-Agent": "AlphopticBackfill/1.0 (contact: your-contact-email-here)"
+    "User-Agent": "AlphopticBackfill/1.0 (contact: myblocknews@gmail.com)"
 })
 
 
