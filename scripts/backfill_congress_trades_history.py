@@ -58,6 +58,7 @@ DATA_DIR = Path("data")
 HISTORY_FILE = DATA_DIR / "congress-trades-history.json"
 REVIEW_FILE = DATA_DIR / "congress-trades-history-review.csv"
 TICKER_MAP_FILE = DATA_DIR / "ticker-name-map.json"
+TICKER_MAP_AUTO_FILE = DATA_DIR / "ticker-name-map-auto.json"
 CHECKPOINT_HOUSE = DATA_DIR / ".backfill-checkpoint-house.json"
 CHECKPOINT_SENATE = DATA_DIR / ".backfill-checkpoint-senate.json"
 
@@ -232,6 +233,70 @@ TRANSACTION_LINE_RE = re.compile(
     re.IGNORECASE
 )
 
+FMP_SEARCH_URL = "https://financialmodelingprep.com/api/v3/search"
+
+
+def lookup_ticker_fmp(company_name, api_key, cache):
+    """
+    Falls back to Financial Modeling Prep's company search endpoint to
+    resolve a ticker from a plain company name, for filings that never
+    included a ticker anywhere at all (some House filers omit it
+    entirely -- confirmed via real review-CSV samples, e.g. "Northwest
+    Natural Gas Company", "Merck & Company, Inc. Common Stock").
+
+    Only called for asset_type == "equity" rows with no ticker after
+    text-extraction and the local name map have both failed.
+
+    A lightweight word-overlap check guards against wrong auto-matches:
+    if the top search result's company name doesn't share enough words
+    with the query, it's rejected and the row is left for manual review
+    instead of silently attaching a possibly-wrong ticker. Getting this
+    wrong (a confidently incorrect ticker with no review flag) is worse
+    than an honest "needs review".
+
+    Results are cached in-memory per run (many rows repeat the same
+    company name) and merged into data/ticker-name-map-auto.json at the
+    end of the run so future runs don't re-spend API calls on names
+    already resolved.
+    """
+    key = normalize_name(company_name)
+    if key in cache:
+        return cache[key]
+
+    if not api_key:
+        cache[key] = None
+        return None
+
+    try:
+        resp = request_with_retry(
+            "GET", FMP_SEARCH_URL,
+            params={"query": company_name, "limit": 3, "apikey": api_key}
+        )
+        results = resp.json()
+    except Exception as e:
+        print(f"    FMP lookup failed for '{company_name}': {e}", file=sys.stderr)
+        cache[key] = None
+        return None
+
+    if not isinstance(results, list) or not results:
+        cache[key] = None
+        return None
+
+    query_words = set(key.split())
+    matched_ticker = None
+    for r in results:
+        candidate_words = set(normalize_name(r.get("name", "")).split())
+        if not query_words:
+            break
+        overlap = len(query_words & candidate_words) / len(query_words)
+        if overlap >= 0.5:
+            matched_ticker = r.get("symbol")
+            break
+
+    cache[key] = matched_ticker
+    return matched_ticker
+
+
 TYPE_MAP = {"p": "buy", "s": "sell", "e": "exchange"}
 
 # Asset type classification -- keeps bonds/notes/private placements in the
@@ -239,7 +304,11 @@ TYPE_MAP = {"p": "buy", "s": "sell", "e": "exchange"}
 # so they can be excluded from the Performance page's return-vs-S&P
 # comparison, which only makes sense for equities. Order matters: check
 # the most specific/reliable pattern first.
-BOND_PATTERN = re.compile(r"Rate/Coupon", re.IGNORECASE)
+BOND_PATTERN = re.compile(
+    r"Rate/Coupon|\bBond\b|\bWts\b|\bOID\b|\bG\.?O\.?\b|\bCap Secs?\b|"
+    r"\bBrd Ed\b|\bSch Dist\b|\bTax Sch\b|\bCnty\b|\bAuth(?:ority)?\s+(?:Bond|Rev)",
+    re.IGNORECASE
+)
 STRUCTURED_NOTE_PATTERN = re.compile(r"Structured Note|Autocallable|Contingent Yield|Linked Note", re.IGNORECASE)
 PRIVATE_PATTERN = re.compile(r"\bLLC\b|\bL\.?P\.?\b|Limited Partnership|Company:", re.IGNORECASE)
 FUND_PATTERN = re.compile(r"\bETF\b|Exchange-Traded|Index Fund|Money Market", re.IGNORECASE)
@@ -265,7 +334,7 @@ def classify_asset_type(asset_name, ticker):
     return "equity"
 
 
-def parse_house_pdf_transactions(pdf_text, filer_name, doc_id, filing_date, ticker_map):
+def parse_house_pdf_transactions(pdf_text, filer_name, doc_id, filing_date, ticker_map, fmp_api_key=None, fmp_cache=None):
     """
     House PTR PDFs list one transaction per line once the header/labels are
     stripped away, in the order: [id] [owner] asset (ticker) type date
@@ -278,6 +347,8 @@ def parse_house_pdf_transactions(pdf_text, filer_name, doc_id, filing_date, tick
     with inconsistent case -- uppercasing on the way out fixes this, since
     real tickers and owner codes are always uppercase in the actual filing.
     """
+    if fmp_cache is None:
+        fmp_cache = {}
     records = []
     for line in pdf_text.splitlines():
         match = TRANSACTION_LINE_RE.match(line)
@@ -306,17 +377,26 @@ def parse_house_pdf_transactions(pdf_text, filer_name, doc_id, filing_date, tick
 
         owner = (match.group("owner") or "self").upper()
 
-        # fall back to the name map only if no ticker was found in parens
-        if ticker is None:
-            ticker = resolve_ticker(asset_name, ticker_map)
-
         asset_type = classify_asset_type(asset_name, ticker)
+        ticker_source = "filing" if ticker else None
+
+        # only chase a ticker for things that are actually equities --
+        # bonds/notes/private placements/funds genuinely have none
+        if ticker is None and asset_type == "equity":
+            ticker = resolve_ticker(asset_name, ticker_map)
+            if ticker:
+                ticker_source = "manual_map"
+            elif fmp_api_key:
+                ticker = lookup_ticker_fmp(asset_name, fmp_api_key, fmp_cache)
+                if ticker:
+                    ticker_source = "fmp_auto"
 
         records.append({
             "lawmaker": filer_name,
             "chamber": "House",
             "owner": owner,
             "symbol": ticker,
+            "ticker_source": ticker_source,
             "asset_name_raw": asset_name,
             "asset_type": asset_type,
             "amount_range_raw": f"${low:,} - ${high:,}",
@@ -429,7 +509,7 @@ def extract_ticker_from_text(asset_name):
     return None
 
 
-def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map):
+def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map, fmp_api_key=None, fmp_cache=None):
     """
     Electronic Senate PTRs render as an HTML table with one transaction per
     row, in this column order (confirmed against a real filing):
@@ -439,6 +519,8 @@ def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map):
       (e.g. "Purchase", "Sale (Full)", "Sale (Partial)", "Exchange"),
       [7] amount range, [8] comment
     """
+    if fmp_cache is None:
+        fmp_cache = {}
     resp = request_with_retry("GET", report_url)
 
     from bs4 import BeautifulSoup
@@ -459,8 +541,11 @@ def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map):
         amount_raw = cells[7]
 
         ticker = None if ticker_cell in ("--", "") else ticker_cell.upper()
+        ticker_source = "filing" if ticker else None
         if ticker is None:
             ticker = extract_ticker_from_text(asset_name)
+            if ticker:
+                ticker_source = "filing"
 
         if "purchase" in transaction_type_raw:
             direction = "buy"
@@ -485,16 +570,25 @@ def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map):
             amount_range_raw = f"${low:,} - ${high:,}"
             midpoint = (low + high) // 2
 
-        if ticker is None:
-            ticker = resolve_ticker(asset_name, ticker_map)
-
         asset_type = classify_asset_type(asset_name, ticker)
+
+        # only chase a ticker for things that are actually equities --
+        # bonds/notes/private placements/funds genuinely have none
+        if ticker is None and asset_type == "equity":
+            ticker = resolve_ticker(asset_name, ticker_map)
+            if ticker:
+                ticker_source = "manual_map"
+            elif fmp_api_key:
+                ticker = lookup_ticker_fmp(asset_name, fmp_api_key, fmp_cache)
+                if ticker:
+                    ticker_source = "fmp_auto"
 
         records.append({
             "lawmaker": filer_name,
             "chamber": "Senate",
             "owner": owner,
             "symbol": ticker,
+            "ticker_source": ticker_source,
             "asset_name_raw": asset_name,
             "asset_type": asset_type,
             "amount_range_raw": amount_range_raw,
@@ -513,7 +607,7 @@ def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map):
 # Orchestration
 # ---------------------------------------------------------------------------
 
-def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False, dump_pdf_text=False):
+def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False, dump_pdf_text=False, fmp_api_key=None, fmp_cache=None):
     checkpoint = load_json(CHECKPOINT_HOUSE, {"last_completed_year": start_year - 1})
     all_records = []
 
@@ -558,7 +652,8 @@ def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False
             try:
                 text = fetch_house_pdf_text(filing["doc_id"], year)
                 records = parse_house_pdf_transactions(
-                    text, filing["filer_name"], filing["doc_id"], filing["filing_date"], ticker_map
+                    text, filing["filer_name"], filing["doc_id"], filing["filing_date"], ticker_map,
+                    fmp_api_key, fmp_cache
                 )
                 all_records.extend(records)
             except Exception as e:
@@ -574,7 +669,7 @@ def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False
     return all_records
 
 
-def run_senate_backfill(start_date, end_date, ticker_map, limit=None, debug=False, dump_page=False):
+def run_senate_backfill(start_date, end_date, ticker_map, limit=None, debug=False, dump_page=False, fmp_api_key=None, fmp_cache=None):
     checkpoint = load_json(CHECKPOINT_SENATE, {"last_offset": 0})
     all_records = []
     offset = checkpoint["last_offset"]
@@ -649,7 +744,7 @@ def run_senate_backfill(start_date, end_date, ticker_map, limit=None, debug=Fals
                 return all_records
 
             try:
-                records = parse_senate_ptr_page(report_url, filer_name, filed_date, ticker_map)
+                records = parse_senate_ptr_page(report_url, filer_name, filed_date, ticker_map, fmp_api_key, fmp_cache)
                 all_records.extend(records)
             except Exception as e:
                 print(f"    skipping {report_url}: {e}", file=sys.stderr)
@@ -710,16 +805,29 @@ def main():
     args = parser.parse_args()
 
     ticker_map = load_ticker_map()
+    fmp_api_key = os.environ.get("FMP_API_KEY")
+    fmp_cache = load_json(TICKER_MAP_AUTO_FILE, {})
+    if not fmp_api_key:
+        print("Note: FMP_API_KEY not set -- automated ticker lookup for unresolved equities is disabled, "
+              "those will go straight to manual review.")
     existing = load_json(HISTORY_FILE, {"records": []})
     new_records = []
 
     if args.source in ("house", "both"):
-        new_records.extend(run_house_backfill(args.start_year, args.end_year, ticker_map, args.limit, args.debug, args.dump_pdf_text))
+        new_records.extend(run_house_backfill(
+            args.start_year, args.end_year, ticker_map, args.limit, args.debug, args.dump_pdf_text,
+            fmp_api_key, fmp_cache
+        ))
 
     if args.source in ("senate", "both"):
         start_date = f"{args.start_year}-01-01"
         end_date = f"{args.end_year}-12-31"
-        new_records.extend(run_senate_backfill(start_date, end_date, ticker_map, args.limit, args.debug, args.dump_senate_page))
+        new_records.extend(run_senate_backfill(
+            start_date, end_date, ticker_map, args.limit, args.debug, args.dump_senate_page,
+            fmp_api_key, fmp_cache
+        ))
+
+    save_json(TICKER_MAP_AUTO_FILE, fmp_cache)
 
     combined = new_records + existing["records"]  # new records first, so fixes to parsing logic win on dedup
     seen = set()
