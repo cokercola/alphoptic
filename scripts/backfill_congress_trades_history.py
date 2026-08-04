@@ -224,7 +224,7 @@ def fetch_house_pdf_text(doc_id, year):
 TRANSACTION_LINE_RE = re.compile(
     r'^\s*(?:(?P<owner>SP|DC|JT)\s+)?'
     r'(?P<asset>[^()]+?)\s*'
-    r'\(\s*(?P<ticker>[A-Za-z.]{1,6})\s*\)\s+'
+    r'(?:\(\s*(?P<ticker>[A-Za-z.]{1,6})\s*\)\s+)?'
     r'(?P<type>[A-Za-z])\s+'
     r'(?P<trade_date>\d{1,2}/\d{1,2}/\d{4})\s+'
     r'(?P<notify_date>\d{1,2}/\d{1,2}/\d{4})\s+'
@@ -285,11 +285,12 @@ def parse_house_pdf_transactions(pdf_text, filer_name, doc_id, filing_date, tick
             continue
 
         asset_name = match.group("asset").strip().rstrip(",")
-        ticker = match.group("ticker").strip().upper()
+        ticker_raw = match.group("ticker")
+        ticker = ticker_raw.strip().upper() if ticker_raw else None
         # a handful of PTR lines put a fund/plan abbreviation in parens
         # instead of a real ticker (e.g. "(TSP)" for Thrift Savings Plan) --
         # treat anything that isn't 1-5 letters as not a real ticker
-        if not re.fullmatch(r"[A-Z]{1,5}", ticker):
+        if ticker and not re.fullmatch(r"[A-Z]{1,5}", ticker):
             ticker = None
 
         direction = TYPE_MAP.get(match.group("type").lower(), "unknown")
