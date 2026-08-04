@@ -359,11 +359,36 @@ def fetch_senate_filings_page(start_date, end_date, offset, csrf_token, page_siz
     return resp.json()
 
 
+SUFFIX_TICKER_RE = re.compile(r"\(([A-Z]{1,5})\)\s*$")
+PREFIX_TICKER_RE = re.compile(r"^([A-Z]{1,5})\s*-\s*\S")
+
+
+def extract_ticker_from_text(asset_name):
+    """
+    The Senate table's dedicated ticker column is frequently '--' even for
+    plain stock trades -- real data shows the ticker is often embedded in
+    the asset description instead, in one of two styles:
+      "ACN - Accenture plc Class A Ordinary Shares"   (prefix)
+      "Recruit Holdings Co Ltd Unsponsored ADR (RCRUY)"  (suffix, same
+        style House PTR filings use)
+    Tries suffix first since it's less likely to false-positive on
+    unrelated capitalized abbreviations at the start of a description.
+    """
+    suffix_match = SUFFIX_TICKER_RE.search(asset_name)
+    if suffix_match:
+        return suffix_match.group(1)
+    prefix_match = PREFIX_TICKER_RE.match(asset_name)
+    if prefix_match:
+        return prefix_match.group(1)
+    return None
+
+
 def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map):
     """
     Electronic Senate PTRs render as an HTML table with one transaction per
     row, in this column order (confirmed against a real filing):
-      [0] row id, [1] transaction date, [2] owner, [3] ticker (or "--"),
+      [0] row id, [1] transaction date, [2] owner, [3] ticker column
+      (often "--" even for real stocks -- see extract_ticker_from_text),
       [4] asset description, [5] asset type, [6] transaction type
       (e.g. "Purchase", "Sale (Full)", "Sale (Partial)", "Exchange"),
       [7] amount range, [8] comment
@@ -388,6 +413,8 @@ def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map):
         amount_raw = cells[7]
 
         ticker = None if ticker_cell in ("--", "") else ticker_cell.upper()
+        if ticker is None:
+            ticker = extract_ticker_from_text(asset_name)
 
         if "purchase" in transaction_type_raw:
             direction = "buy"
@@ -519,6 +546,9 @@ def run_senate_backfill(start_date, end_date, ticker_map, limit=None, debug=Fals
             print("Senate: no more filings, backfill complete for this date range")
             break
 
+        if limit:
+            rows = rows[:limit]
+
         href_re = re.compile(r'href="([^"]+)"')
         paper_skipped = 0
 
@@ -623,7 +653,7 @@ def main():
         end_date = f"{args.end_year}-12-31"
         new_records.extend(run_senate_backfill(start_date, end_date, ticker_map, args.limit, args.debug, args.dump_senate_page))
 
-    combined = existing["records"] + new_records
+    combined = new_records + existing["records"]  # new records first, so fixes to parsing logic win on dedup
     seen = set()
     deduped = []
     for r in combined:
