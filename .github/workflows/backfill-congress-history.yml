@@ -28,6 +28,11 @@ on:
         required: false
         default: false
         type: boolean
+      dump_pdf_text:
+        description: "Debug mode: dump raw pdftotext output for one House filing instead of parsing it"
+        required: false
+        default: false
+        type: boolean
 permissions:
   contents: write
 jobs:
@@ -50,6 +55,7 @@ jobs:
           FILING_LIMIT: ${{ github.event.inputs.limit }}
           SOURCE: ${{ github.event.inputs.source }}
           DEBUG_MODE: ${{ github.event.inputs.debug }}
+          DUMP_PDF_TEXT: ${{ github.event.inputs.dump_pdf_text }}
         run: |
           ARGS=(--start-year "${START_YEAR:-2012}" --source "${SOURCE:-both}")
           if [ -n "$END_YEAR" ]; then
@@ -60,6 +66,9 @@ jobs:
           fi
           if [ "$DEBUG_MODE" = "true" ]; then
             ARGS+=(--debug)
+          fi
+          if [ "$DUMP_PDF_TEXT" = "true" ]; then
+            ARGS+=(--dump-pdf-text)
           fi
           echo "Running: python scripts/backfill_congress_trades_history.py ${ARGS[*]}"
           python scripts/backfill_congress_trades_history.py "${ARGS[@]}"
