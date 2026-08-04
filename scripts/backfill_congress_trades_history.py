@@ -70,7 +70,12 @@ RETRY_ATTEMPTS = 3
 RETRY_BACKOFF_SECONDS = 5
 POLITE_DELAY_SECONDS = 1.0  # between requests to either source, be a good citizen
 
-STOCK_ACT_START_YEAR = 2012  # electronic disclosure begins here; earlier data is not reliably trade-level
+STOCK_ACT_START_YEAR = 2012  # law took effect in 2012, but see HOUSE_ELECTRONIC_START_YEAR below
+HOUSE_ELECTRONIC_START_YEAR = 2014  # confirmed via real testing: House PTR filings before this
+                                     # are scanned paper forms with no embedded text (doc IDs in
+                                     # the 8000000-9000000 range) -- pdftotext returns nothing.
+                                     # 2014+ filings use a newer system (doc IDs 20000000+) with
+                                     # real, extractable text. Senate has no equivalent gap.
 
 session = requests.Session()
 session.headers.update({
@@ -511,7 +516,13 @@ def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False
     checkpoint = load_json(CHECKPOINT_HOUSE, {"last_completed_year": start_year - 1})
     all_records = []
 
-    for year in range(max(start_year, checkpoint["last_completed_year"] + 1), end_year + 1):
+    effective_start = max(start_year, HOUSE_ELECTRONIC_START_YEAR)
+    if start_year < HOUSE_ELECTRONIC_START_YEAR:
+        print(f"House: skipping {start_year}-{HOUSE_ELECTRONIC_START_YEAR - 1} -- confirmed scanned "
+              f"paper filings with no extractable text, not electronically filed. "
+              f"Starting at {HOUSE_ELECTRONIC_START_YEAR}.")
+
+    for year in range(max(effective_start, checkpoint["last_completed_year"] + 1), end_year + 1):
         try:
             filings = fetch_house_year_index(year, debug=debug)
         except Exception as e:
@@ -722,6 +733,11 @@ def main():
         "updated_at": datetime.utcnow().isoformat() + "Z",
         "record_count": len(deduped),
         "needs_review_count": sum(1 for r in deduped if r["needs_review"]),
+        "coverage_note": (
+            f"House data begins {HOUSE_ELECTRONIC_START_YEAR} -- earlier House filings "
+            "were scanned paper forms with no electronically extractable trade data. "
+            "Senate data begins 2012 (STOCK Act electronic filing start), with no equivalent gap."
+        ),
         "records": deduped,
     }
     save_json(HISTORY_FILE, output)
