@@ -17,8 +17,15 @@ Output: data/congress-trades-history.json
   plus fields the Performance page needs:
     - amount_range_raw       the disclosed bracket as filed, e.g. "$1,001 - $15,000"
     - amount_estimated       midpoint of that bracket
+    - asset_type             "equity", "bond", "structured_note", "private_placement",
+                              or "fund" -- bonds/notes/private stakes stay in the raw
+                              data but should be excluded from the Performance page's
+                              return-vs-S&P comparison, which only makes sense for
+                              equities
     - source                 "house" or "senate"
-    - needs_review           true if the asset name could not be matched to a ticker
+    - needs_review           true only for equities whose ticker could not be
+                              resolved -- bonds/notes/private placements are expected
+                              to have no ticker and are not review items
     - source_doc_id          filing identifier, for traceability back to the PDF/page
 
 Unmatched names are also written to data/congress-trades-history-review.csv
@@ -222,6 +229,36 @@ TRANSACTION_LINE_RE = re.compile(
 
 TYPE_MAP = {"p": "buy", "s": "sell", "e": "exchange"}
 
+# Asset type classification -- keeps bonds/notes/private placements in the
+# raw data (useful for future features) while flagging them as non-equity
+# so they can be excluded from the Performance page's return-vs-S&P
+# comparison, which only makes sense for equities. Order matters: check
+# the most specific/reliable pattern first.
+BOND_PATTERN = re.compile(r"Rate/Coupon", re.IGNORECASE)
+STRUCTURED_NOTE_PATTERN = re.compile(r"Structured Note|Autocallable|Contingent Yield|Linked Note", re.IGNORECASE)
+PRIVATE_PATTERN = re.compile(r"\bLLC\b|\bL\.?P\.?\b|Limited Partnership|Company:", re.IGNORECASE)
+FUND_PATTERN = re.compile(r"\bETF\b|Exchange-Traded|Index Fund|Money Market", re.IGNORECASE)
+
+
+def classify_asset_type(asset_name, ticker):
+    """
+    Returns one of: bond, structured_note, private_placement, fund, equity.
+    Defaults to "equity" when nothing else matches, since that's the
+    overwhelming majority case for both House and Senate filings, and
+    keeps needs_review meaningful (only equities without a resolved
+    ticker are flagged for review; bonds/notes/private stakes are
+    expected to have no ticker and aren't review items).
+    """
+    if BOND_PATTERN.search(asset_name):
+        return "bond"
+    if STRUCTURED_NOTE_PATTERN.search(asset_name):
+        return "structured_note"
+    if PRIVATE_PATTERN.search(asset_name):
+        return "private_placement"
+    if FUND_PATTERN.search(asset_name):
+        return "fund"
+    return "equity"
+
 
 def parse_house_pdf_transactions(pdf_text, filer_name, doc_id, filing_date, ticker_map):
     """
@@ -267,12 +304,15 @@ def parse_house_pdf_transactions(pdf_text, filer_name, doc_id, filing_date, tick
         if ticker is None:
             ticker = resolve_ticker(asset_name, ticker_map)
 
+        asset_type = classify_asset_type(asset_name, ticker)
+
         records.append({
             "lawmaker": filer_name,
             "chamber": "House",
             "owner": owner,
             "symbol": ticker,
             "asset_name_raw": asset_name,
+            "asset_type": asset_type,
             "amount_range_raw": f"${low:,} - ${high:,}",
             "amount_estimated": midpoint,
             "direction": direction,
@@ -280,7 +320,7 @@ def parse_house_pdf_transactions(pdf_text, filer_name, doc_id, filing_date, tick
             "filed_date": filing_date,
             "source": "house",
             "source_doc_id": doc_id,
-            "needs_review": ticker is None,
+            "needs_review": asset_type == "equity" and ticker is None,
         })
     return records
 
@@ -442,12 +482,15 @@ def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map):
         if ticker is None:
             ticker = resolve_ticker(asset_name, ticker_map)
 
+        asset_type = classify_asset_type(asset_name, ticker)
+
         records.append({
             "lawmaker": filer_name,
             "chamber": "Senate",
             "owner": owner,
             "symbol": ticker,
             "asset_name_raw": asset_name,
+            "asset_type": asset_type,
             "amount_range_raw": amount_range_raw,
             "amount_estimated": midpoint,
             "direction": direction,
@@ -455,7 +498,7 @@ def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map):
             "filed_date": filing_date,
             "source": "senate",
             "source_doc_id": report_url.rstrip("/").split("/")[-1],
-            "needs_review": ticker is None,
+            "needs_review": asset_type == "equity" and ticker is None,
         })
     return records
 
@@ -615,12 +658,22 @@ def write_review_csv(records):
     REVIEW_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(REVIEW_FILE, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=[
-            "asset_name_raw", "lawmaker", "chamber", "trade_date", "source", "source_doc_id"
+            "asset_name_raw", "asset_type", "lawmaker", "chamber", "trade_date", "source", "source_doc_id"
         ])
         writer.writeheader()
         for r in review_rows:
             writer.writerow({k: r.get(k, "") for k in writer.fieldnames})
-    print(f"\n{len(review_rows)} rows need manual ticker review -> {REVIEW_FILE}")
+
+    type_counts = {}
+    for r in records:
+        t = r.get("asset_type", "unknown")
+        type_counts[t] = type_counts.get(t, 0) + 1
+    equity_count = type_counts.get("equity", 0)
+    equity_review_pct = (len(review_rows) / equity_count * 100) if equity_count else 0
+
+    print(f"\nAsset type breakdown: {dict(sorted(type_counts.items(), key=lambda kv: -kv[1]))}")
+    print(f"{len(review_rows)} equities need manual ticker review out of {equity_count} total equities "
+          f"({equity_review_pct:.1f}%) -> {REVIEW_FILE}")
     if len(review_rows) > 100:
         print("That's over 100 -- worth considering fuzzy matching for the bulk of these,")
         print("with a clear methodology note on the Performance chart if you do.")
