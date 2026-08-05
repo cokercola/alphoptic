@@ -233,7 +233,7 @@ TRANSACTION_LINE_RE = re.compile(
     re.IGNORECASE
 )
 
-FMP_SEARCH_URL = "https://financialmodelingprep.com/api/v3/search"
+FMP_SEARCH_URL = "https://financialmodelingprep.com/stable/search-name"
 
 
 def lookup_ticker_fmp(company_name, api_key, cache):
