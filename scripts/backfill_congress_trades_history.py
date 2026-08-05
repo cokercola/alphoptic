@@ -236,7 +236,7 @@ TRANSACTION_LINE_RE = re.compile(
 FMP_SEARCH_URL = "https://financialmodelingprep.com/stable/search-name"
 
 
-def lookup_ticker_fmp(company_name, api_key, cache):
+def lookup_ticker_fmp(company_name, api_key, cache, quota_state):
     """
     Falls back to Financial Modeling Prep's company search endpoint to
     resolve a ticker from a plain company name, for filings that never
@@ -250,21 +250,23 @@ def lookup_ticker_fmp(company_name, api_key, cache):
     A lightweight word-overlap check guards against wrong auto-matches:
     if the top search result's company name doesn't share enough words
     with the query, it's rejected and the row is left for manual review
-    instead of silently attaching a possibly-wrong ticker. Getting this
-    wrong (a confidently incorrect ticker with no review flag) is worse
-    than an honest "needs review".
+    instead of silently attaching a possibly-wrong ticker.
 
-    Results are cached in-memory per run (many rows repeat the same
-    company name) and merged into data/ticker-name-map-auto.json at the
-    end of the run so future runs don't re-spend API calls on names
-    already resolved.
+    Only a confirmed "no good match" result is cached as None -- request
+    failures (rate limits, network errors) are NOT cached, so they can
+    be retried on a future run instead of being permanently stuck as
+    "already tried" when they were never actually resolved.
+
+    quota_state is a shared dict with a "calls_made" counter and
+    "limit_hit" flag -- once the free-tier daily cap is reached, further
+    lookups are skipped immediately rather than burning through retries
+    on 429s that will all fail identically for the rest of the day.
     """
     key = normalize_name(company_name)
     if key in cache:
         return cache[key]
 
-    if not api_key:
-        cache[key] = None
+    if not api_key or quota_state.get("limit_hit"):
         return None
 
     try:
@@ -272,14 +274,20 @@ def lookup_ticker_fmp(company_name, api_key, cache):
             "GET", FMP_SEARCH_URL,
             params={"query": company_name, "limit": 3, "apikey": api_key}
         )
+        quota_state["calls_made"] = quota_state.get("calls_made", 0) + 1
         results = resp.json()
     except Exception as e:
-        print(f"    FMP lookup failed for '{company_name}': {e}", file=sys.stderr)
-        cache[key] = None
-        return None
+        err_text = str(e)
+        if "429" in err_text or "Limit Reach" in err_text:
+            quota_state["limit_hit"] = True
+            print(f"    FMP daily quota reached after {quota_state.get('calls_made', 0)} calls this run -- "
+                  f"remaining unresolved equities go straight to manual review for now.", file=sys.stderr)
+        else:
+            print(f"    FMP lookup failed for '{company_name}': {e}", file=sys.stderr)
+        return None  # not cached -- safe to retry on a future run
 
     if not isinstance(results, list) or not results:
-        cache[key] = None
+        cache[key] = None  # confirmed no match, safe to cache
         return None
 
     query_words = set(key.split())
@@ -293,7 +301,7 @@ def lookup_ticker_fmp(company_name, api_key, cache):
             matched_ticker = r.get("symbol")
             break
 
-    cache[key] = matched_ticker
+    cache[key] = matched_ticker  # confirmed result (match or no good match), safe to cache
     return matched_ticker
 
 
@@ -334,7 +342,7 @@ def classify_asset_type(asset_name, ticker):
     return "equity"
 
 
-def parse_house_pdf_transactions(pdf_text, filer_name, doc_id, filing_date, ticker_map, fmp_api_key=None, fmp_cache=None):
+def parse_house_pdf_transactions(pdf_text, filer_name, doc_id, filing_date, ticker_map, fmp_api_key=None, fmp_cache=None, fmp_quota_state=None):
     """
     House PTR PDFs list one transaction per line once the header/labels are
     stripped away, in the order: [id] [owner] asset (ticker) type date
@@ -349,6 +357,8 @@ def parse_house_pdf_transactions(pdf_text, filer_name, doc_id, filing_date, tick
     """
     if fmp_cache is None:
         fmp_cache = {}
+    if fmp_quota_state is None:
+        fmp_quota_state = {}
     records = []
     for line in pdf_text.splitlines():
         match = TRANSACTION_LINE_RE.match(line)
@@ -387,7 +397,7 @@ def parse_house_pdf_transactions(pdf_text, filer_name, doc_id, filing_date, tick
             if ticker:
                 ticker_source = "manual_map"
             elif fmp_api_key:
-                ticker = lookup_ticker_fmp(asset_name, fmp_api_key, fmp_cache)
+                ticker = lookup_ticker_fmp(asset_name, fmp_api_key, fmp_cache, fmp_quota_state)
                 if ticker:
                     ticker_source = "fmp_auto"
 
@@ -509,7 +519,7 @@ def extract_ticker_from_text(asset_name):
     return None
 
 
-def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map, fmp_api_key=None, fmp_cache=None):
+def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map, fmp_api_key=None, fmp_cache=None, fmp_quota_state=None):
     """
     Electronic Senate PTRs render as an HTML table with one transaction per
     row, in this column order (confirmed against a real filing):
@@ -521,6 +531,8 @@ def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map, fmp_a
     """
     if fmp_cache is None:
         fmp_cache = {}
+    if fmp_quota_state is None:
+        fmp_quota_state = {}
     resp = request_with_retry("GET", report_url)
 
     from bs4 import BeautifulSoup
@@ -579,7 +591,7 @@ def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map, fmp_a
             if ticker:
                 ticker_source = "manual_map"
             elif fmp_api_key:
-                ticker = lookup_ticker_fmp(asset_name, fmp_api_key, fmp_cache)
+                ticker = lookup_ticker_fmp(asset_name, fmp_api_key, fmp_cache, fmp_quota_state)
                 if ticker:
                     ticker_source = "fmp_auto"
 
@@ -607,7 +619,7 @@ def parse_senate_ptr_page(report_url, filer_name, filing_date, ticker_map, fmp_a
 # Orchestration
 # ---------------------------------------------------------------------------
 
-def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False, dump_pdf_text=False, fmp_api_key=None, fmp_cache=None):
+def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False, dump_pdf_text=False, fmp_api_key=None, fmp_cache=None, fmp_quota_state=None):
     checkpoint = load_json(CHECKPOINT_HOUSE, {"last_completed_year": start_year - 1})
     all_records = []
 
@@ -653,7 +665,7 @@ def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False
                 text = fetch_house_pdf_text(filing["doc_id"], year)
                 records = parse_house_pdf_transactions(
                     text, filing["filer_name"], filing["doc_id"], filing["filing_date"], ticker_map,
-                    fmp_api_key, fmp_cache
+                    fmp_api_key, fmp_cache, fmp_quota_state
                 )
                 all_records.extend(records)
             except Exception as e:
@@ -669,7 +681,7 @@ def run_house_backfill(start_year, end_year, ticker_map, limit=None, debug=False
     return all_records
 
 
-def run_senate_backfill(start_date, end_date, ticker_map, limit=None, debug=False, dump_page=False, fmp_api_key=None, fmp_cache=None):
+def run_senate_backfill(start_date, end_date, ticker_map, limit=None, debug=False, dump_page=False, fmp_api_key=None, fmp_cache=None, fmp_quota_state=None):
     checkpoint = load_json(CHECKPOINT_SENATE, {"last_offset": 0})
     all_records = []
     offset = checkpoint["last_offset"]
@@ -744,7 +756,7 @@ def run_senate_backfill(start_date, end_date, ticker_map, limit=None, debug=Fals
                 return all_records
 
             try:
-                records = parse_senate_ptr_page(report_url, filer_name, filed_date, ticker_map, fmp_api_key, fmp_cache)
+                records = parse_senate_ptr_page(report_url, filer_name, filed_date, ticker_map, fmp_api_key, fmp_cache, fmp_quota_state)
                 all_records.extend(records)
             except Exception as e:
                 print(f"    skipping {report_url}: {e}", file=sys.stderr)
@@ -812,11 +824,12 @@ def main():
               "those will go straight to manual review.")
     existing = load_json(HISTORY_FILE, {"records": []})
     new_records = []
+    fmp_quota_state = {}
 
     if args.source in ("house", "both"):
         new_records.extend(run_house_backfill(
             args.start_year, args.end_year, ticker_map, args.limit, args.debug, args.dump_pdf_text,
-            fmp_api_key, fmp_cache
+            fmp_api_key, fmp_cache, fmp_quota_state
         ))
 
     if args.source in ("senate", "both"):
@@ -824,8 +837,12 @@ def main():
         end_date = f"{args.end_year}-12-31"
         new_records.extend(run_senate_backfill(
             start_date, end_date, ticker_map, args.limit, args.debug, args.dump_senate_page,
-            fmp_api_key, fmp_cache
+            fmp_api_key, fmp_cache, fmp_quota_state
         ))
+
+    if fmp_quota_state.get("calls_made"):
+        print(f"\nFMP: {fmp_quota_state['calls_made']} live lookups made this run"
+              f"{' (stopped early, daily quota reached)' if fmp_quota_state.get('limit_hit') else ''}.")
 
     save_json(TICKER_MAP_AUTO_FILE, fmp_cache)
 
