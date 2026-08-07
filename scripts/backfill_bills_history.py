@@ -383,6 +383,8 @@ def cmd_poll(args):
 
     if not new_signals:
         print("No newly completed results to merge this run.")
+        if still_pending:
+            print(f"{len(still_pending)} batch(es) still processing -- run poll again later.")
         return
 
     # Merge: new results overwrite any existing record for the same
@@ -391,6 +393,19 @@ def cmd_poll(args):
     merged.update(new_signals)
     signals = list(merged.values())
 
+    rebuild_and_save_bills_json(signals, new_signals_count=len(new_signals))
+
+    print(f"\nMerged {len(new_signals)} newly completed bills into {BILLS_JSON_PATH}. "
+          f"Total tracked: {len(signals)}.")
+    if still_pending:
+        print(f"{len(still_pending)} batch(es) still processing -- run poll again later.")
+
+
+def rebuild_and_save_bills_json(signals, new_signals_count):
+    """Shared by poll (after merging fresh batch results) and repair
+    (rewriting the summary from existing signals only, no new data) --
+    keeping this in one place means they can't drift out of sync with
+    each other or with fetch_bills.py's own summary structure."""
     stage_counts = {stage: 0 for stage in STAGE_LABELS}
     for s in signals:
         stage_counts[s.get("stage", "introduced")] = stage_counts.get(s.get("stage", "introduced"), 0) + 1
@@ -412,7 +427,7 @@ def cmd_poll(args):
         "summary": {
             "bills_tracked": len(signals),
             "high_impact": sum(1 for s in signals if s.get("impact_score", 0) >= 70),
-            "new_signals_today": len(new_signals),
+            "new_signals_today": new_signals_count,
             "industries_affected": len({s.get("industry") for s in signals if s.get("industry")}),
             "total_bills_this_congress": total_bills_this_congress,
             "stage_breakdown": [
@@ -440,10 +455,24 @@ def cmd_poll(args):
     with open(BILLS_JSON_PATH, "w") as f:
         json.dump(output, f, indent=2)
 
-    print(f"\nMerged {len(new_signals)} newly completed bills into {BILLS_JSON_PATH}. "
-          f"Total tracked: {len(signals)}.")
-    if still_pending:
-        print(f"{len(still_pending)} batch(es) still processing -- run poll again later.")
+    return output
+
+
+def cmd_repair(args):
+    """Rewrites data/bills.json's summary from the EXISTING signals
+    already on file -- no submission, no classification, no new bills.
+    One tiny free Congress.gov metadata call (total bill count), but no
+    Anthropic spend at all. Use this to verify a summary-structure fix
+    (like the missing community_categories field) took effect on the
+    live file without needing to submit/poll any new data first."""
+    previous = load_previous_signals()
+    signals = list(previous.values())
+    if not signals:
+        print("No existing signals found in data/bills.json -- nothing to repair.")
+        return
+    rebuild_and_save_bills_json(signals, new_signals_count=0)
+    print(f"Repaired {BILLS_JSON_PATH} summary from {len(signals)} existing signals. "
+          f"No new bills were fetched or classified -- this only rebuilds the summary structure.")
 
 
 def main():
@@ -459,6 +488,9 @@ def main():
 
     poll_parser = sub.add_parser("poll")
     poll_parser.set_defaults(func=cmd_poll)
+
+    repair_parser = sub.add_parser("repair")
+    repair_parser.set_defaults(func=cmd_repair)
 
     args = parser.parse_args()
     args.func(args)
