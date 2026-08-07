@@ -139,7 +139,11 @@ def cmd_submit(args):
             print(f"Reached end of bill listing at offset {offset}.")
             break
 
+        hit_limit_mid_page = False
+        items_consumed_this_page = 0
+
         for b in page:
+            items_consumed_this_page += 1
             total_scanned += 1
             bill_type = b.get("type", "").lower()
             number = b.get("number")
@@ -207,14 +211,24 @@ def cmd_submit(args):
             total_queued += 1
 
             if args.limit and total_queued >= args.limit:
+                hit_limit_mid_page = True
                 break
 
-        offset += LISTING_PAGE_SIZE
-        checkpoint["last_offset"] = offset
+        if hit_limit_mid_page:
+            # Only advance past the items we actually scanned this page --
+            # NOT a full page jump, which would silently skip everything
+            # between here and the end of the page on the next run.
+            checkpoint["last_offset"] = offset + items_consumed_this_page
+        else:
+            offset += LISTING_PAGE_SIZE
+            checkpoint["last_offset"] = offset
 
         if args.limit and total_queued >= args.limit:
             break
         if len(pending_requests) >= BATCH_CHUNK_SIZE:
+            # Same reasoning -- checkpoint should reflect exactly what
+            # was scanned, not a full extra page.
+            checkpoint["last_offset"] = offset if not hit_limit_mid_page else offset + items_consumed_this_page
             break  # submit this chunk, continue from here on the next submit run
 
     print(f"\nScanned {total_scanned} bills this run.")
