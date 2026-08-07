@@ -5,13 +5,14 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "submit = queue new bills for classification, poll = check/merge finished batches"
+        description: "submit = queue new bills, poll = check/merge finished batches, repair = rewrite summary from existing data only (no API cost)"
         required: false
         default: "poll"
         type: choice
         options:
           - submit
           - poll
+          - repair
       limit:
         description: "submit only: cap how many bills get queued this run, for a small test"
         required: false
@@ -60,6 +61,9 @@ jobs:
             fi
             echo "Running: python scripts/backfill_bills_history.py ${ARGS[*]}"
             python scripts/backfill_bills_history.py "${ARGS[@]}"
+          elif [ "$ACTUAL_MODE" = "repair" ]; then
+            echo "Running: python scripts/backfill_bills_history.py repair"
+            python scripts/backfill_bills_history.py repair
           else
             echo "Running: python scripts/backfill_bills_history.py poll"
             python scripts/backfill_bills_history.py poll
