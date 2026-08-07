@@ -104,6 +104,23 @@ def save_checkpoint(checkpoint):
         json.dump(checkpoint, f, indent=2)
 
 
+def fetch_with_retry(func, *args, retries=3, backoff=5, **kwargs):
+    """Retries transient network failures (timeouts, connection resets)
+    against Congress.gov's free API, which occasionally has these at
+    real scale. Re-raises after exhausting retries, so the caller can
+    still decide what to do (skip this one bill vs. abort the run)."""
+    last_err = None
+    for attempt in range(1, retries + 1):
+        try:
+            return func(*args, **kwargs)
+        except requests.exceptions.RequestException as e:
+            last_err = e
+            print(f"    request failed (attempt {attempt}/{retries}): {e}", file=sys.stderr)
+            if attempt < retries:
+                time.sleep(backoff * attempt)
+    raise last_err
+
+
 def fetch_bill_listing_page(congress, offset, limit):
     """Congress.gov's plain bill listing endpoint - includes title and
     latestAction directly in the response, so we can determine whether
@@ -138,7 +155,20 @@ def cmd_submit(args):
     total_queued = 0
 
     while True:
-        page = fetch_bill_listing_page(CURRENT_CONGRESS, offset, LISTING_PAGE_SIZE)
+        try:
+            page = fetch_with_retry(fetch_bill_listing_page, CURRENT_CONGRESS, offset, LISTING_PAGE_SIZE)
+        except requests.exceptions.RequestException as e:
+            print(f"\nERROR: bill listing fetch failed repeatedly at offset {offset}: {e}", file=sys.stderr)
+            print("Saving progress made so far and stopping cleanly -- just re-run submit, "
+                  "it will resume from where this run left off.")
+            checkpoint["last_offset"] = offset
+            save_checkpoint(checkpoint)
+            print(f"\nScanned {total_scanned} bills before the failure.")
+            print(f"  Skipped {total_skipped_reserved} 'Reserved for...' placeholder bills.")
+            print(f"  Skipped {total_skipped_cached} already cached with unchanged status.")
+            print(f"  Queued {total_queued} bills needing fresh classification (not yet submitted).")
+            sys.exit(1)
+
         if not page:
             print(f"Reached end of bill listing at offset {offset}.")
             break
@@ -171,19 +201,28 @@ def cmd_submit(args):
             # daily job. The listing endpoint doesn't include policyArea
             # or sponsor name, so a detail fetch is required here.
             try:
-                detail = fetch_bill(CURRENT_CONGRESS, bill_type, number)
-            except requests.HTTPError as e:
-                print(f"WARNING: detail fetch failed for {bill_id} ({e}); skipping this run.", file=sys.stderr)
+                detail = fetch_with_retry(fetch_bill, CURRENT_CONGRESS, bill_type, number)
+            except requests.exceptions.RequestException as e:
+                print(f"WARNING: detail fetch failed for {bill_id} after retries ({e}); "
+                      f"skipping this bill this run.", file=sys.stderr)
                 continue
 
             policy_area = detail.get("policyArea", {}).get("name", "")
             sponsor_name = detail.get("sponsors", [{}])[0].get("fullName", "Unknown")
 
             try:
-                cosponsor_names = fetch_bill_cosponsors(CURRENT_CONGRESS, bill_type, number)
-            except requests.HTTPError:
+                cosponsor_names = fetch_with_retry(fetch_bill_cosponsors, CURRENT_CONGRESS, bill_type, number)
+            except requests.exceptions.RequestException as e:
+                print(f"WARNING: cosponsor fetch failed for {bill_id} after retries ({e}); "
+                      f"continuing with empty cosponsor list.", file=sys.stderr)
                 cosponsor_names = []
-            summary_text = fetch_bill_summary(CURRENT_CONGRESS, bill_type, number)
+
+            try:
+                summary_text = fetch_with_retry(fetch_bill_summary, CURRENT_CONGRESS, bill_type, number)
+            except requests.exceptions.RequestException as e:
+                print(f"WARNING: summary fetch failed for {bill_id} after retries ({e}); "
+                      f"classifying without an official summary.", file=sys.stderr)
+                summary_text = None
 
             custom_id = bill_id
             pending_requests.append({
@@ -306,14 +345,14 @@ def reconstruct_meta_from_bill_id(bill_id):
     number = int(number)
 
     try:
-        detail = fetch_bill(CURRENT_CONGRESS, bill_type, number)
-    except requests.HTTPError as e:
-        print(f"    WARNING: could not reconstruct metadata for {bill_id}: {e}", file=sys.stderr)
+        detail = fetch_with_retry(fetch_bill, CURRENT_CONGRESS, bill_type, number)
+    except requests.exceptions.RequestException as e:
+        print(f"    WARNING: could not reconstruct metadata for {bill_id} after retries: {e}", file=sys.stderr)
         return None
 
     try:
-        cosponsor_names = fetch_bill_cosponsors(CURRENT_CONGRESS, bill_type, number)
-    except requests.HTTPError:
+        cosponsor_names = fetch_with_retry(fetch_bill_cosponsors, CURRENT_CONGRESS, bill_type, number)
+    except requests.exceptions.RequestException:
         cosponsor_names = []
 
     return {
