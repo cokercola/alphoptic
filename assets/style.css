@@ -798,3 +798,75 @@ table.data-table a { color: var(--blue); text-decoration: none; }
   color: var(--blue);
   font-weight: 600;
 }
+
+/* ============================================
+   Stalled bills (dashboard teaser + bills page)
+   ============================================ */
+.stalled-highlight {
+  background: rgba(232,178,61,0.06);
+  border: 1px solid var(--amber);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-top: 16px;
+}
+.stalled-highlight-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.stalled-highlight-head span {
+  color: var(--amber);
+  font-weight: 600;
+}
+.stalled-highlight-head a {
+  color: var(--blue);
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.stalled-highlight-row {
+  background: var(--panel);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.stalled-highlight-row:last-child { margin-bottom: 0; }
+.stalled-highlight-title {
+  color: var(--text);
+  font-weight: 600;
+}
+.stalled-highlight-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+.stalled-days-badge {
+  background: rgba(232,178,61,0.15);
+  color: var(--amber);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 9px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Cosponsor name chips on the bill detail page */
+.cosponsor-chip {
+  display: inline-block;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 10px;
+}
