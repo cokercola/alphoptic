@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-08-06T14:22:15.396996Z",
+  "updated_at": "2026-08-07T13:13:09.679982Z",
   "summary": {
     "bills_tracked": 32,
     "high_impact": 2,
     "new_signals_today": 32,
     "industries_affected": 26,
-    "total_bills_this_congress": 18175,
+    "total_bills_this_congress": 18305,
     "stage_breakdown": [
       {
         "stage": "introduced",
