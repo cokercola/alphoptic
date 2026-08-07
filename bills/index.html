@@ -26,11 +26,11 @@
       <span>Bills by stage</span>
       <label style="font-size:13px; font-weight:normal; display:flex; align-items:center; gap:6px; cursor:pointer;">
         <input type="checkbox" id="stalled-toggle">
-        Stalled only (no action in 60+ days)
+        Stalled only (no action in 180+ days)
       </label>
     </div>
     <div id="stage-breakdown"></div>
-    <div class="section-label">All tracked bills</div>
+    <div class="section-label" id="bills-list-heading">All tracked bills</div>
     <table class="data-table" id="bills-table">
       <thead>
         <tr><th>Bill</th><th>Industry</th><th>Direction</th><th>Passage odds</th><th>Impact</th><th>Stage</th></tr>
@@ -46,7 +46,7 @@
 let allSignals = [];
 let currentStageFilter = 'all';
 
-const STALLED_THRESHOLD_DAYS = 60;
+const STALLED_THRESHOLD_DAYS = 180;
 // Only "still in progress" stages can be stalled -- a became_law or
 // failed_vetoed bill having an old last-action date is expected and
 // correct, not a sign of anything dormant.
@@ -69,6 +69,10 @@ function renderBillsTable(stageFilter) {
   const body = document.getElementById('bills-body');
   const stalledOnly = document.getElementById('stalled-toggle').checked;
 
+  document.getElementById('bills-list-heading').textContent = stalledOnly
+    ? `Stalled bills — no action in ${STALLED_THRESHOLD_DAYS}+ days`
+    : 'All tracked bills';
+
   let filtered = stageFilter === 'all'
     ? allSignals
     : allSignals.filter(s => s.stage === stageFilter);
@@ -79,7 +83,7 @@ function renderBillsTable(stageFilter) {
 
   if (!filtered.length) {
     const emptyMsg = stalledOnly
-      ? 'No stalled bills right now — everything currently tracked has had action in the last 60 days.'
+      ? `No stalled bills right now — everything currently tracked has had action in the last ${STALLED_THRESHOLD_DAYS} days.`
       : 'No bills in this stage.';
     body.innerHTML = `<tr><td colspan="6" class="empty-note">${emptyMsg}</td></tr>`;
     return;
