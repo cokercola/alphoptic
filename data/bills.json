@@ -1,16 +1,17 @@
 {
-  "updated_at": "2026-08-07T17:10:45.562743Z",
+  "updated_at": "2026-08-07T18:45:33.921870Z",
   "summary": {
     "bills_tracked": 552,
     "high_impact": 15,
-    "new_signals_today": 500,
+    "new_signals_today": 0,
     "industries_affected": 348,
+    "total_bills_this_congress": 18305,
     "stage_breakdown": [
       {
         "stage": "introduced",
         "label": "Introduced",
         "count": 37,
-        "full_coverage": true
+        "full_coverage": false
       },
       {
         "stage": "committee",
@@ -41,6 +42,58 @@
         "label": "Failed / vetoed",
         "count": 0,
         "full_coverage": true
+      }
+    ],
+    "community_categories": [
+      {
+        "category": "healthcare_access",
+        "label": "Healthcare Access",
+        "count": 51
+      },
+      {
+        "category": "housing",
+        "label": "Housing",
+        "count": 10
+      },
+      {
+        "category": "wages_labor",
+        "label": "Wages & Labor",
+        "count": 4
+      },
+      {
+        "category": "consumer_protection",
+        "label": "Consumer Protection",
+        "count": 0
+      },
+      {
+        "category": "safety",
+        "label": "Safety",
+        "count": 27
+      },
+      {
+        "category": "education",
+        "label": "Education",
+        "count": 10
+      },
+      {
+        "category": "civil_rights",
+        "label": "Civil Rights",
+        "count": 7
+      },
+      {
+        "category": "environment",
+        "label": "Environment",
+        "count": 38
+      },
+      {
+        "category": "veterans",
+        "label": "Veterans",
+        "count": 0
+      },
+      {
+        "category": "immigration",
+        "label": "Immigration",
+        "count": 16
       }
     ]
   },
