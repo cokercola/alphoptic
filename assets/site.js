@@ -172,23 +172,30 @@ const EMPTY_CATEGORY_TEXT = "No bills currently tracked in this category — cov
 function renderCommunityPage(containerId, data) {
   const el = document.getElementById(containerId);
   if (!el) return;
-  const categories = (data.summary && data.summary.community_categories) || [];
+  const categories = [...((data.summary && data.summary.community_categories) || [])]
+    .sort((a, b) => a.label.localeCompare(b.label));
   const byCategory = {};
   data.signals.forEach(s => {
     if (s.community_category === 'none') return;
     (byCategory[s.community_category] = byCategory[s.community_category] || []).push(s);
   });
 
+  const CAP = 10;
   el.innerHTML = categories.map(cat => {
     const bills = byCategory[cat.category] || [];
-    const body = bills.length
-      ? bills.map(s => `
+    const shown = bills.slice(0, CAP);
+    const remaining = bills.length - shown.length;
+    const body = shown.length
+      ? shown.map(s => `
           <div class="community-bill-row">
             <div><a href="/bills/detail.html?id=${s.bill_id}">${s.bill_id}</a> — ${s.title}</div>
             <div class="community-bill-meta">${s.status || 'No status available'}</div>
           </div>
         `).join('')
       : `<div class="community-empty">${EMPTY_CATEGORY_TEXT}</div>`;
+    const viewAll = remaining > 0
+      ? `<div style="padding-top:8px;"><a href="/bills/index.html?category=${cat.category}" style="color:var(--blue); text-decoration:none; font-size:13px;">View all ${bills.length} →</a></div>`
+      : '';
 
     return `
       <div class="industry-card">
@@ -197,6 +204,7 @@ function renderCommunityPage(containerId, data) {
           <span class="community-count">${cat.count} bill${cat.count === 1 ? '' : 's'}</span>
         </div>
         ${body}
+        ${viewAll}
       </div>
     `;
   }).join('');
