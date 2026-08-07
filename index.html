@@ -75,7 +75,7 @@ renderSidebar('dashboard');
 // whose internals aren't visible in this edit. Same threshold/logic
 // as bills/index.html's "Stalled only" toggle, kept in sync manually.
 (async function renderStalledHighlight() {
-  const STALLED_THRESHOLD_DAYS = 60;
+  const STALLED_THRESHOLD_DAYS = 180;
   const STALLABLE_STAGES = new Set(['introduced', 'committee', 'passed_one_chamber', 'passed_both']);
   const TEASER_COUNT = 3;
 
