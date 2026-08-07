@@ -34,10 +34,26 @@ async function init() {
   renderSidebar('industries');
   const data = await fetchSiteData();
   document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
+
+  // Claude's industry classification is free text, not a fixed list
+  // (unlike community_category), so minor formatting differences
+  // between runs -- "Healthcare/Insurance" vs "Healthcare / Insurance"
+  // -- would otherwise fragment into separate cards for what's really
+  // the same industry. Normalizing spacing around / and & here merges
+  // those without touching the stored data.
+  function normalizeIndustryLabel(industry) {
+    return (industry || 'Unknown')
+      .trim()
+      .replace(/\s*\/\s*/g, '/')
+      .replace(/\s*&\s*/g, ' & ')
+      .replace(/\s+/g, ' ');
+  }
+
   const byIndustry = {};
   data.signals.forEach(s => {
-    if (!byIndustry[s.industry]) byIndustry[s.industry] = [];
-    byIndustry[s.industry].push(s);
+    const key = normalizeIndustryLabel(s.industry);
+    if (!byIndustry[key]) byIndustry[key] = [];
+    byIndustry[key].push(s);
   });
   const list = document.getElementById('industry-list');
   const industries = Object.keys(byIndustry).sort((a, b) => a.localeCompare(b));
