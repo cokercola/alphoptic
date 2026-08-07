@@ -7,6 +7,7 @@ function renderSidebar(activePage) {
   const items = [
     { href: '/index.html', label: 'Dashboard', key: 'dashboard' },
     { href: '/bills/index.html', label: 'Bills', key: 'bills' },
+    { href: '/bills/index.html?stalled=1', label: 'Stalled', key: 'stalled' },
     { href: '/industries/index.html', label: 'Industries', key: 'industries' },
     { href: '/companies/index.html', label: 'Companies', key: 'companies' },
     { href: '/signals/index.html', label: 'Signals', key: 'signals' },
@@ -224,7 +225,7 @@ function renderCommunityHighlight(containerId, data, limit) {
       </div>
       ${shown.map(s => `
         <div class="community-highlight-row">
-          <div class="community-highlight-title">${s.bill_id} — ${s.title}</div>
+          <div class="community-highlight-title"><a href="/bills/detail.html?id=${s.bill_id}" style="color:inherit; text-decoration:none;">${s.bill_id} — ${s.title}</a></div>
           <div class="community-highlight-meta"><span class="community-highlight-cat">${s.community_category_label}</span> · ${s.status || 'No status available'}</div>
         </div>
       `).join('')}
