@@ -1,0 +1,322 @@
+{
+  "last_offset": 250,
+  "pending_batches": [
+    {
+      "batch_id": "msgbatch_01QuvJxEYhHJZnjTYT5ZDC1u",
+      "submitted_at": "2026-08-07T15:59:28.405200+00:00",
+      "meta": {
+        "SRES4": {
+          "bill_id": "SRES4",
+          "congress": 119,
+          "type": "sres",
+          "number": "4",
+          "title": "A resolution notifying the President of the United States of the election of a President pro tempore.",
+          "status": "Submitted in the Senate, considered, and agreed to without amendment by Unanimous Consent. (consideration: CR S6; text: CR S6)",
+          "status_date": "2025-01-03",
+          "sponsor": "Sen. Thune, John [R-SD]",
+          "cosponsors": 0,
+          "cosponsor_names": [],
+          "policy_area": "Congress"
+        },
+        "HRES11": {
+          "bill_id": "HRES11",
+          "congress": 119,
+          "type": "hres",
+          "number": "11",
+          "title": "Fair Representation Amendment",
+          "status": "Referred to the House Committee on Rules.",
+          "status_date": "2025-01-03",
+          "sponsor": "Rep. Davidson, Warren [R-OH-8]",
+          "cosponsors": 1,
+          "cosponsor_names": [
+            "Rep. Gosar, Paul A. [R-AZ-9]"
+          ],
+          "policy_area": "Congress"
+        },
+        "HRES10": {
+          "bill_id": "HRES10",
+          "congress": 119,
+          "type": "hres",
+          "number": "10",
+          "title": "HEALTH Act",
+          "status": "Referred to the House Committee on Rules.",
+          "status_date": "2025-01-03",
+          "sponsor": "Rep. Davidson, Warren [R-OH-8]",
+          "cosponsors": 0,
+          "cosponsor_names": [],
+          "policy_area": "Congress"
+        },
+        "SRES15": {
+          "bill_id": "SRES15",
+          "congress": 119,
+          "type": "sres",
+          "number": "15",
+          "title": "A resolution electing Gary B. Myrick, of Virginia, as Secretary for the Minority of the Senate.",
+          "status": "Submitted in the Senate, considered, and agreed to without amendment by Unanimous Consent. (consideration: CR S8; text: CR S8)",
+          "status_date": "2025-01-03",
+          "sponsor": "Sen. Schumer, Charles E. [D-NY]",
+          "cosponsors": 0,
+          "cosponsor_names": [],
+          "policy_area": "Congress"
+        },
+        "SRES13": {
+          "bill_id": "SRES13",
+          "congress": 119,
+          "type": "sres",
+          "number": "13",
+          "title": "A resolution notifying the House of Representatives of the election of a Sergeant at Arms and Doorkeeper of the Senate.",
+          "status": "Message on Senate action sent to the House.",
+          "status_date": "2025-01-06",
+          "sponsor": "Sen. Thune, John [R-SD]",
+          "cosponsors": 0,
+          "cosponsor_names": [],
+          "policy_area": "Congress"
+        },
+        "SRES12": {
+          "bill_id": "SRES12",
+          "congress": 119,
+          "type": "sres",
+          "number": "12",
+          "title": "A resolution notifying the President of the United States of the election of a Sergeant at Arms and Doorkeeper of the Senate.",
+          "status": "Submitted in the Senate, considered, and agreed to without amendment by Unanimous Consent. (consideration: CR S8; text: CR S8)",
+          "status_date": "2025-01-03",
+          "sponsor": "Sen. Thune, John [R-SD]",
+          "cosponsors": 0,
+          "cosponsor_names": [],
+          "policy_area": "Congress"
+        },
+        "SRES11": {
+          "bill_id": "SRES11",
+          "congress": 119,
+          "type": "sres",
+          "number": "11",
+          "title": "A resolution electing Jennifer A. Hemingway as Sergeant at Arms and Doorkeeper of the Senate.",
+          "status": "Submitted in the Senate, considered, and agreed to without amendment by Unanimous Consent. (consideration: CR S8; text: CR S8)",
+          "status_date": "2025-01-03",
+          "sponsor": "Sen. Thune, John [R-SD]",
+          "cosponsors": 0,
+          "cosponsor_names": [],
+          "policy_area": "Congress"
+        },
+        "SRES10": {
+          "bill_id": "SRES10",
+          "congress": 119,
+          "type": "sres",
+          "number": "10",
+          "title": "A resolution notifying the House of Representatives of the election of a Secretary of the Senate.",
+          "status": "Message on Senate action sent to the House.",
+          "status_date": "2025-01-06",
+          "sponsor": "Sen. Thune, John [R-SD]",
+          "cosponsors": 0,
+          "cosponsor_names": [],
+          "policy_area": "Congress"
+        },
+        "SRES9": {
+          "bill_id": "SRES9",
+          "congress": 119,
+          "type": "sres",
+          "number": "9",
+          "title": "A resolution notifying the President of the United States of the election of a Secretary of the Senate.",
+          "status": "Submitted in the Senate, considered, and agreed to without amendment by Unanimous Consent. (consideration: CR S7-8; text: CR S8)",
+          "status_date": "2025-01-03",
+          "sponsor": "Sen. Thune, John [R-SD]",
+          "cosponsors": 0,
+          "cosponsor_names": [],
+          "policy_area": "Congress"
+        },
+        "SRES8": {
+          "bill_id": "SRES8",
+          "congress": 119,
+          "type": "sres",
+          "number": "8",
+          "title": "A resolution electing Jackie Barber as Secretary of the Senate.",
+          "status": "Submitted in the Senate, considered, and agreed to without amendment by Unanimous Consent. (consideration: CR S7; text: CR S7)",
+          "status_date": "2025-01-03",
+          "sponsor": "Sen. Thune, John [R-SD]",
+          "cosponsors": 0,
+          "cosponsor_names": [],
+          "policy_area": "Congress"
+        },
+        "SRES7": {
+          "bill_id": "SRES7",
+          "congress": 119,
+          "type": "sres",
+          "number": "7",
+          "title": "A resolution fixing the hour of daily meeting of the Senate.",
+          "status": "Submitted in the Senate, considered, and agreed to without amendment by Unanimous Consent. (consideration: CR S7; text: CR S7)",
+          "status_date": "2025-01-03",
+          "sponsor": "Sen. Thune, John [R-SD]",
+          "cosponsors": 0,
+          "cosponsor_names": [],
+          "policy_area": "Congress"
+        },
+        "HR110": {
+          "bill_id": "HR110",
+          "congress": 119,
+          "type": "hr",
+          "number": "110",
+          "title": "Small Business Prosperity Act of 2025",
+          "status": "Referred to the House Committee on Ways and Means.",
+          "status_date": "2025-01-03",
+          "sponsor": "Rep. Biggs, Andy [R-AZ-5]",
+          "cosponsors": 0,
+          "cosponsor_names": [],
+          "policy_area": "Taxation"
+        },
+        "HRES15": {
+          "bill_id": "HRES15",
+          "congress": 119,
+          "type": "hres",
+          "number": "15",
+          "title": "Rescinding the subpoenas issued by the January 6th Select Committee on September 23, 2021, October 6, 2021, and February 9, 2022, and withdrawing the recommendations finding Stephen K. Bannon, Mark Randall Meadows, Daniel Scavino, Jr., and Peter K. Navarro in contempt of Congress.",
+          "status": "Referred to the Committee on Rules, and in addition to the Committee on the Judiciary, for a period to be subsequently determined by the Speaker, in each case for consideration of such provisions as fall within the jurisdiction of the committee concerned.",
+          "status_date": "2025-01-06",
+          "sponsor": "Rep. Burlison, Eric [R-MO-7]",
+          "cosponsors": 12,
+          "cosponsor_names": [
+            "Rep. Self, Keith [R-TX-3]",
+            "Rep. Massie, Thomas [R-KY-4]",
+            "Rep. Cloud, Michael [R-TX-27]",
+            "Rep. Weber, Randy K. Sr. [R-TX-14]",
+            "Rep. Ogles, Andrew [R-TN-5]",
+            "Rep. Higgins, Clay [R-LA-3]",
+            "Rep. Crane, Elijah [R-AZ-2]",
+            "Rep. Brecheen, Josh [R-OK-2]",
+            "Rep. Biggs, Andy [R-AZ-5]",
+            "Rep. Rose, John W. [R-TN-6]",
+            "Rep. Harris, Andy [R-MD-1]",
+            "Rep. Hageman, Harriet M. [R-WY-At Large]"
+          ],
+          "policy_area": "Congress"
+        },
+        "HRES18": {
+          "bill_id": "HRES18",
+          "congress": 119,
+          "type": "hres",
+          "number": "18",
+          "title": "Expressing the sense of the House of Representatives that the Parthenon Marbles should be returned to Greece.",
+          "status": "Referred to the House Committee on Foreign Affairs.",
+          "status_date": "2025-01-07",
+          "sponsor": "Rep. Malliotakis, Nicole [R-NY-11]",
+          "cosponsors": 3,
+          "cosponsor_names": [
+            "Rep. Bilirakis, Gus M. [R-FL-12]",
+            "Rep. Pappas, Chris [D-NH-1]",
+            "Rep. Titus, Dina [D-NV-1]"
+          ],
+          "policy_area": "International Affairs"
+        },
+        "HR55": {
+          "bill_id": "HR55",
+          "congress": 119,
+          "type": "hr",
+          "number": "55",
+          "title": "To repeal the National Voter Registration Act of 1993.",
+          "status": "Referred to the House Committee on House Administration.",
+          "status_date": "2025-01-03",
+          "sponsor": "Rep. Biggs, Andy [R-AZ-5]",
+          "cosponsors": 1,
+          "cosponsor_names": [
+            "Rep. Perry, Scott [R-PA-10]"
+          ],
+          "policy_area": "Government Operations and Politics"
+        },
+        "HRES28": {
+          "bill_id": "HRES28",
+          "congress": 119,
+          "type": "hres",
+          "number": "28",
+          "title": "BRIDGE to Congress Resolution",
+          "status": "Referred to the House Committee on Rules.",
+          "status_date": "2025-01-09",
+          "sponsor": "Rep. Perez, Marie Gluesenkamp [D-WA-3]",
+          "cosponsors": 1,
+          "cosponsor_names": [
+            "Rep. Golden, Jared F. [D-ME-2]"
+          ],
+          "policy_area": "Congress"
+        },
+        "HJRES16": {
+          "bill_id": "HJRES16",
+          "congress": 119,
+          "type": "hjres",
+          "number": "16",
+          "title": "Proposing an amendment to the Constitution of the United States extending the right to vote to citizens sixteen years of age or older.",
+          "status": "Referred to the House Committee on the Judiciary.",
+          "status_date": "2025-01-09",
+          "sponsor": "Rep. Meng, Grace [D-NY-6]",
+          "cosponsors": 6,
+          "cosponsor_names": [
+            "Rep. Casten, Sean [D-IL-6]",
+            "Rep. Bonamici, Suzanne [D-OR-1]",
+            "Rep. Pressley, Ayanna [D-MA-7]",
+            "Rep. Schakowsky, Janice D. [D-IL-9]",
+            "Rep. Mullin, Kevin [D-CA-15]",
+            "Rep. Tlaib, Rashida [D-MI-12]"
+          ],
+          "policy_area": "Government Operations and Politics"
+        },
+        "SRES16": {
+          "bill_id": "SRES16",
+          "congress": 119,
+          "type": "sres",
+          "number": "16",
+          "title": "A resolution to constitute the majority party's membership on certain committees for the One Hundred Nineteenth Congress, or until their successors are chosen.",
+          "status": "Submitted in the Senate, considered, and agreed to without amendment by Unanimous Consent. (consideration: CR S40; text: CR S42-43)",
+          "status_date": "2025-01-07",
+          "sponsor": "Sen. Thune, John [R-SD]",
+          "cosponsors": 0,
+          "cosponsor_names": [],
+          "policy_area": "Congress"
+        },
+        "SRES19": {
+          "bill_id": "SRES19",
+          "congress": 119,
+          "type": "sres",
+          "number": "19",
+          "title": "A resolution honoring the life and legacy of President Jimmy Carter and commending President Jimmy Carter for his life-long career of public service, humanitarian leadership, diplomacy, and courageous advocacy.",
+          "status": "Submitted in the Senate, considered, and agreed to without amendment and with a preamble by Unanimous Consent. (consideration: CR S76; text: CR S81)",
+          "status_date": "2025-01-09",
+          "sponsor": "Sen. Warnock, Raphael G. [D-GA]",
+          "cosponsors": 20,
+          "cosponsor_names": [
+            "Sen. Ossoff, Jon [D-GA]",
+            "Sen. Thune, John [R-SD]",
+            "Sen. Schumer, Charles E. [D-NY]",
+            "Sen. Alsobrooks, Angela [D-MD]",
+            "Sen. Baldwin, Tammy [D-WI]",
+            "Sen. Banks, Jim [R-IN]",
+            "Sen. Barrasso, John [R-WY]",
+            "Sen. Bennet, Michael F. [D-CO]",
+            "Sen. Blackburn, Marsha [R-TN]",
+            "Sen. Blumenthal, Richard [D-CT]",
+            "Sen. Blunt Rochester, Lisa [D-DE]",
+            "Sen. Booker, Cory A. [D-NJ]",
+            "Sen. Boozman, John [R-AR]",
+            "Sen. Britt, Katie Boyd [R-AL]",
+            "Sen. Budd, Ted [R-NC]",
+            "Sen. Cantwell, Maria [D-WA]",
+            "Sen. Capito, Shelley Moore [R-WV]",
+            "Sen. Cassidy, Bill [R-LA]",
+            "Sen. Collins, Susan M. [R-ME]",
+            "Sen. Coons, Christopher A. [D-DE]"
+          ],
+          "policy_area": "Government Operations and Politics"
+        },
+        "HR94": {
+          "bill_id": "HR94",
+          "congress": 119,
+          "type": "hr",
+          "number": "94",
+          "title": "To terminate the designation of the Islamic Republic of Pakistan as a major non-NATO ally, and for other purposes.",
+          "status": "Referred to the House Committee on Foreign Affairs.",
+          "status_date": "2025-01-03",
+          "sponsor": "Rep. Biggs, Andy [R-AZ-5]",
+          "cosponsors": 0,
+          "cosponsor_names": [],
+          "policy_area": "International Affairs"
+        }
+      }
+    }
+  ]
+}
