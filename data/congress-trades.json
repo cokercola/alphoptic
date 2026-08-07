@@ -1,7 +1,165 @@
 {
-  "updated_at": "2026-08-06T15:10:03.998781Z",
+  "updated_at": "2026-08-07T14:08:00.181276Z",
   "lookback_days": 30,
   "lawmakers": [
+    {
+      "name": "April Delaney",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "CHRW",
+          "amount": 32500,
+          "direction": "buy",
+          "trade_date": "2026-07-27",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "HUBB",
+          "amount": 32500,
+          "direction": "buy",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "FWONK",
+          "amount": 32500,
+          "direction": "buy",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "CHRW",
+          "amount": 32500,
+          "direction": "buy",
+          "trade_date": "2026-07-31",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "LYV",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-21",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "SCI",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-27",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "STE",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-31",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "VIK",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "CLH",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-27",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "SCI",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-20",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "FLT",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-15",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "FWONK",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-22",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "FLT",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-16",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "FLT",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-31",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "ENTG",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-30",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        }
+      ]
+    },
+    {
+      "name": "Sheldon Whitehouse",
+      "party": null,
+      "chamber": "Senate",
+      "trades": [
+        {
+          "symbol": "LOW",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-20",
+          "filed_date": "2026-08-03",
+          "is_new": true,
+          "linked": false
+        }
+      ]
+    },
     {
       "name": "Shelley Moore Capito",
       "party": null,
@@ -49,164 +207,6 @@
           "direction": "sell",
           "trade_date": "2026-07-21",
           "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        }
-      ]
-    },
-    {
-      "name": "April Delaney",
-      "party": null,
-      "chamber": "House",
-      "trades": [
-        {
-          "symbol": "BWXT",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-24",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "SGI",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-30",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "MLM",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-24",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "FWONK",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-31",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "FWONK",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-28",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "HUBB",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-23",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "FWONK",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-23",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "CHRW",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-27",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "CHRW",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-31",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "MKL",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-28",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "BWXT",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-30",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "MLM",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-20",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "SCI",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-30",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "CLH",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-24",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "CHRW",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-24",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        }
-      ]
-    },
-    {
-      "name": "Sheldon Whitehouse",
-      "party": null,
-      "chamber": "Senate",
-      "trades": [
-        {
-          "symbol": "LOW",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-20",
-          "filed_date": "2026-08-03",
           "is_new": true,
           "linked": false
         }

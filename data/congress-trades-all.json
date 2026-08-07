@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-06T15:10:03.999252Z",
+  "updated_at": "2026-08-07T14:08:00.181720Z",
   "lookback_days": 30,
   "trades": [
     {
@@ -71,54 +71,10 @@
     {
       "lawmaker": "April Delaney",
       "chamber": "House",
-      "symbol": "BWXT",
+      "symbol": "CHRW",
       "amount": 32500,
       "direction": "buy",
-      "trade_date": "2026-07-24",
-      "filed_date": "2026-08-04",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "April Delaney",
-      "chamber": "House",
-      "symbol": "SGI",
-      "amount": 32500,
-      "direction": "buy",
-      "trade_date": "2026-07-30",
-      "filed_date": "2026-08-04",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "April Delaney",
-      "chamber": "House",
-      "symbol": "MLM",
-      "amount": 32500,
-      "direction": "buy",
-      "trade_date": "2026-07-24",
-      "filed_date": "2026-08-04",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "April Delaney",
-      "chamber": "House",
-      "symbol": "FWONK",
-      "amount": 32500,
-      "direction": "buy",
-      "trade_date": "2026-07-31",
-      "filed_date": "2026-08-04",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "April Delaney",
-      "chamber": "House",
-      "symbol": "FWONK",
-      "amount": 32500,
-      "direction": "buy",
-      "trade_date": "2026-07-28",
+      "trade_date": "2026-07-27",
       "filed_date": "2026-08-04",
       "is_new": true,
       "linked": false
@@ -151,17 +107,6 @@
       "symbol": "CHRW",
       "amount": 32500,
       "direction": "buy",
-      "trade_date": "2026-07-27",
-      "filed_date": "2026-08-04",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "April Delaney",
-      "chamber": "House",
-      "symbol": "CHRW",
-      "amount": 32500,
-      "direction": "buy",
       "trade_date": "2026-07-31",
       "filed_date": "2026-08-04",
       "is_new": true,
@@ -170,32 +115,10 @@
     {
       "lawmaker": "April Delaney",
       "chamber": "House",
-      "symbol": "MKL",
+      "symbol": "LYV",
       "amount": 8000,
       "direction": "sell",
-      "trade_date": "2026-07-28",
-      "filed_date": "2026-08-04",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "April Delaney",
-      "chamber": "House",
-      "symbol": "BWXT",
-      "amount": 8000,
-      "direction": "buy",
-      "trade_date": "2026-07-30",
-      "filed_date": "2026-08-04",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "April Delaney",
-      "chamber": "House",
-      "symbol": "MLM",
-      "amount": 8000,
-      "direction": "buy",
-      "trade_date": "2026-07-20",
+      "trade_date": "2026-07-21",
       "filed_date": "2026-08-04",
       "is_new": true,
       "linked": false
@@ -206,7 +129,29 @@
       "symbol": "SCI",
       "amount": 8000,
       "direction": "sell",
-      "trade_date": "2026-07-30",
+      "trade_date": "2026-07-27",
+      "filed_date": "2026-08-04",
+      "is_new": true,
+      "linked": false
+    },
+    {
+      "lawmaker": "April Delaney",
+      "chamber": "House",
+      "symbol": "STE",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-31",
+      "filed_date": "2026-08-04",
+      "is_new": true,
+      "linked": false
+    },
+    {
+      "lawmaker": "April Delaney",
+      "chamber": "House",
+      "symbol": "VIK",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-23",
       "filed_date": "2026-08-04",
       "is_new": true,
       "linked": false
@@ -217,7 +162,7 @@
       "symbol": "CLH",
       "amount": 8000,
       "direction": "sell",
-      "trade_date": "2026-07-24",
+      "trade_date": "2026-07-27",
       "filed_date": "2026-08-04",
       "is_new": true,
       "linked": false
@@ -225,10 +170,65 @@
     {
       "lawmaker": "April Delaney",
       "chamber": "House",
-      "symbol": "CHRW",
+      "symbol": "SCI",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-20",
+      "filed_date": "2026-08-04",
+      "is_new": true,
+      "linked": false
+    },
+    {
+      "lawmaker": "April Delaney",
+      "chamber": "House",
+      "symbol": "FLT",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-15",
+      "filed_date": "2026-08-04",
+      "is_new": true,
+      "linked": false
+    },
+    {
+      "lawmaker": "April Delaney",
+      "chamber": "House",
+      "symbol": "FWONK",
       "amount": 8000,
       "direction": "buy",
-      "trade_date": "2026-07-24",
+      "trade_date": "2026-07-22",
+      "filed_date": "2026-08-04",
+      "is_new": true,
+      "linked": false
+    },
+    {
+      "lawmaker": "April Delaney",
+      "chamber": "House",
+      "symbol": "FLT",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-16",
+      "filed_date": "2026-08-04",
+      "is_new": true,
+      "linked": false
+    },
+    {
+      "lawmaker": "April Delaney",
+      "chamber": "House",
+      "symbol": "FLT",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-31",
+      "filed_date": "2026-08-04",
+      "is_new": true,
+      "linked": false
+    },
+    {
+      "lawmaker": "April Delaney",
+      "chamber": "House",
+      "symbol": "ENTG",
+      "amount": 8000,
+      "direction": "buy",
+      "trade_date": "2026-07-30",
       "filed_date": "2026-08-04",
       "is_new": true,
       "linked": false
