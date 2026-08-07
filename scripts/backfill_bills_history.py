@@ -293,8 +293,21 @@ def cmd_submit(args):
         save_checkpoint(checkpoint)
         return
 
-    batch = client.messages.batches.create(requests=pending_requests)
-    print(f"\nSubmitted batch {batch.id} with {len(pending_requests)} requests. "
+    # A bill can genuinely get re-scanned within one run: sorting by
+    # updateDate keeps pagination stable in general, but if a bill's
+    # status changes WHILE a long scan is still in progress (very
+    # possible over a multi-hour run), its updateDate moves forward and
+    # can shift it into a later page than where it started, queuing it
+    # twice. pending_meta (a dict) already self-dedupes; pending_requests
+    # (a list) doesn't, and the Batch API rejects duplicate custom_ids
+    # outright -- so dedupe here too, keeping the later (fresher) copy.
+    deduped_requests = list({r["custom_id"]: r for r in pending_requests}.values())
+    if len(deduped_requests) < len(pending_requests):
+        print(f"Deduplicated {len(pending_requests) - len(deduped_requests)} bill(s) "
+              f"re-scanned mid-run (likely updated while this scan was in progress).")
+
+    batch = client.messages.batches.create(requests=deduped_requests)
+    print(f"\nSubmitted batch {batch.id} with {len(deduped_requests)} requests. "
           f"Status: {batch.processing_status}")
 
     checkpoint["pending_batches"].append({
