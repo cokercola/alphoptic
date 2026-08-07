@@ -287,6 +287,43 @@ def build_signal_from_result(meta, classification, schema_version):
     }
 
 
+def reconstruct_meta_from_bill_id(bill_id):
+    """Fallback for when a batch's local metadata is missing or lost
+    (e.g. checkpoint file deleted while a batch was still in flight).
+    Since custom_id IS the bill_id, we can always rebuild everything
+    needed by re-fetching fresh from Congress.gov -- the local
+    checkpoint is a convenience cache, not the only source of truth."""
+    match = BILL_ID_RE.match(bill_id)
+    if not match:
+        return None
+    bill_type, number = match.groups()
+    bill_type = bill_type.lower()
+    number = int(number)
+
+    try:
+        detail = fetch_bill(CURRENT_CONGRESS, bill_type, number)
+    except requests.HTTPError as e:
+        print(f"    WARNING: could not reconstruct metadata for {bill_id}: {e}", file=sys.stderr)
+        return None
+
+    try:
+        cosponsor_names = fetch_bill_cosponsors(CURRENT_CONGRESS, bill_type, number)
+    except requests.HTTPError:
+        cosponsor_names = []
+
+    return {
+        "bill_id": bill_id,
+        "congress": CURRENT_CONGRESS,
+        "title": detail.get("title", ""),
+        "status": detail.get("latestAction", {}).get("text", ""),
+        "status_date": detail.get("latestAction", {}).get("actionDate", ""),
+        "sponsor": detail.get("sponsors", [{}])[0].get("fullName", "Unknown"),
+        "cosponsors": len(cosponsor_names),
+        "cosponsor_names": cosponsor_names,
+        "policy_area": detail.get("policyArea", {}).get("name", ""),
+    }
+
+
 def cmd_poll(args):
     checkpoint = load_checkpoint()
     if not checkpoint["pending_batches"]:
@@ -308,10 +345,14 @@ def cmd_poll(args):
 
         succeeded = 0
         failed = 0
+        reconstructed = 0
         for result in client.messages.batches.results(batch_id):
-            meta = entry["meta"].get(result.custom_id)
+            meta = entry.get("meta", {}).get(result.custom_id)
             if not meta:
-                continue
+                meta = reconstruct_meta_from_bill_id(result.custom_id)
+                if not meta:
+                    continue
+                reconstructed += 1
 
             if result.result.type == "succeeded":
                 text = result.result.message.content[0].text.strip()
@@ -329,7 +370,8 @@ def cmd_poll(args):
             signal = build_signal_from_result(meta, classification, CLASSIFICATION_SCHEMA_VERSION)
             new_signals[signal["bill_id"]] = signal
 
-        print(f"  Merged {succeeded} succeeded, {failed} failed/fell back to placeholder classification.")
+        print(f"  Merged {succeeded} succeeded, {failed} failed/fell back to placeholder classification"
+              f"{f', {reconstructed} with metadata reconstructed live (checkpoint data was missing)' if reconstructed else ''}.")
 
     checkpoint["pending_batches"] = still_pending
     save_checkpoint(checkpoint)
