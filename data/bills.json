@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-07T13:13:09.679982Z",
+  "updated_at": "2026-08-07T14:21:58.394417Z",
   "summary": {
     "bills_tracked": 32,
     "high_impact": 2,
@@ -99,402 +99,8 @@
   },
   "signals": [
     {
-      "bill_id": "HR1842",
-      "title": "PAW Act of 2025",
-      "industry": "Animal Welfare / Pet Industry",
-      "direction": "mixed",
-      "passage_probability": 30,
-      "impact_score": 30,
-      "confidence": 15,
-      "status": "Referred to the House Committee on Ways and Means.",
-      "stage": "committee",
-      "schema_version": 3,
-      "community_category": "none",
-      "community_category_label": "None",
-      "sponsor": "Rep. Tenney, Claudia [R-NY-24]",
-      "cosponsors": 4,
-      "last_action": "Referred to the House Committee on Ways and Means.",
-      "next_event": "TBD",
-      "summary": "Without a summary, precise impact is unclear, but PAW Act likely addresses animal welfare policy with mixed effects on pet-related industries.",
-      "companies": [
-        {
-          "ticker": "CHWY",
-          "name": "Chewy Inc.",
-          "effect": "mixed",
-          "exposure": 20
-        },
-        {
-          "ticker": "IDXX",
-          "name": "IDEXX Laboratories",
-          "effect": "mixed",
-          "exposure": 15
-        }
-      ]
-    },
-    {
-      "bill_id": "S622",
-      "title": "Leech Lake Reservation Restoration Amendments Act of 2025",
-      "industry": "Forestry & Land Management",
-      "direction": "mixed",
-      "passage_probability": 15,
-      "impact_score": 25,
-      "confidence": 55,
-      "status": "Held at the desk.",
-      "stage": "introduced",
-      "schema_version": 3,
-      "community_category": "none",
-      "community_category_label": "None",
-      "sponsor": "Sen. Smith, Tina [D-MN]",
-      "cosponsors": 1,
-      "last_action": "Held at the desk.",
-      "next_event": "TBD",
-      "summary": "Federal land in Minnesota's Chippewa National Forest transfers to Leech Lake Band of Ojibwe, modestly reshaping timber and resource access in the region.",
-      "companies": [
-        {
-          "ticker": "WY",
-          "name": "Weyerhaeuser Company",
-          "effect": "mixed",
-          "exposure": 10
-        },
-        {
-          "ticker": "RYN",
-          "name": "Rayonier Inc.",
-          "effect": "mixed",
-          "exposure": 8
-        }
-      ]
-    },
-    {
-      "bill_id": "HR3101",
-      "title": "SHIELD Act",
-      "industry": "Technology / Patent Litigation",
-      "direction": "positive",
-      "passage_probability": 33,
-      "impact_score": 45,
-      "confidence": 20,
-      "status": "Referred to the House Committee on the Judiciary.",
-      "stage": "committee",
-      "schema_version": 3,
-      "community_category": "immigration",
-      "community_category_label": "Immigration",
-      "sponsor": "Rep. Garcia, Robert [D-CA-42]",
-      "cosponsors": 17,
-      "last_action": "Referred to the House Committee on the Judiciary.",
-      "next_event": "TBD",
-      "summary": "Insufficient bill summary to assess impact; SHIELD Act name suggests patent troll litigation reform affecting tech companies.",
-      "companies": [
-        {
-          "ticker": "GOOGL",
-          "name": "Alphabet Inc.",
-          "effect": "positive",
-          "exposure": 40
-        },
-        {
-          "ticker": "MSFT",
-          "name": "Microsoft Corporation",
-          "effect": "positive",
-          "exposure": 38
-        },
-        {
-          "ticker": "AAPL",
-          "name": "Apple Inc.",
-          "effect": "positive",
-          "exposure": 35
-        }
-      ]
-    },
-    {
-      "bill_id": "HR6179",
-      "title": "Clean Cloud Act of 2025",
-      "industry": "Data Centers & Cloud Computing",
-      "direction": "negative",
-      "passage_probability": 31,
-      "impact_score": 72,
-      "confidence": 78,
-      "status": "Referred to the House Committee on Energy and Commerce.",
-      "stage": "committee",
-      "schema_version": 3,
-      "community_category": "environment",
-      "community_category_label": "Environment",
-      "sponsor": "Rep. Cohen, Steve [D-TN-9]",
-      "cosponsors": 9,
-      "last_action": "Referred to the House Committee on Energy and Commerce.",
-      "next_event": "TBD",
-      "summary": "Bill imposes escalating emissions fees on large data centers and cryptomining facilities, increasing operating costs through 2035 when a zero-emissions baseline takes effect.",
-      "companies": [
-        {
-          "ticker": "AMZN",
-          "name": "Amazon.com Inc.",
-          "effect": "negative",
-          "exposure": 65
-        },
-        {
-          "ticker": "MSFT",
-          "name": "Microsoft Corporation",
-          "effect": "mixed",
-          "exposure": 60
-        },
-        {
-          "ticker": "GOOGL",
-          "name": "Alphabet Inc.",
-          "effect": "mixed",
-          "exposure": 58
-        },
-        {
-          "ticker": "MARA",
-          "name": "MARA Holdings Inc.",
-          "effect": "negative",
-          "exposure": 85
-        }
-      ]
-    },
-    {
-      "bill_id": "HR6983",
-      "title": "PRICE Act",
-      "industry": "Energy & Commerce",
-      "direction": "mixed",
-      "passage_probability": 30,
-      "impact_score": 30,
-      "confidence": 10,
-      "status": "Referred to the House Committee on Energy and Commerce.",
-      "stage": "committee",
-      "schema_version": 3,
-      "community_category": "none",
-      "community_category_label": "None",
-      "sponsor": "Rep. Menendez, Robert [D-NJ-8]",
-      "cosponsors": 4,
-      "last_action": "Referred to the House Committee on Energy and Commerce.",
-      "next_event": "TBD",
-      "summary": "Insufficient bill summary available to determine meaningful economic or regulatory impact on any specific industry.",
-      "companies": []
-    },
-    {
-      "bill_id": "HR2152",
-      "title": "AI PLAN Act",
-      "industry": "Financial Technology & Cybersecurity",
-      "direction": "mixed",
-      "passage_probability": 16,
-      "impact_score": 30,
-      "confidence": 55,
-      "status": "Placed on the Union Calendar, Calendar No. 615.",
-      "stage": "introduced",
-      "schema_version": 3,
-      "community_category": "none",
-      "community_category_label": "None",
-      "sponsor": "Rep. Nunn, Zachary [R-IA-3]",
-      "cosponsors": 7,
-      "last_action": "Placed on the Union Calendar, Calendar No. 615.",
-      "next_event": "TBD",
-      "summary": "Bill mandates a federal study on AI-driven financial crime risks, likely spurring demand for AI fraud detection and compliance solutions.",
-      "companies": [
-        {
-          "ticker": "PANW",
-          "name": "Palo Alto Networks",
-          "effect": "positive",
-          "exposure": 35
-        },
-        {
-          "ticker": "FICO",
-          "name": "Fair Isaac Corporation",
-          "effect": "positive",
-          "exposure": 40
-        },
-        {
-          "ticker": "BAC",
-          "name": "Bank of America",
-          "effect": "mixed",
-          "exposure": 30
-        },
-        {
-          "ticker": "SIFT",
-          "name": "Sift Science",
-          "effect": "positive",
-          "exposure": 45
-        }
-      ]
-    },
-    {
-      "bill_id": "HR7147",
-      "title": "Homeland Security and Further Additional Continuing Appropriations Act, 2026.",
-      "industry": "Defense & Homeland Security",
-      "direction": "positive",
-      "passage_probability": 100,
-      "impact_score": 62,
-      "confidence": 72,
-      "status": "Became Public Law No: 119-86.",
-      "stage": "became_law",
-      "schema_version": 3,
-      "community_category": "none",
-      "community_category_label": "None",
-      "sponsor": "Rep. Cole, Tom [R-OK-4]",
-      "cosponsors": 0,
-      "last_action": "Became Public Law No: 119-86.",
-      "next_event": "TBD",
-      "summary": "Funds DHS operations for FY2026, sustaining federal contracts for border security, cybersecurity, and emergency management vendors.",
-      "companies": [
-        {
-          "ticker": "LDOS",
-          "name": "Leidos Holdings",
-          "effect": "positive",
-          "exposure": 55
-        },
-        {
-          "ticker": "BAH",
-          "name": "Booz Allen Hamilton",
-          "effect": "positive",
-          "exposure": 50
-        },
-        {
-          "ticker": "SAIC",
-          "name": "Science Applications International Corp",
-          "effect": "positive",
-          "exposure": 48
-        },
-        {
-          "ticker": "CACI",
-          "name": "CACI International",
-          "effect": "positive",
-          "exposure": 45
-        }
-      ]
-    },
-    {
-      "bill_id": "HR7006",
-      "title": "Financial Services and General Government and National Security, Department of State, and Related Programs Appropriations Act, 2026",
-      "industry": "Financial Services & Government Contracting",
-      "direction": "mixed",
-      "passage_probability": 15,
-      "impact_score": 42,
-      "confidence": 55,
-      "status": "Received in the Senate.",
-      "stage": "introduced",
-      "schema_version": 3,
-      "community_category": "none",
-      "community_category_label": "None",
-      "sponsor": "Rep. Cole, Tom [R-OK-4]",
-      "cosponsors": 0,
-      "last_action": "Received in the Senate.",
-      "next_event": "TBD",
-      "summary": "Bill funds federal financial agencies and foreign aid programs, affecting government contractors, defense firms, and financial regulators in FY2026.",
-      "companies": [
-        {
-          "ticker": "BAH",
-          "name": "Booz Allen Hamilton",
-          "effect": "positive",
-          "exposure": 55
-        },
-        {
-          "ticker": "SAIC",
-          "name": "Science Applications International Corp",
-          "effect": "positive",
-          "exposure": 48
-        },
-        {
-          "ticker": "V",
-          "name": "Visa Inc",
-          "effect": "mixed",
-          "exposure": 20
-        },
-        {
-          "ticker": "GS",
-          "name": "Goldman Sachs",
-          "effect": "mixed",
-          "exposure": 18
-        }
-      ]
-    },
-    {
-      "bill_id": "HR9040",
-      "title": "Regulate the Price of All Drugs Act",
-      "industry": "Pharmaceuticals",
-      "direction": "negative",
-      "passage_probability": 30,
-      "impact_score": 82,
-      "confidence": 45,
-      "status": "Referred to the Committee on Energy and Commerce, and in addition to the Committees on the Judiciary, and Financial Services, for a period to be subsequently determined by the Speaker, in each case for consideration of such provisions as fall within the jurisdiction of the committee concerned.",
-      "stage": "committee",
-      "schema_version": 3,
-      "community_category": "healthcare_access",
-      "community_category_label": "Healthcare Access",
-      "sponsor": "Rep. Sherman, Brad [D-CA-32]",
-      "cosponsors": 0,
-      "last_action": "Referred to the Committee on Energy and Commerce, and in addition to the Committees on the Judiciary, and Financial Services, for a period to be subsequently determined by the Speaker, in each case for consideration of such provisions as fall within the jurisdiction of the committee concerned.",
-      "next_event": "TBD",
-      "summary": "Proposed drug price regulation would significantly compress pharmaceutical revenue and profit margins across the industry.",
-      "companies": [
-        {
-          "ticker": "JNJ",
-          "name": "Johnson & Johnson",
-          "effect": "negative",
-          "exposure": 70
-        },
-        {
-          "ticker": "PFE",
-          "name": "Pfizer",
-          "effect": "negative",
-          "exposure": 75
-        },
-        {
-          "ticker": "MRK",
-          "name": "Merck & Co.",
-          "effect": "negative",
-          "exposure": 78
-        },
-        {
-          "ticker": "ABBV",
-          "name": "AbbVie",
-          "effect": "negative",
-          "exposure": 80
-        }
-      ]
-    },
-    {
-      "bill_id": "HR9393",
-      "title": "Lower Costs, More Transparency Act of 2026",
-      "industry": "Healthcare / Pharmacy Benefit Management",
-      "direction": "negative",
-      "passage_probability": 30,
-      "impact_score": 68,
-      "confidence": 42,
-      "status": "Ordered to be Reported in the Nature of a Substitute by the Yeas and Nays: 45 - 0.",
-      "stage": "committee",
-      "schema_version": 3,
-      "community_category": "healthcare_access",
-      "community_category_label": "Healthcare Access",
-      "sponsor": "Rep. Guthrie, Brett [R-KY-2]",
-      "cosponsors": 1,
-      "last_action": "Ordered to be Reported in the Nature of a Substitute by the Yeas and Nays: 45 - 0.",
-      "next_event": "TBD",
-      "summary": "Bill likely targets drug pricing transparency and PBM reform, pressuring pharmacy benefit managers and potentially lowering drug costs.",
-      "companies": [
-        {
-          "ticker": "CVS",
-          "name": "CVS Health (Caremark)",
-          "effect": "negative",
-          "exposure": 72
-        },
-        {
-          "ticker": "CI",
-          "name": "Cigna Group (Express Scripts)",
-          "effect": "negative",
-          "exposure": 68
-        },
-        {
-          "ticker": "UNH",
-          "name": "UnitedHealth Group (OptumRx)",
-          "effect": "negative",
-          "exposure": 65
-        },
-        {
-          "ticker": "ESRX",
-          "name": "Express Scripts (Cigna subsidiary)",
-          "effect": "negative",
-          "exposure": 60
-        }
-      ]
-    },
-    {
       "bill_id": "HRES27",
+      "congress": 119,
       "title": "Expressing opposition to Central Business District Tolling Program of New York City.",
       "industry": "Transportation & Infrastructure",
       "direction": "mixed",
@@ -508,7 +114,13 @@
       "community_category_label": "None",
       "sponsor": "Rep. LaLota, Nick [R-NY-1]",
       "cosponsors": 3,
+      "cosponsor_names": [
+        "Rep. Garbarino, Andrew R. [R-NY-2]",
+        "Rep. Malliotakis, Nicole [R-NY-11]",
+        "Rep. Lawler, Michael [R-NY-17]"
+      ],
       "last_action": "Referred to the House Committee on Transportation and Infrastructure.",
+      "last_action_date": "2025-01-09",
       "next_event": "TBD",
       "summary": "Congressional resolution opposing NYC congestion pricing could delay or halt tolls on Manhattan drivers, benefiting commuters but hurting transit funding.",
       "companies": [
@@ -540,6 +152,7 @@
     },
     {
       "bill_id": "HR6",
+      "congress": 119,
       "title": "Reserved for the Speaker.",
       "industry": "Unknown",
       "direction": "mixed",
@@ -553,13 +166,16 @@
       "community_category_label": "None",
       "sponsor": "Rep. Johnson, Mike [R-LA-4]",
       "cosponsors": 0,
+      "cosponsor_names": [],
       "last_action": "",
+      "last_action_date": "",
       "next_event": "TBD",
       "summary": "No information available to assess legislative impact or affected industries.",
       "companies": []
     },
     {
       "bill_id": "HR9",
+      "congress": 119,
       "title": "Reserved for the Speaker.",
       "industry": "Unknown",
       "direction": "mixed",
@@ -573,13 +189,16 @@
       "community_category_label": "None",
       "sponsor": "Rep. Johnson, Mike [R-LA-4]",
       "cosponsors": 0,
+      "cosponsor_names": [],
       "last_action": "",
+      "last_action_date": "",
       "next_event": "TBD",
       "summary": "No information available to assess legislative impact on any industry or companies.",
       "companies": []
     },
     {
       "bill_id": "HR11",
+      "congress": 119,
       "title": "Reserved for the Minority Leader.",
       "industry": "Unknown",
       "direction": "mixed",
@@ -593,13 +212,16 @@
       "community_category_label": "None",
       "sponsor": "Rep. Jeffries, Hakeem S. [D-NY-8]",
       "cosponsors": 0,
+      "cosponsor_names": [],
       "last_action": "",
+      "last_action_date": "",
       "next_event": "TBD",
       "summary": "No information available to assess legislative impact or affected industries.",
       "companies": []
     },
     {
       "bill_id": "HR13",
+      "congress": 119,
       "title": "Reserved for the Minority Leader.",
       "industry": "Unknown",
       "direction": "mixed",
@@ -613,13 +235,16 @@
       "community_category_label": "None",
       "sponsor": "Rep. Jeffries, Hakeem S. [D-NY-8]",
       "cosponsors": 0,
+      "cosponsor_names": [],
       "last_action": "",
+      "last_action_date": "",
       "next_event": "TBD",
       "summary": "No information available to assess legislative impact or affected industries.",
       "companies": []
     },
     {
       "bill_id": "HR16",
+      "congress": 119,
       "title": "Reserved for the Minority Leader.",
       "industry": "Unknown",
       "direction": "mixed",
@@ -633,13 +258,16 @@
       "community_category_label": "None",
       "sponsor": "Rep. Jeffries, Hakeem S. [D-NY-8]",
       "cosponsors": 0,
+      "cosponsor_names": [],
       "last_action": "",
+      "last_action_date": "",
       "next_event": "TBD",
       "summary": "No information available to assess legislative impact or affected industries.",
       "companies": []
     },
     {
       "bill_id": "HR19",
+      "congress": 119,
       "title": "Reserved for the Minority Leader.",
       "industry": "Unknown",
       "direction": "mixed",
@@ -653,13 +281,16 @@
       "community_category_label": "None",
       "sponsor": "Rep. Jeffries, Hakeem S. [D-NY-8]",
       "cosponsors": 0,
+      "cosponsor_names": [],
       "last_action": "",
+      "last_action_date": "",
       "next_event": "TBD",
       "summary": "No information available to assess legislative impact or affected industries.",
       "companies": []
     },
     {
       "bill_id": "HJRES8",
+      "congress": 119,
       "title": "Proposing an amendment to the Constitution of the United States to provide certain line item veto authority to the President.",
       "industry": "Government/Public Sector",
       "direction": "mixed",
@@ -673,7 +304,11 @@
       "community_category_label": "None",
       "sponsor": "Rep. McClintock, Tom [R-CA-5]",
       "cosponsors": 1,
+      "cosponsor_names": [
+        "Rep. Weber, Randy K. Sr. [R-TX-14]"
+      ],
       "last_action": "Referred to the House Committee on the Judiciary.",
+      "last_action_date": "2025-01-03",
       "next_event": "TBD",
       "summary": "Proposed constitutional amendment granting presidential line-item veto could reduce federal spending, affecting defense, infrastructure, and social program contractors.",
       "companies": [
@@ -705,6 +340,7 @@
     },
     {
       "bill_id": "HRES9",
+      "congress": 119,
       "title": "Reaffirming that the United States is not a party to the Rome Statute and does not recognize the jurisdiction of the International Criminal Court.",
       "industry": "Defense & Foreign Policy",
       "direction": "positive",
@@ -718,7 +354,9 @@
       "community_category_label": "None",
       "sponsor": "Rep. Biggs, Andy [R-AZ-5]",
       "cosponsors": 0,
+      "cosponsor_names": [],
       "last_action": "Referred to the House Committee on Foreign Affairs.",
+      "last_action_date": "2025-01-03",
       "next_event": "TBD",
       "summary": "Resolution reaffirms US non-recognition of ICC jurisdiction and supports Israel, with limited direct commercial industry impact.",
       "companies": [
@@ -744,6 +382,7 @@
     },
     {
       "bill_id": "HRES8",
+      "congress": 119,
       "title": "Reaffirming the House of Representatives's commitment to ensuring secure elections throughout the United States by recognizing that the presentation of valid photograph identification is a fundamental component of secure elections.",
       "industry": "Election Technology & Identity Verification",
       "direction": "positive",
@@ -757,7 +396,12 @@
       "community_category_label": "None",
       "sponsor": "Rep. Biggs, Andy [R-AZ-5]",
       "cosponsors": 2,
+      "cosponsor_names": [
+        "Rep. Crane, Elijah [R-AZ-2]",
+        "Rep. Harshbarger, Diana [R-TN-1]"
+      ],
       "last_action": "Referred to the House Committee on House Administration.",
+      "last_action_date": "2025-01-03",
       "next_event": "TBD",
       "summary": "Non-binding resolution supporting voter photo ID requirements could modestly benefit identity verification and election technology companies.",
       "companies": [
@@ -777,6 +421,7 @@
     },
     {
       "bill_id": "HRES19",
+      "congress": 119,
       "title": "Providing the sense of the House of Representatives that the House should not adjourn until the annual appropriation bills within the jurisdiction of all the subcommittees of the Committee on Appropriations for the current fiscal year are enacted into law.",
       "industry": "Government/Public Administration",
       "direction": "mixed",
@@ -790,7 +435,12 @@
       "community_category_label": "None",
       "sponsor": "Rep. Ogles, Andrew [R-TN-5]",
       "cosponsors": 2,
+      "cosponsor_names": [
+        "Rep. Clyde, Andrew S. [R-GA-9]",
+        "Rep. Luna, Anna Paulina [R-FL-13]"
+      ],
       "last_action": "Referred to the House Committee on Appropriations.",
+      "last_action_date": "2025-01-07",
       "next_event": "TBD",
       "summary": "Resolution urges House to stay in session until all spending bills pass, potentially reducing uncertainty from continuing resolutions and government shutdowns.",
       "companies": [
@@ -822,6 +472,7 @@
     },
     {
       "bill_id": "HRES7",
+      "congress": 119,
       "title": "Recognizing the importance of access to comprehensive, high-quality, life-affirming medical care for women of all ages.",
       "industry": "Healthcare",
       "direction": "positive",
@@ -835,7 +486,11 @@
       "community_category_label": "Healthcare Access",
       "sponsor": "Rep. Biggs, Andy [R-AZ-5]",
       "cosponsors": 1,
+      "cosponsor_names": [
+        "Rep. Higgins, Clay [R-LA-3]"
+      ],
       "last_action": "Referred to the House Committee on Energy and Commerce.",
+      "last_action_date": "2025-01-03",
       "next_event": "TBD",
       "summary": "Non-binding resolution supporting women's healthcare access with no direct regulatory or funding changes expected.",
       "companies": [
@@ -861,6 +516,7 @@
     },
     {
       "bill_id": "HJRES21",
+      "congress": 119,
       "title": "Disapproving of the rule submitted by the Department of Homeland Security relating to \"Modernizing H-2 Program Requirements, Oversight, and Worker Protections\".",
       "industry": "Agriculture & Seasonal Labor",
       "direction": "negative",
@@ -874,7 +530,12 @@
       "community_category_label": "Immigration",
       "sponsor": "Rep. Arrington, Jodey C. [R-TX-19]",
       "cosponsors": 2,
+      "cosponsor_names": [
+        "Rep. Self, Keith [R-TX-3]",
+        "Rep. Moore, Riley [R-WV-2]"
+      ],
       "last_action": "Referred to the House Committee on the Judiciary.",
+      "last_action_date": "2025-01-16",
       "next_event": "TBD",
       "summary": "Nullifying H-2 worker protections could increase compliance uncertainty for employers relying on seasonal agricultural and nonagricultural guest workers.",
       "companies": [
@@ -906,6 +567,7 @@
     },
     {
       "bill_id": "SRES2",
+      "congress": 119,
       "title": "A resolution informing the House of Representatives that a quorum of the Senate is assembled.",
       "industry": "Government/Legislative Process",
       "direction": "mixed",
@@ -919,13 +581,16 @@
       "community_category_label": "None",
       "sponsor": "Sen. Thune, John [R-SD]",
       "cosponsors": 0,
+      "cosponsor_names": [],
       "last_action": "Message on Senate action sent to the House.",
+      "last_action_date": "2025-01-06",
       "next_event": "TBD",
       "summary": "Procedural Senate resolution with no direct economic impact; simply notifies the House that a Senate quorum is present.",
       "companies": []
     },
     {
       "bill_id": "SRES3",
+      "congress": 119,
       "title": "A resolution to elect Charles E. Grassley, a Senator from the State of Iowa, to be President pro tempore of the Senate of the United States.",
       "industry": "Government/Politics",
       "direction": "mixed",
@@ -939,13 +604,491 @@
       "community_category_label": "None",
       "sponsor": "Sen. Thune, John [R-SD]",
       "cosponsors": 0,
+      "cosponsor_names": [],
       "last_action": "Submitted in the Senate, considered, and agreed to without amendment by Unanimous Consent. (consideration: CR S6; text: CR S6)",
+      "last_action_date": "2025-01-03",
       "next_event": "TBD",
       "summary": "Elects Senator Grassley as Senate President pro tempore, a ceremonial leadership role with minimal direct industry impact.",
       "companies": []
     },
     {
+      "bill_id": "HR1842",
+      "congress": 119,
+      "title": "PAW Act of 2025",
+      "industry": "Animal Welfare / Pet Industry",
+      "direction": "mixed",
+      "passage_probability": 30,
+      "impact_score": 30,
+      "confidence": 15,
+      "status": "Referred to the House Committee on Ways and Means.",
+      "stage": "committee",
+      "schema_version": 3,
+      "community_category": "none",
+      "community_category_label": "None",
+      "sponsor": "Rep. Tenney, Claudia [R-NY-24]",
+      "cosponsors": 4,
+      "cosponsor_names": [
+        "Rep. Ross, Deborah K. [D-NC-2]",
+        "Rep. Malliotakis, Nicole [R-NY-11]",
+        "Rep. Tlaib, Rashida [D-MI-12]",
+        "Rep. Bresnahan, Robert P. [R-PA-8]"
+      ],
+      "last_action": "Referred to the House Committee on Ways and Means.",
+      "last_action_date": "2025-03-04",
+      "next_event": "TBD",
+      "summary": "Without a summary, precise impact is unclear, but PAW Act likely addresses animal welfare policy with mixed effects on pet-related industries.",
+      "companies": [
+        {
+          "ticker": "CHWY",
+          "name": "Chewy Inc.",
+          "effect": "mixed",
+          "exposure": 20
+        },
+        {
+          "ticker": "IDXX",
+          "name": "IDEXX Laboratories",
+          "effect": "mixed",
+          "exposure": 15
+        }
+      ]
+    },
+    {
+      "bill_id": "S622",
+      "congress": 119,
+      "title": "Leech Lake Reservation Restoration Amendments Act of 2025",
+      "industry": "Forestry & Land Management",
+      "direction": "mixed",
+      "passage_probability": 15,
+      "impact_score": 25,
+      "confidence": 55,
+      "status": "Held at the desk.",
+      "stage": "introduced",
+      "schema_version": 3,
+      "community_category": "none",
+      "community_category_label": "None",
+      "sponsor": "Sen. Smith, Tina [D-MN]",
+      "cosponsors": 1,
+      "cosponsor_names": [
+        "Sen. Klobuchar, Amy [D-MN]"
+      ],
+      "last_action": "Held at the desk.",
+      "last_action_date": "2025-12-15",
+      "next_event": "TBD",
+      "summary": "Federal land in Minnesota's Chippewa National Forest transfers to Leech Lake Band of Ojibwe, modestly reshaping timber and resource access in the region.",
+      "companies": [
+        {
+          "ticker": "WY",
+          "name": "Weyerhaeuser Company",
+          "effect": "mixed",
+          "exposure": 10
+        },
+        {
+          "ticker": "RYN",
+          "name": "Rayonier Inc.",
+          "effect": "mixed",
+          "exposure": 8
+        }
+      ]
+    },
+    {
+      "bill_id": "HR3101",
+      "congress": 119,
+      "title": "SHIELD Act",
+      "industry": "Technology / Patent Litigation",
+      "direction": "positive",
+      "passage_probability": 33,
+      "impact_score": 45,
+      "confidence": 20,
+      "status": "Referred to the House Committee on the Judiciary.",
+      "stage": "committee",
+      "schema_version": 3,
+      "community_category": "immigration",
+      "community_category_label": "Immigration",
+      "sponsor": "Rep. Garcia, Robert [D-CA-42]",
+      "cosponsors": 17,
+      "cosponsor_names": [
+        "Rep. Torres, Norma J. [D-CA-35]",
+        "Rep. Ramirez, Delia C. [D-IL-3]",
+        "Rep. Vel\u00e1zquez, Nydia M. [D-NY-7]",
+        "Rep. Frost, Maxwell [D-FL-10]",
+        "Rep. Espaillat, Adriano [D-NY-13]",
+        "Rep. Lee, Summer L. [D-PA-12]",
+        "Rep. Omar, Ilhan [D-MN-5]",
+        "Rep. Barrag\u00e1n, Nanette Diaz [D-CA-44]",
+        "Rep. Goldman, Daniel S. [D-NY-10]",
+        "Rep. Salinas, Andrea [D-OR-6]",
+        "Del. Norton, Eleanor Holmes [D-DC-At Large]",
+        "Rep. Vargas, Juan [D-CA-52]",
+        "Rep. Thanedar, Shri [D-MI-13]",
+        "Rep. Tlaib, Rashida [D-MI-12]",
+        "Rep. Crockett, Jasmine [D-TX-30]",
+        "Rep. Latimer, George [D-NY-16]",
+        "Rep. Simon, Lateefah [D-CA-12]"
+      ],
+      "last_action": "Referred to the House Committee on the Judiciary.",
+      "last_action_date": "2025-04-30",
+      "next_event": "TBD",
+      "summary": "Insufficient bill summary to assess impact; SHIELD Act name suggests patent troll litigation reform affecting tech companies.",
+      "companies": [
+        {
+          "ticker": "GOOGL",
+          "name": "Alphabet Inc.",
+          "effect": "positive",
+          "exposure": 40
+        },
+        {
+          "ticker": "MSFT",
+          "name": "Microsoft Corporation",
+          "effect": "positive",
+          "exposure": 38
+        },
+        {
+          "ticker": "AAPL",
+          "name": "Apple Inc.",
+          "effect": "positive",
+          "exposure": 35
+        }
+      ]
+    },
+    {
+      "bill_id": "HR6179",
+      "congress": 119,
+      "title": "Clean Cloud Act of 2025",
+      "industry": "Data Centers & Cloud Computing",
+      "direction": "negative",
+      "passage_probability": 31,
+      "impact_score": 72,
+      "confidence": 78,
+      "status": "Referred to the House Committee on Energy and Commerce.",
+      "stage": "committee",
+      "schema_version": 3,
+      "community_category": "environment",
+      "community_category_label": "Environment",
+      "sponsor": "Rep. Cohen, Steve [D-TN-9]",
+      "cosponsors": 9,
+      "cosponsor_names": [
+        "Rep. Castor, Kathy [D-FL-14]",
+        "Rep. Dean, Madeleine [D-PA-4]",
+        "Rep. Goldman, Daniel S. [D-NY-10]",
+        "Rep. Jayapal, Pramila [D-WA-7]",
+        "Rep. Morrison, Kelly [D-MN-3]",
+        "Del. Norton, Eleanor Holmes [D-DC-At Large]",
+        "Rep. Quigley, Mike [D-IL-5]",
+        "Rep. Pingree, Chellie [D-ME-1]",
+        "Rep. Olszewski, Johnny [D-MD-2]"
+      ],
+      "last_action": "Referred to the House Committee on Energy and Commerce.",
+      "last_action_date": "2025-11-20",
+      "next_event": "TBD",
+      "summary": "Bill imposes escalating emissions fees on large data centers and cryptomining facilities, increasing operating costs through 2035 when a zero-emissions baseline takes effect.",
+      "companies": [
+        {
+          "ticker": "AMZN",
+          "name": "Amazon.com Inc.",
+          "effect": "negative",
+          "exposure": 65
+        },
+        {
+          "ticker": "MSFT",
+          "name": "Microsoft Corporation",
+          "effect": "mixed",
+          "exposure": 60
+        },
+        {
+          "ticker": "GOOGL",
+          "name": "Alphabet Inc.",
+          "effect": "mixed",
+          "exposure": 58
+        },
+        {
+          "ticker": "MARA",
+          "name": "MARA Holdings Inc.",
+          "effect": "negative",
+          "exposure": 85
+        }
+      ]
+    },
+    {
+      "bill_id": "HR6983",
+      "congress": 119,
+      "title": "PRICE Act",
+      "industry": "Energy & Commerce",
+      "direction": "mixed",
+      "passage_probability": 30,
+      "impact_score": 30,
+      "confidence": 10,
+      "status": "Referred to the House Committee on Energy and Commerce.",
+      "stage": "committee",
+      "schema_version": 3,
+      "community_category": "none",
+      "community_category_label": "None",
+      "sponsor": "Rep. Menendez, Robert [D-NJ-8]",
+      "cosponsors": 4,
+      "cosponsor_names": [
+        "Rep. Casar, Greg [D-TX-35]",
+        "Rep. Grijalva, Adelita S. [D-AZ-7]",
+        "Rep. Larson, John B. [D-CT-1]",
+        "Rep. Vel\u00e1zquez, Nydia M. [D-NY-7]"
+      ],
+      "last_action": "Referred to the House Committee on Energy and Commerce.",
+      "last_action_date": "2026-01-08",
+      "next_event": "TBD",
+      "summary": "Insufficient bill summary available to determine meaningful economic or regulatory impact on any specific industry.",
+      "companies": []
+    },
+    {
+      "bill_id": "HR2152",
+      "congress": 119,
+      "title": "AI PLAN Act",
+      "industry": "Financial Technology & Cybersecurity",
+      "direction": "mixed",
+      "passage_probability": 16,
+      "impact_score": 30,
+      "confidence": 55,
+      "status": "Placed on the Union Calendar, Calendar No. 615.",
+      "stage": "introduced",
+      "schema_version": 3,
+      "community_category": "none",
+      "community_category_label": "None",
+      "sponsor": "Rep. Nunn, Zachary [R-IA-3]",
+      "cosponsors": 7,
+      "cosponsor_names": [
+        "Rep. Himes, James A. [D-CT-4]",
+        "Rep. Begich, Nicholas J. [R-AK-At Large]",
+        "Rep. Moran, Nathaniel [R-TX-1]",
+        "Rep. Vindman, Eugene Simon [D-VA-7]",
+        "Rep. Gottheimer, Josh [D-NJ-5]",
+        "Rep. Gillen, Laura [D-NY-4]",
+        "Rep. McDonald Rivet, Kristen [D-MI-8]"
+      ],
+      "last_action": "Placed on the Union Calendar, Calendar No. 615.",
+      "last_action_date": "2026-06-24",
+      "next_event": "TBD",
+      "summary": "Bill mandates a federal study on AI-driven financial crime risks, likely spurring demand for AI fraud detection and compliance solutions.",
+      "companies": [
+        {
+          "ticker": "PANW",
+          "name": "Palo Alto Networks",
+          "effect": "positive",
+          "exposure": 35
+        },
+        {
+          "ticker": "FICO",
+          "name": "Fair Isaac Corporation",
+          "effect": "positive",
+          "exposure": 40
+        },
+        {
+          "ticker": "BAC",
+          "name": "Bank of America",
+          "effect": "mixed",
+          "exposure": 30
+        },
+        {
+          "ticker": "SIFT",
+          "name": "Sift Science",
+          "effect": "positive",
+          "exposure": 45
+        }
+      ]
+    },
+    {
+      "bill_id": "HR7147",
+      "congress": 119,
+      "title": "Homeland Security and Further Additional Continuing Appropriations Act, 2026.",
+      "industry": "Defense & Homeland Security",
+      "direction": "positive",
+      "passage_probability": 100,
+      "impact_score": 62,
+      "confidence": 72,
+      "status": "Became Public Law No: 119-86.",
+      "stage": "became_law",
+      "schema_version": 3,
+      "community_category": "none",
+      "community_category_label": "None",
+      "sponsor": "Rep. Cole, Tom [R-OK-4]",
+      "cosponsors": 0,
+      "cosponsor_names": [],
+      "last_action": "Became Public Law No: 119-86.",
+      "last_action_date": "2026-04-30",
+      "next_event": "TBD",
+      "summary": "Funds DHS operations for FY2026, sustaining federal contracts for border security, cybersecurity, and emergency management vendors.",
+      "companies": [
+        {
+          "ticker": "LDOS",
+          "name": "Leidos Holdings",
+          "effect": "positive",
+          "exposure": 55
+        },
+        {
+          "ticker": "BAH",
+          "name": "Booz Allen Hamilton",
+          "effect": "positive",
+          "exposure": 50
+        },
+        {
+          "ticker": "SAIC",
+          "name": "Science Applications International Corp",
+          "effect": "positive",
+          "exposure": 48
+        },
+        {
+          "ticker": "CACI",
+          "name": "CACI International",
+          "effect": "positive",
+          "exposure": 45
+        }
+      ]
+    },
+    {
+      "bill_id": "HR7006",
+      "congress": 119,
+      "title": "Financial Services and General Government and National Security, Department of State, and Related Programs Appropriations Act, 2026",
+      "industry": "Financial Services & Government Contracting",
+      "direction": "mixed",
+      "passage_probability": 15,
+      "impact_score": 42,
+      "confidence": 55,
+      "status": "Received in the Senate.",
+      "stage": "introduced",
+      "schema_version": 3,
+      "community_category": "none",
+      "community_category_label": "None",
+      "sponsor": "Rep. Cole, Tom [R-OK-4]",
+      "cosponsors": 0,
+      "cosponsor_names": [],
+      "last_action": "Received in the Senate.",
+      "last_action_date": "2026-01-15",
+      "next_event": "TBD",
+      "summary": "Bill funds federal financial agencies and foreign aid programs, affecting government contractors, defense firms, and financial regulators in FY2026.",
+      "companies": [
+        {
+          "ticker": "BAH",
+          "name": "Booz Allen Hamilton",
+          "effect": "positive",
+          "exposure": 55
+        },
+        {
+          "ticker": "SAIC",
+          "name": "Science Applications International Corp",
+          "effect": "positive",
+          "exposure": 48
+        },
+        {
+          "ticker": "V",
+          "name": "Visa Inc",
+          "effect": "mixed",
+          "exposure": 20
+        },
+        {
+          "ticker": "GS",
+          "name": "Goldman Sachs",
+          "effect": "mixed",
+          "exposure": 18
+        }
+      ]
+    },
+    {
+      "bill_id": "HR9040",
+      "congress": 119,
+      "title": "Regulate the Price of All Drugs Act",
+      "industry": "Pharmaceuticals",
+      "direction": "negative",
+      "passage_probability": 30,
+      "impact_score": 82,
+      "confidence": 45,
+      "status": "Referred to the Committee on Energy and Commerce, and in addition to the Committees on the Judiciary, and Financial Services, for a period to be subsequently determined by the Speaker, in each case for consideration of such provisions as fall within the jurisdiction of the committee concerned.",
+      "stage": "committee",
+      "schema_version": 3,
+      "community_category": "healthcare_access",
+      "community_category_label": "Healthcare Access",
+      "sponsor": "Rep. Sherman, Brad [D-CA-32]",
+      "cosponsors": 0,
+      "cosponsor_names": [],
+      "last_action": "Referred to the Committee on Energy and Commerce, and in addition to the Committees on the Judiciary, and Financial Services, for a period to be subsequently determined by the Speaker, in each case for consideration of such provisions as fall within the jurisdiction of the committee concerned.",
+      "last_action_date": "2026-05-26",
+      "next_event": "TBD",
+      "summary": "Proposed drug price regulation would significantly compress pharmaceutical revenue and profit margins across the industry.",
+      "companies": [
+        {
+          "ticker": "JNJ",
+          "name": "Johnson & Johnson",
+          "effect": "negative",
+          "exposure": 70
+        },
+        {
+          "ticker": "PFE",
+          "name": "Pfizer",
+          "effect": "negative",
+          "exposure": 75
+        },
+        {
+          "ticker": "MRK",
+          "name": "Merck & Co.",
+          "effect": "negative",
+          "exposure": 78
+        },
+        {
+          "ticker": "ABBV",
+          "name": "AbbVie",
+          "effect": "negative",
+          "exposure": 80
+        }
+      ]
+    },
+    {
+      "bill_id": "HR9393",
+      "congress": 119,
+      "title": "Lower Costs, More Transparency Act of 2026",
+      "industry": "Healthcare / Pharmacy Benefit Management",
+      "direction": "negative",
+      "passage_probability": 30,
+      "impact_score": 68,
+      "confidence": 42,
+      "status": "Ordered to be Reported in the Nature of a Substitute by the Yeas and Nays: 45 - 0.",
+      "stage": "committee",
+      "schema_version": 3,
+      "community_category": "healthcare_access",
+      "community_category_label": "Healthcare Access",
+      "sponsor": "Rep. Guthrie, Brett [R-KY-2]",
+      "cosponsors": 1,
+      "cosponsor_names": [
+        "Rep. Pallone, Frank [D-NJ-6]"
+      ],
+      "last_action": "Ordered to be Reported in the Nature of a Substitute by the Yeas and Nays: 45 - 0.",
+      "last_action_date": "2026-07-21",
+      "next_event": "TBD",
+      "summary": "Bill likely targets drug pricing transparency and PBM reform, pressuring pharmacy benefit managers and potentially lowering drug costs.",
+      "companies": [
+        {
+          "ticker": "CVS",
+          "name": "CVS Health (Caremark)",
+          "effect": "negative",
+          "exposure": 72
+        },
+        {
+          "ticker": "CI",
+          "name": "Cigna Group (Express Scripts)",
+          "effect": "negative",
+          "exposure": 68
+        },
+        {
+          "ticker": "UNH",
+          "name": "UnitedHealth Group (OptumRx)",
+          "effect": "negative",
+          "exposure": 65
+        },
+        {
+          "ticker": "ESRX",
+          "name": "Express Scripts (Cigna subsidiary)",
+          "effect": "negative",
+          "exposure": 60
+        }
+      ]
+    },
+    {
       "bill_id": "HR123",
+      "congress": 119,
       "title": "Improving Science in Chemical Assessments Act",
       "industry": "Chemicals",
       "direction": "mixed",
@@ -959,7 +1102,9 @@
       "community_category_label": "Environment",
       "sponsor": "Rep. Biggs, Andy [R-AZ-5]",
       "cosponsors": 0,
+      "cosponsor_names": [],
       "last_action": "Referred to the Committee on Science, Space, and Technology, and in addition to the Committee on Energy and Commerce, for a period to be subsequently determined by the Speaker, in each case for consideration of such provisions as fall within the jurisdiction of the committee concerned.",
+      "last_action_date": "2025-01-03",
       "next_event": "TBD",
       "summary": "Bill restructures EPA chemical risk assessment procedures, potentially slowing or easing regulatory burdens on chemical manufacturers depending on implementation.",
       "companies": [
@@ -991,6 +1136,7 @@
     },
     {
       "bill_id": "HR78",
+      "congress": 119,
       "title": "Pregnant Women Health and Safety Act of 2025",
       "industry": "Healthcare",
       "direction": "negative",
@@ -1004,7 +1150,11 @@
       "community_category_label": "Safety",
       "sponsor": "Rep. Biggs, Andy [R-AZ-5]",
       "cosponsors": 1,
+      "cosponsor_names": [
+        "Rep. Allen, Rick W. [R-GA-12]"
+      ],
       "last_action": "Referred to the Committee on the Judiciary, and in addition to the Committee on Energy and Commerce, for a period to be subsequently determined by the Speaker, in each case for consideration of such provisions as fall within the jurisdiction of the committee concerned.",
+      "last_action_date": "2025-01-03",
       "next_event": "TBD",
       "summary": "Bill imposes admitting privilege requirements and ambulatory surgical center standards on abortion providers, likely reducing access and clinic operations nationwide.",
       "companies": [
@@ -1030,6 +1180,7 @@
     },
     {
       "bill_id": "HR118",
+      "congress": 119,
       "title": "No Federal Funds for Political Prosecutions Act",
       "industry": "Government/Law Enforcement",
       "direction": "mixed",
@@ -1043,13 +1194,16 @@
       "community_category_label": "Safety",
       "sponsor": "Rep. Biggs, Andy [R-AZ-5]",
       "cosponsors": 0,
+      "cosponsor_names": [],
       "last_action": "Referred to the Committee on the Judiciary, and in addition to the Committee on Energy and Commerce, for a period to be subsequently determined by the Speaker, in each case for consideration of such provisions as fall within the jurisdiction of the committee concerned.",
+      "last_action_date": "2025-01-03",
       "next_event": "TBD",
       "summary": "Bill restricts federal equitable sharing funds from being used by state or local agencies to prosecute current or former presidents or vice presidents.",
       "companies": []
     },
     {
       "bill_id": "HRES52",
+      "congress": 119,
       "title": "Recognizing and honoring the work of community organizations and individuals who create and maintain services and educational programs for marginalized groups ensuring the resilience and prosperity of members of the LGBTQIA+ community.",
       "industry": "Nonprofit/Social Services",
       "direction": "positive",
@@ -1063,13 +1217,37 @@
       "community_category_label": "Civil Rights",
       "sponsor": "Rep. Watson Coleman, Bonnie [D-NJ-12]",
       "cosponsors": 27,
+      "cosponsor_names": [
+        "Rep. Tlaib, Rashida [D-MI-12]",
+        "Rep. Espaillat, Adriano [D-NY-13]",
+        "Rep. Vel\u00e1zquez, Nydia M. [D-NY-7]",
+        "Del. Norton, Eleanor Holmes [D-DC-At Large]",
+        "Rep. McIver, LaMonica [D-NJ-10]",
+        "Rep. Quigley, Mike [D-IL-5]",
+        "Rep. Johnson, Henry C. \"Hank\" [D-GA-4]",
+        "Rep. Mullin, Kevin [D-CA-15]",
+        "Rep. Titus, Dina [D-NV-1]",
+        "Rep. Evans, Dwight [D-PA-3]",
+        "Rep. Sewell, Terri A. [D-AL-7]",
+        "Rep. Hayes, Jahana [D-CT-5]",
+        "Rep. Moskowitz, Jared [D-FL-23]",
+        "Rep. Gottheimer, Josh [D-NJ-5]",
+        "Rep. Krishnamoorthi, Raja [D-IL-8]",
+        "Rep. Doggett, Lloyd [D-TX-37]",
+        "Rep. Ramirez, Delia C. [D-IL-3]",
+        "Rep. Pallone, Frank [D-NJ-6]",
+        "Rep. Swalwell, Eric [D-CA-14]",
+        "Rep. Carson, Andr\u00e9 [D-IN-7]"
+      ],
       "last_action": "Referred to the House Committee on the Judiciary.",
+      "last_action_date": "2025-01-16",
       "next_event": "TBD",
       "summary": "Symbolic resolution honoring LGBTQIA+ community organizations with no direct regulatory or financial impact on any industry.",
       "companies": []
     },
     {
       "bill_id": "HR91",
+      "congress": 119,
       "title": "Freedom for Farmers Act of 2025",
       "industry": "Agriculture/Environmental Health",
       "direction": "mixed",
@@ -1083,7 +1261,9 @@
       "community_category_label": "Healthcare Access",
       "sponsor": "Rep. Biggs, Andy [R-AZ-5]",
       "cosponsors": 0,
+      "cosponsor_names": [],
       "last_action": "Referred to the House Committee on Energy and Commerce.",
+      "last_action_date": "2025-01-03",
       "next_event": "TBD",
       "summary": "Abolishing the ATSDR reduces federal oversight of toxic exposure near farms, potentially benefiting agrochemical companies but raising public health concerns.",
       "companies": [
@@ -1115,6 +1295,7 @@
     },
     {
       "bill_id": "HR62",
+      "congress": 119,
       "title": "WILLIS Act",
       "industry": "Government/Legal Services",
       "direction": "negative",
@@ -1128,13 +1309,19 @@
       "community_category_label": "Safety",
       "sponsor": "Rep. Biggs, Andy [R-AZ-5]",
       "cosponsors": 2,
+      "cosponsor_names": [
+        "Rep. Crane, Elijah [R-AZ-2]",
+        "Rep. Luna, Anna Paulina [R-FL-13]"
+      ],
       "last_action": "Referred to the House Committee on the Judiciary.",
+      "last_action_date": "2025-01-03",
       "next_event": "TBD",
       "summary": "Bill would cut federal funding to Fulton County DA's office, with minimal direct private-sector industry impact.",
       "companies": []
     },
     {
       "bill_id": "HR63",
+      "congress": 119,
       "title": "ALVIN Act",
       "industry": "Government/Legal",
       "direction": "negative",
@@ -1148,7 +1335,13 @@
       "community_category_label": "Safety",
       "sponsor": "Rep. Biggs, Andy [R-AZ-5]",
       "cosponsors": 3,
+      "cosponsor_names": [
+        "Rep. Crane, Elijah [R-AZ-2]",
+        "Rep. Brecheen, Josh [R-OK-2]",
+        "Rep. Luna, Anna Paulina [R-FL-13]"
+      ],
       "last_action": "Referred to the House Committee on the Judiciary.",
+      "last_action_date": "2025-01-03",
       "next_event": "TBD",
       "summary": "Bill would cut federal funding to Manhattan DA's office, with minimal direct impact on publicly traded companies.",
       "companies": []
