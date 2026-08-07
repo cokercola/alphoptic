@@ -870,3 +870,22 @@ table.data-table a { color: var(--blue); text-decoration: none; }
   padding: 3px 9px;
   border-radius: 10px;
 }
+
+/* Bills index pagination */
+.pagination-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.pagination-btn:hover:not(:disabled) {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
