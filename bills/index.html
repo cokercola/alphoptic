@@ -57,6 +57,17 @@ const STALLED_THRESHOLD_DAYS = 180;
 // correct, not a sign of anything dormant.
 const STALLABLE_STAGES = new Set(['introduced', 'committee', 'passed_one_chamber', 'passed_both']);
 
+// Must match the same normalization used on the Industries page, so a
+// "View all" link there reliably matches every bill with that industry
+// here, regardless of minor spacing variations in the raw classification.
+function normalizeIndustryLabel(industry) {
+  return (industry || 'Unknown')
+    .trim()
+    .replace(/\s*\/\s*/g, '/')
+    .replace(/\s*&\s*/g, ' & ')
+    .replace(/\s+/g, ' ');
+}
+
 function daysSince(dateStr) {
   if (!dateStr) return null;
   const diffMs = Date.now() - new Date(dateStr).getTime();
@@ -86,7 +97,7 @@ function renderBillsTable(stageFilter, resetPage = true) {
     filtered = filtered.filter(s => s.community_category === currentCategoryFilter);
   }
   if (currentIndustryFilter) {
-    filtered = filtered.filter(s => s.industry === currentIndustryFilter);
+    filtered = filtered.filter(s => normalizeIndustryLabel(s.industry) === currentIndustryFilter);
   }
 
   // Build the contextual heading + clear-filter link
