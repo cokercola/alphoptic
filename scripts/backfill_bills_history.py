@@ -60,11 +60,14 @@ from fetch_bills import (
     FALLBACK_CLASSIFICATION,
     BILLS_JSON_PATH,
     BILL_ID_RE,
+    COMMUNITY_CATEGORIES,
+    COMMUNITY_CATEGORY_LABELS,
     client,
     extract_json_object,
     fetch_bill,
     fetch_bill_cosponsors,
     fetch_bill_summary,
+    fetch_total_bill_count,
     bill_stage,
     STAGE_LABELS,
     passage_probability,
@@ -283,6 +286,7 @@ def build_signal_from_result(meta, classification, schema_version):
         "stage_label": STAGE_LABELS[stage],
         "passage_probability": passage_probability(bill_like, stage),
         "community_category": community_category,
+        "community_category_label": COMMUNITY_CATEGORY_LABELS.get(community_category, "None"),
         "schema_version": schema_version,
         **classification,
     }
@@ -389,7 +393,19 @@ def cmd_poll(args):
 
     stage_counts = {stage: 0 for stage in STAGE_LABELS}
     for s in signals:
-        stage_counts[s.get("stage", "introduced")] += 1
+        stage_counts[s.get("stage", "introduced")] = stage_counts.get(s.get("stage", "introduced"), 0) + 1
+
+    community_counts = {cat: 0 for cat in COMMUNITY_CATEGORIES}
+    for s in signals:
+        cat = s.get("community_category")
+        if cat in community_counts:
+            community_counts[cat] += 1
+
+    try:
+        total_bills_this_congress = fetch_total_bill_count()
+    except requests.HTTPError as e:
+        print(f"WARNING: couldn't fetch total bill count ({e}); omitting from output.")
+        total_bills_this_congress = None
 
     output = {
         "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
@@ -398,9 +414,23 @@ def cmd_poll(args):
             "high_impact": sum(1 for s in signals if s.get("impact_score", 0) >= 70),
             "new_signals_today": len(new_signals),
             "industries_affected": len({s.get("industry") for s in signals if s.get("industry")}),
+            "total_bills_this_congress": total_bills_this_congress,
             "stage_breakdown": [
-                {"stage": st, "label": STAGE_LABELS[st], "count": stage_counts[st], "full_coverage": True}
-                for st in STAGE_LABELS
+                {
+                    "stage": stage,
+                    "label": STAGE_LABELS[stage],
+                    "count": stage_counts[stage],
+                    "full_coverage": stage != "introduced",
+                }
+                for stage in STAGE_LABELS
+            ],
+            "community_categories": [
+                {
+                    "category": cat,
+                    "label": COMMUNITY_CATEGORY_LABELS[cat],
+                    "count": community_counts[cat],
+                }
+                for cat in COMMUNITY_CATEGORIES
             ],
         },
         "signals": signals,
