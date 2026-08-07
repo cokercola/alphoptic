@@ -102,7 +102,7 @@ function renderBillsTable(stageFilter) {
 }
 
 async function init() {
-  renderSidebar('bills');
+  renderSidebar(new URLSearchParams(window.location.search).get('stalled') === '1' ? 'stalled' : 'bills');
   const data = await fetchSiteData();
   document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
 
@@ -118,6 +118,13 @@ async function init() {
   allSignals = data.signals.map(s => ({ ...s, stageLabel: labelByStage[s.stage] || s.stage }));
 
   renderStageBreakdown('stage-breakdown', data.summary, (stage) => renderBillsTable(stage));
+
+  // Deep link from the dashboard's "Stalled bills" teaser
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('stalled') === '1') {
+    document.getElementById('stalled-toggle').checked = true;
+  }
+
   renderBillsTable('all');
 
   document.getElementById('stalled-toggle').addEventListener('change', () => {
