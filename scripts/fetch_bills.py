@@ -585,7 +585,7 @@ def main():
         "summary": {
             "bills_tracked": len(signals),
             "high_impact": sum(1 for s in signals if s["impact_score"] >= 70),
-            "new_signals_today": len(signals),
+            "new_signals_today": classified,
             "industries_affected": len({s["industry"] for s in signals}),
             "total_bills_this_congress": total_bills_this_congress,
             "stage_breakdown": [
