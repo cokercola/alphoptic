@@ -59,6 +59,7 @@ from fetch_bills import (
     CLASSIFY_PROMPT,
     FALLBACK_CLASSIFICATION,
     BILLS_JSON_PATH,
+    BILL_ID_RE,
     client,
     extract_json_object,
     fetch_bill,
