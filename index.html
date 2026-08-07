@@ -45,6 +45,7 @@
     </div>
     <div id="signal-list"></div>
     <div id="community-highlight"></div>
+    <div id="stalled-highlight"></div>
   </main>
   <aside class="ticker-panel">
     <div class="section-label">Watchlist</div>
@@ -67,6 +68,71 @@ loadTradesData('data/congress-trades.json', function (data) {
 <script src="/assets/onboarding.js"></script>
 <script>
 renderSidebar('dashboard');
+</script>
+<script>
+// Stalled bills teaser -- self-contained, separate from app.js's
+// community-highlight render, so it doesn't require touching code
+// whose internals aren't visible in this edit. Same threshold/logic
+// as bills/index.html's "Stalled only" toggle, kept in sync manually.
+(async function renderStalledHighlight() {
+  const STALLED_THRESHOLD_DAYS = 60;
+  const STALLABLE_STAGES = new Set(['introduced', 'committee', 'passed_one_chamber', 'passed_both']);
+  const TEASER_COUNT = 3;
+
+  function daysSince(dateStr) {
+    if (!dateStr) return null;
+    return Math.floor((Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24));
+  }
+
+  try {
+    const data = await fetchSiteData();
+    const labelByStage = {};
+    (data.summary.stage_breakdown || []).forEach(s => { labelByStage[s.stage] = s.label; });
+
+    const stalled = (data.signals || [])
+      .filter(s => STALLABLE_STAGES.has(s.stage))
+      .map(s => ({ ...s, daysStalled: daysSince(s.last_action_date) }))
+      .filter(s => s.daysStalled !== null && s.daysStalled >= STALLED_THRESHOLD_DAYS)
+      .sort((a, b) => b.daysStalled - a.daysStalled)
+      .slice(0, TEASER_COUNT);
+
+    const el = document.getElementById('stalled-highlight');
+    if (!stalled.length) {
+      el.innerHTML = `
+        <div class="stalled-highlight">
+          <div class="stalled-highlight-head">
+            <span>Stalled bills</span>
+            <a href="/bills/index.html?stalled=1">View all →</a>
+          </div>
+          <div class="stalled-highlight-meta">No stalled bills right now — everything tracked has had action in the last ${STALLED_THRESHOLD_DAYS} days.</div>
+        </div>
+      `;
+      return;
+    }
+
+    el.innerHTML = `
+      <div class="stalled-highlight">
+        <div class="stalled-highlight-head">
+          <span>Stalled bills</span>
+          <a href="/bills/index.html?stalled=1">View all →</a>
+        </div>
+        ${stalled.map(s => `
+          <div class="stalled-highlight-row">
+            <div>
+              <div class="stalled-highlight-title"><a href="/bills/detail.html?id=${s.bill_id}" style="color:inherit; text-decoration:none;">${s.bill_id} — ${s.title}</a></div>
+              <div class="stalled-highlight-meta">Sponsor: ${s.sponsor} · ${labelByStage[s.stage] || s.stage}</div>
+            </div>
+            <span class="stalled-days-badge">${s.daysStalled} days</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } catch (err) {
+    console.error(err);
+    // Fails silently on the dashboard teaser -- the full bills page
+    // remains the source of truth if this can't load for any reason.
+  }
+})();
 </script>
  <div id="site-footer"></div>
  <script src="/assets/footer.js"></script>
