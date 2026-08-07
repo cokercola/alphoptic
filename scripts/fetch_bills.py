@@ -5,14 +5,31 @@ static dashboard to read.
 
 Bill coverage = your hand-picked WATCHED_BILLS (always included) PLUS
 the AUTO_FETCH_LIMIT most recently-updated bills from Congress.gov
-(auto-discovered every run). This lets coverage grow over time without
-manually adding every bill number.
+(auto-discovered every run) PLUS every bill tracked in a PREVIOUS run
+(carried forward automatically). Coverage is CUMULATIVE - once a bill
+is discovered, it stays tracked and keeps getting checked for status
+changes, even after it's no longer among the most-recently-updated
+bills. (Earlier versions of this script only kept whichever bills
+happened to be in that run's auto-fetch window, so bills would quietly
+disappear from tracking once they stopped being "recent" - fixed here.)
+
+Note: since coverage only grows, the daily Congress.gov call volume
+(free, generous limit) and the theoretical Claude re-classification
+surface both grow slowly over time too, though caching keeps actual
+Claude calls limited to bills whose status has changed. Worth revisiting
+with a pruning rule later (e.g. stop tracking bills that became law or
+failed months ago) if the tracked count grows large enough to matter.
 
 Classification is CACHED: if a bill was already classified in a
 previous run and its latest action hasn't changed since then, we reuse
 the cached classification instead of calling Claude again. This keeps
 cost roughly proportional to *new* bills and *changed* bills only, not
 your total tracked bill count.
+
+Each bill also stores its cosponsors by NAME (not just a count), fetched
+from Congress.gov's separate cosponsors endpoint - needed to answer
+questions like "what bills is Senator X cosponsoring" or "what bills
+has Senator Y sponsored that aren't moving."
 
 Run once daily via .github/workflows/update-bills.yml
 
@@ -27,6 +44,8 @@ import datetime
 import requests
 import anthropic
 
+import re
+
 CONGRESS_API_KEY = os.environ["CONGRESS_API_KEY"]
 CONGRESS_BASE = "https://api.congress.gov/v3"
 BILLS_JSON_PATH = "data/bills.json"
@@ -39,21 +58,15 @@ CLASSIFICATION_SCHEMA_VERSION = 3  # v3: community_category is now derived deter
 
 client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
 
-# Hand-picked bills you always want tracked, regardless of whether
-# they're currently "recently updated." Keep adding to this list for
-# anything specific you care about.
-WATCHED_BILLS = [
-    {"congress": 119, "type": "hr", "number": 1842},
-    {"congress": 119, "type": "s", "number": 622},
-    {"congress": 119, "type": "hr", "number": 3101},
-    {"congress": 119, "type": "hr", "number": 6179},   # Clean Cloud Act - data centers/crypto mining energy use
-    {"congress": 119, "type": "hr", "number": 6983},   # PRICE Act - data center electricity generation requirements
-    {"congress": 119, "type": "hr", "number": 2152},   # AI PLAN Act - AI-enabled financial crime/fraud strategy
-    {"congress": 119, "type": "hr", "number": 7147},   # DHS Appropriations Act, 2026
-    {"congress": 119, "type": "hr", "number": 7006},   # Financial Services & General Government Appropriations Act, 2026
-    {"congress": 119, "type": "hr", "number": 9040},   # Regulate the Price of All Drugs Act
-    {"congress": 119, "type": "hr", "number": 9393},   # Lower Costs, More Transparency Act of 2026
-]
+# Reserved for bills you specifically want tracked even though
+# auto-discovery structurally can't find them -- e.g. a genuinely
+# dormant bill (no recent action means it never appears in the
+# "recently updated" sort auto-fetch relies on). NOT for hand-picking
+# bills because they make a good demo; that undermines the "everything
+# here is real, unbiased tracked activity" premise the dashboard relies
+# on. Empty at launch -- everything is discovered organically via
+# fetch_recent_bill_refs() below.
+WATCHED_BILLS = []
 
 # How many additional, auto-discovered "recently updated" bills to pull
 # each run, on top of WATCHED_BILLS above. Raise this over time as you
@@ -94,6 +107,18 @@ def fetch_bill(congress, bill_type, number):
     resp = requests.get(url, params=params, timeout=30)
     resp.raise_for_status()
     return resp.json()["bill"]
+
+
+def fetch_bill_cosponsors(congress, bill_type, number):
+    """Congress.gov's bill detail response only includes a cosponsor
+    COUNT - the actual names live on this separate endpoint. Needed for
+    'what bills is person X cosponsoring' style questions, which a
+    count alone can't answer."""
+    url = f"{CONGRESS_BASE}/bill/{congress}/{bill_type}/{number}/cosponsors"
+    params = {"api_key": CONGRESS_API_KEY, "format": "json"}
+    resp = requests.get(url, params=params, timeout=30)
+    resp.raise_for_status()
+    return [c.get("fullName", "Unknown") for c in resp.json().get("cosponsors", [])]
 
 
 def fetch_bill_summary(congress, bill_type, number):
@@ -382,6 +407,27 @@ def passage_probability(bill, stage):
     return min(base + bump, 97)
 
 
+BILL_ID_RE = re.compile(r"^([A-Z]+)(\d+)$")
+
+
+def ref_from_previous_signal(signal):
+    """Reconstructs a fetchable {congress, type, number} ref from a
+    previous run's signal record, so previously-tracked bills can stay
+    in the pool going forward instead of dropping out once they're no
+    longer 'recently updated'. Uses the signal's own stored `congress`
+    field when present; falls back to CURRENT_CONGRESS for older
+    records written before that field existed."""
+    match = BILL_ID_RE.match(signal["bill_id"])
+    if not match:
+        return None
+    bill_type, number = match.groups()
+    return {
+        "congress": signal.get("congress", CURRENT_CONGRESS),
+        "type": bill_type.lower(),
+        "number": int(number),
+    }
+
+
 def load_previous_signals():
     """Returns {bill_id: signal_dict} from the last run's output, or an
     empty dict if there's no previous file yet (first run ever)."""
@@ -410,6 +456,26 @@ def main():
         print(f"WARNING: auto-fetch of recent bills failed ({e}); "
               f"continuing with WATCHED_BILLS only.")
 
+    # Add back every bill tracked in a previous run, so coverage is
+    # CUMULATIVE - once a bill is discovered (via WATCHED_BILLS,
+    # auto-fetch, or the community scan), it stays tracked and keeps
+    # getting checked for status changes going forward, rather than
+    # silently disappearing from output the day it's no longer among
+    # the most-recently-updated bills. Without this, a bill discovered
+    # a month ago that hasn't moved since would vanish from bills.json
+    # entirely - which breaks any AI feature or user expectation that
+    # "once tracked, always queryable."
+    carried_forward = 0
+    for bill_id, prev_signal in previous_by_id.items():
+        if bill_id in all_refs:
+            continue
+        ref = ref_from_previous_signal(prev_signal)
+        if ref:
+            all_refs[bill_id] = ref
+            carried_forward += 1
+    if carried_forward:
+        print(f"Carried forward {carried_forward} previously-tracked bills not in this run's auto-fetch window.")
+
     # Separate discovery pass: scans a wider batch of recent bills
     # specifically looking for community-relevant ones (by official
     # policyArea) that aren't already in the industry/stock-focused
@@ -430,6 +496,13 @@ def main():
         bill = bill_cache.get(bill_id) or fetch_bill(ref["congress"], ref["type"], ref["number"])
         title = bill.get("title", "")
         status = bill.get("latestAction", {}).get("text", "")
+        status_date = bill.get("latestAction", {}).get("actionDate", "")
+
+        try:
+            cosponsor_names = fetch_bill_cosponsors(ref["congress"], ref["type"], ref["number"])
+        except requests.HTTPError as e:
+            print(f"WARNING: cosponsor fetch failed for {bill_id} ({e}); leaving list empty this run.")
+            cosponsor_names = []
 
         cached = previous_by_id.get(bill_id)
         # Cache is only reused if the status is unchanged AND the
@@ -469,6 +542,7 @@ def main():
 
         signals.append({
             "bill_id": bill_id,
+            "congress": ref["congress"],
             "title": title,
             "industry": classification["industry"],
             "direction": classification["direction"],
@@ -482,7 +556,9 @@ def main():
             "community_category_label": COMMUNITY_CATEGORY_LABELS.get(community_category, "None"),
             "sponsor": bill.get("sponsors", [{}])[0].get("fullName", "Unknown"),
             "cosponsors": bill.get("cosponsors", {}).get("count", 0),
+            "cosponsor_names": cosponsor_names,
             "last_action": status,
+            "last_action_date": status_date,
             "next_event": "TBD",
             "summary": classification["summary"],
             "companies": classification["companies"],
