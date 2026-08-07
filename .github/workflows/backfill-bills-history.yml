@@ -1,0 +1,76 @@
+name: Backfill bills history
+on:
+  schedule:
+    - cron: "0 */3 * * *"   # automatic poll every 3 hours - harmless no-op if nothing's pending
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "submit = queue new bills for classification, poll = check/merge finished batches"
+        required: false
+        default: "poll"
+        type: choice
+        options:
+          - submit
+          - poll
+      limit:
+        description: "submit only: cap how many bills get queued this run, for a small test"
+        required: false
+        default: ""
+      debug:
+        description: "submit only: print counts and estimated cost without actually submitting"
+        required: false
+        default: false
+        type: boolean
+permissions:
+  contents: write
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install requests anthropic
+      - name: Run backfill
+        env:
+          CONGRESS_API_KEY: ${{ secrets.CONGRESS_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          EVENT_NAME: ${{ github.event_name }}
+          MODE: ${{ github.event.inputs.mode }}
+          FILING_LIMIT: ${{ github.event.inputs.limit }}
+          DEBUG_MODE: ${{ github.event.inputs.debug }}
+        run: |
+          # Scheduled runs always poll -- manual dispatch uses whichever mode was chosen
+          if [ "$EVENT_NAME" = "schedule" ]; then
+            ACTUAL_MODE="poll"
+          else
+            ACTUAL_MODE="${MODE:-poll}"
+          fi
+
+          if [ "$ACTUAL_MODE" = "submit" ]; then
+            ARGS=(submit)
+            if [ -n "$FILING_LIMIT" ]; then
+              ARGS+=(--limit "$FILING_LIMIT")
+            fi
+            if [ "$DEBUG_MODE" = "true" ]; then
+              ARGS+=(--debug)
+            fi
+            echo "Running: python scripts/backfill_bills_history.py ${ARGS[*]}"
+            python scripts/backfill_bills_history.py "${ARGS[@]}"
+          else
+            echo "Running: python scripts/backfill_bills_history.py poll"
+            python scripts/backfill_bills_history.py poll
+          fi
+      - name: Commit updated data
+        if: always()
+        run: |
+          git config user.name "alphoptic-bot"
+          git config user.email "actions@github.com"
+          for f in data/bills.json data/.backfill-bills-checkpoint.json; do
+            [ -f "$f" ] && git add "$f"
+          done
+          git diff --staged --quiet || git commit -m "Backfill bills history"
+          git push
