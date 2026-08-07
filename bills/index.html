@@ -37,6 +37,7 @@
       </thead>
       <tbody id="bills-body"></tbody>
     </table>
+    <div id="bills-pagination" style="margin-top:14px; text-align:center;"></div>
   </main>
 </div>
 <script src="/assets/site.js"></script>
@@ -45,6 +46,10 @@
 <script>
 let allSignals = [];
 let currentStageFilter = 'all';
+let currentCategoryFilter = null;
+let currentIndustryFilter = null;
+let currentPage = 1;
+const PAGE_SIZE = 25;
 
 const STALLED_THRESHOLD_DAYS = 180;
 // Only "still in progress" stages can be stalled -- a became_law or
@@ -64,14 +69,11 @@ function isStalled(signal) {
   return days !== null && days >= STALLED_THRESHOLD_DAYS;
 }
 
-function renderBillsTable(stageFilter) {
+function renderBillsTable(stageFilter, resetPage = true) {
   currentStageFilter = stageFilter;
+  if (resetPage) currentPage = 1;
   const body = document.getElementById('bills-body');
   const stalledOnly = document.getElementById('stalled-toggle').checked;
-
-  document.getElementById('bills-list-heading').textContent = stalledOnly
-    ? `Stalled bills — no action in ${STALLED_THRESHOLD_DAYS}+ days`
-    : 'All tracked bills';
 
   let filtered = stageFilter === 'all'
     ? allSignals
@@ -80,16 +82,37 @@ function renderBillsTable(stageFilter) {
   if (stalledOnly) {
     filtered = filtered.filter(isStalled);
   }
+  if (currentCategoryFilter) {
+    filtered = filtered.filter(s => s.community_category === currentCategoryFilter);
+  }
+  if (currentIndustryFilter) {
+    filtered = filtered.filter(s => s.industry === currentIndustryFilter);
+  }
+
+  // Build the contextual heading + clear-filter link
+  const headingEl = document.getElementById('bills-list-heading');
+  let headingParts = [];
+  if (stalledOnly) headingParts.push(`Stalled bills (no action in ${STALLED_THRESHOLD_DAYS}+ days)`);
+  if (currentCategoryFilter) headingParts.push(`Community: ${currentCategoryFilter.replace(/_/g, ' ')}`);
+  if (currentIndustryFilter) headingParts.push(`Industry: ${currentIndustryFilter}`);
+  const hasActiveFilter = currentCategoryFilter || currentIndustryFilter;
+  headingEl.innerHTML = (headingParts.length ? headingParts.join(' · ') : 'All tracked bills')
+    + (hasActiveFilter ? ' <a href="/bills/index.html" style="font-size:12px; font-weight:normal; color:var(--blue); margin-left:8px;">Clear filter ×</a>' : '');
 
   if (!filtered.length) {
     const emptyMsg = stalledOnly
       ? `No stalled bills right now — everything currently tracked has had action in the last ${STALLED_THRESHOLD_DAYS} days.`
-      : 'No bills in this stage.';
+      : 'No bills match this filter.';
     body.innerHTML = `<tr><td colspan="6" class="empty-note">${emptyMsg}</td></tr>`;
+    document.getElementById('bills-pagination').innerHTML = '';
     return;
   }
 
-  body.innerHTML = filtered.map(s => {
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  currentPage = Math.min(currentPage, totalPages);
+  const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  body.innerHTML = pageItems.map(s => {
     const days = daysSince(s.last_action_date);
     const staleBadge = isStalled(s) ? ` <span style="color:var(--text-secondary); font-size:11px;">(${days}d stalled)</span>` : '';
     return `
@@ -103,6 +126,23 @@ function renderBillsTable(stageFilter) {
     </tr>
   `;
   }).join('');
+
+  const pager = document.getElementById('bills-pagination');
+  if (totalPages <= 1) {
+    pager.innerHTML = '';
+  } else {
+    pager.innerHTML = `
+      <button class="pagination-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">← Prev</button>
+      <span style="margin:0 10px; font-size:13px; color:var(--text-muted);">Page ${currentPage} of ${totalPages} (${filtered.length} bills)</span>
+      <button class="pagination-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">Next →</button>
+    `;
+  }
+}
+
+function goToPage(page) {
+  currentPage = page;
+  renderBillsTable(currentStageFilter, false);
+  document.getElementById('bills-table').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function init() {
@@ -123,10 +163,17 @@ async function init() {
 
   renderStageBreakdown('stage-breakdown', data.summary, (stage) => renderBillsTable(stage));
 
-  // Deep link from the dashboard's "Stalled bills" teaser
+  // Deep links from the dashboard's Stalled teaser, or from the
+  // Community/Industries pages' "View all" links
   const params = new URLSearchParams(window.location.search);
   if (params.get('stalled') === '1') {
     document.getElementById('stalled-toggle').checked = true;
+  }
+  if (params.get('category')) {
+    currentCategoryFilter = params.get('category');
+  }
+  if (params.get('industry')) {
+    currentIndustryFilter = params.get('industry');
   }
 
   renderBillsTable('all');
