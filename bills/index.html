@@ -22,7 +22,13 @@
   <nav class="sidebar" id="sidebar"></nav>
   <main>
     <div class="breadcrumb"><a href="/index.html">Dashboard</a> / Bills</div>
-    <div class="section-label">Bills by stage</div>
+    <div class="section-label" style="display:flex; align-items:center; justify-content:space-between;">
+      <span>Bills by stage</span>
+      <label style="font-size:13px; font-weight:normal; display:flex; align-items:center; gap:6px; cursor:pointer;">
+        <input type="checkbox" id="stalled-toggle">
+        Stalled only (no action in 60+ days)
+      </label>
+    </div>
     <div id="stage-breakdown"></div>
     <div class="section-label">All tracked bills</div>
     <table class="data-table" id="bills-table">
@@ -38,28 +44,61 @@
 <script src="/assets/header.js"></script>
 <script>
 let allSignals = [];
+let currentStageFilter = 'all';
+
+const STALLED_THRESHOLD_DAYS = 60;
+// Only "still in progress" stages can be stalled -- a became_law or
+// failed_vetoed bill having an old last-action date is expected and
+// correct, not a sign of anything dormant.
+const STALLABLE_STAGES = new Set(['introduced', 'committee', 'passed_one_chamber', 'passed_both']);
+
+function daysSince(dateStr) {
+  if (!dateStr) return null;
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+}
+
+function isStalled(signal) {
+  if (!STALLABLE_STAGES.has(signal.stage)) return false;
+  const days = daysSince(signal.last_action_date);
+  return days !== null && days >= STALLED_THRESHOLD_DAYS;
+}
 
 function renderBillsTable(stageFilter) {
+  currentStageFilter = stageFilter;
   const body = document.getElementById('bills-body');
-  const filtered = stageFilter === 'all'
+  const stalledOnly = document.getElementById('stalled-toggle').checked;
+
+  let filtered = stageFilter === 'all'
     ? allSignals
     : allSignals.filter(s => s.stage === stageFilter);
 
+  if (stalledOnly) {
+    filtered = filtered.filter(isStalled);
+  }
+
   if (!filtered.length) {
-    body.innerHTML = `<tr><td colspan="6" class="empty-note">No bills in this stage.</td></tr>`;
+    const emptyMsg = stalledOnly
+      ? 'No stalled bills right now — everything currently tracked has had action in the last 60 days.'
+      : 'No bills in this stage.';
+    body.innerHTML = `<tr><td colspan="6" class="empty-note">${emptyMsg}</td></tr>`;
     return;
   }
 
-  body.innerHTML = filtered.map(s => `
+  body.innerHTML = filtered.map(s => {
+    const days = daysSince(s.last_action_date);
+    const staleBadge = isStalled(s) ? ` <span style="color:var(--text-secondary); font-size:11px;">(${days}d stalled)</span>` : '';
+    return `
     <tr>
-      <td><a href="detail.html?id=${s.bill_id}">${s.bill_id}</a> — ${s.title}</td>
+      <td><a href="detail.html?id=${s.bill_id}">${s.bill_id}</a> — ${s.title}${staleBadge}</td>
       <td>${s.industry}</td>
       <td>${directionPill(s.direction)}</td>
       <td>${s.passage_probability}%</td>
       <td>${s.impact_score}/100</td>
       <td>${stagePill(s.stage, s.stageLabel)}</td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 }
 
 async function init() {
@@ -80,6 +119,10 @@ async function init() {
 
   renderStageBreakdown('stage-breakdown', data.summary, (stage) => renderBillsTable(stage));
   renderBillsTable('all');
+
+  document.getElementById('stalled-toggle').addEventListener('change', () => {
+    renderBillsTable(currentStageFilter);
+  });
 }
 
 init().catch(err => {

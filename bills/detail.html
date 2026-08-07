@@ -42,10 +42,23 @@ async function init() {
   }
   document.getElementById('crumb-id').textContent = bill.bill_id;
   document.title = bill.bill_id + ' — Alphoptic';
+
+  const cosponsorNames = bill.cosponsor_names || [];
+  const shownCosponsors = cosponsorNames.slice(0, 3);
+  const remainingCount = cosponsorNames.length - shownCosponsors.length;
+  const cosponsorChips = shownCosponsors.map(name =>
+    `<span style="background:var(--surface-2, #1e293b); color:var(--text-secondary); font-size:11px; padding:3px 9px; border-radius:10px;">${name}</span>`
+  ).join('') + (remainingCount > 0 ? `<span style="background:var(--surface-2, #1e293b); color:var(--text-secondary); font-size:11px; padding:3px 9px; border-radius:10px;">+${remainingCount} more</span>` : '');
+
+  const lastActionDate = bill.last_action_date
+    ? new Date(bill.last_action_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : '';
+
   content.innerHTML += `
     <div class="detail-header">
       <h1>${bill.bill_id} — ${bill.title}</h1>
       <div class="meta">${bill.status} · Sponsor: ${bill.sponsor} · ${bill.cosponsors} cosponsors</div>
+      ${cosponsorChips ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">${cosponsorChips}</div>` : ''}
     </div>
     <p style="color:var(--text-secondary); max-width:640px;">${bill.summary}</p>
     <div class="info-grid">
@@ -53,7 +66,7 @@ async function init() {
       <div class="item"><div class="label">Passage probability</div><div class="value">${bill.passage_probability}%</div></div>
       <div class="item"><div class="label">Impact score</div><div class="value">${bill.impact_score}/100</div></div>
       <div class="item"><div class="label">Confidence</div><div class="value">${bill.confidence}%</div></div>
-      <div class="item"><div class="label">Last action</div><div class="value" style="font-size:13px;">${bill.last_action}</div></div>
+      <div class="item"><div class="label">Last action</div><div class="value" style="font-size:13px;">${bill.last_action}${lastActionDate ? ` <span style="color:var(--text-secondary);">(${lastActionDate})</span>` : ''}</div></div>
       <div class="item"><div class="label">Next event</div><div class="value" style="font-size:13px;">${bill.next_event}</div></div>
     </div>
     <div class="section-label">Company exposure</div>
