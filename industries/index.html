@@ -40,24 +40,32 @@ async function init() {
     byIndustry[s.industry].push(s);
   });
   const list = document.getElementById('industry-list');
-  const industries = Object.keys(byIndustry);
+  const industries = Object.keys(byIndustry).sort((a, b) => a.localeCompare(b));
   if (!industries.length) {
     list.innerHTML = `<div class="empty-note">No industry data yet.</div>`;
     return;
   }
+  const CAP = 10;
   list.innerHTML = industries.map(industry => {
     const bills = byIndustry[industry];
     const avgImpact = Math.round(bills.reduce((sum, b) => sum + b.impact_score, 0) / bills.length);
+    const shown = bills.slice(0, CAP);
+    const remaining = bills.length - shown.length;
     return `
       <div class="industry-card">
         <h3>${industry}</h3>
         <div class="meta">${bills.length} bill${bills.length > 1 ? 's' : ''} tracked · avg impact ${avgImpact}/100</div>
-        ${bills.map(b => `
+        ${shown.map(b => `
           <div style="font-size:13px; padding:4px 0;">
             <a href="/bills/detail.html?id=${b.bill_id}" style="color:var(--blue); text-decoration:none;">${b.bill_id}</a>
             — ${b.title} ${directionPill(b.direction)}
           </div>
         `).join('')}
+        ${remaining > 0 ? `
+          <div style="font-size:13px; padding:6px 0 0;">
+            <a href="/bills/index.html?industry=${encodeURIComponent(industry)}" style="color:var(--blue); text-decoration:none;">View all ${bills.length} →</a>
+          </div>
+        ` : ''}
       </div>
     `;
   }).join('');
