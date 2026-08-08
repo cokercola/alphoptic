@@ -1,149 +1,7 @@
 {
-  "updated_at": "2026-08-07T14:08:00.181276Z",
+  "updated_at": "2026-08-08T13:40:19.437267Z",
   "lookback_days": 30,
   "lawmakers": [
-    {
-      "name": "April Delaney",
-      "party": null,
-      "chamber": "House",
-      "trades": [
-        {
-          "symbol": "CHRW",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-27",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "HUBB",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-23",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "FWONK",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-23",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "CHRW",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-31",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "LYV",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-21",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "SCI",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-27",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "STE",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-31",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "VIK",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-23",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "CLH",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-27",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "SCI",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-20",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "FLT",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-15",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "FWONK",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-22",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "FLT",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-16",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "FLT",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-31",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "ENTG",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-30",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": false
-        }
-      ]
-    },
     {
       "name": "Sheldon Whitehouse",
       "party": null,
@@ -155,6 +13,103 @@
           "direction": "sell",
           "trade_date": "2026-07-20",
           "filed_date": "2026-08-03",
+          "is_new": true,
+          "linked": true
+        }
+      ]
+    },
+    {
+      "name": "David Taylor",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "MPC",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-07",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "MSFT",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-07",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "MSFT",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-07",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "GOOGL",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-17",
+          "filed_date": "2026-08-07",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "MSFT",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-07",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "MPC",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-07",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "MPC",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-07",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "FITB",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-07",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "KR",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-07",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "AVGO",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-07",
           "is_new": true,
           "linked": false
         }
@@ -190,7 +145,7 @@
           "trade_date": "2026-07-21",
           "filed_date": "2026-08-04",
           "is_new": true,
-          "linked": false
+          "linked": true
         },
         {
           "symbol": "KO",
@@ -199,7 +154,7 @@
           "trade_date": "2026-07-21",
           "filed_date": "2026-08-04",
           "is_new": true,
-          "linked": false
+          "linked": true
         },
         {
           "symbol": "CSCO",
@@ -208,7 +163,122 @@
           "trade_date": "2026-07-21",
           "filed_date": "2026-08-04",
           "is_new": true,
+          "linked": true
+        }
+      ]
+    },
+    {
+      "name": "April Delaney",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "CHRW",
+          "amount": 32500,
+          "direction": "buy",
+          "trade_date": "2026-07-27",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "CHRW",
+          "amount": 32500,
+          "direction": "buy",
+          "trade_date": "2026-07-31",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "LYV",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-20",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "MKL",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-27",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "CHRW",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-22",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "MKL",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-29",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "FWONK",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-29",
+          "filed_date": "2026-08-04",
+          "is_new": true,
           "linked": false
+        },
+        {
+          "symbol": "FLT",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "FLT",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-30",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "MLM",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-20",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "MKL",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "MLM",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-17",
+          "filed_date": "2026-08-04",
+          "is_new": true,
+          "linked": true
         }
       ]
     }
