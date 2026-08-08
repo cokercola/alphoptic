@@ -381,6 +381,31 @@ def reconstruct_meta_from_bill_id(bill_id):
     }
 
 
+def sanitize_classification(classification):
+    """Claude's CLASSIFY_PROMPT schema specifies impact_score/confidence
+    as integers and exposure as integers, but nothing enforces that on
+    the way out -- at real scale (thousands of calls) some fraction
+    come back as strings instead (e.g. "70" instead of 70), which
+    crashes any later int comparison/sum on that field. Coerce here,
+    once, right after parsing, so a bad type from one bill can never
+    take down the whole summary rebuild after a merge has already
+    succeeded."""
+    for field in ("impact_score", "confidence"):
+        if field in classification:
+            try:
+                classification[field] = int(classification[field])
+            except (TypeError, ValueError):
+                classification[field] = 0
+    if isinstance(classification.get("companies"), list):
+        for c in classification["companies"]:
+            if isinstance(c, dict) and "exposure" in c:
+                try:
+                    c["exposure"] = int(c["exposure"])
+                except (TypeError, ValueError):
+                    c["exposure"] = 0
+    return classification
+
+
 def cmd_poll(args):
     checkpoint = load_checkpoint()
     if not checkpoint["pending_batches"]:
@@ -415,7 +440,7 @@ def cmd_poll(args):
                 text = result.result.message.content[0].text.strip()
                 text = text.replace("```json", "").replace("```", "").strip()
                 try:
-                    classification = json.loads(extract_json_object(text))
+                    classification = sanitize_classification(json.loads(extract_json_object(text)))
                     succeeded += 1
                 except (ValueError, json.JSONDecodeError):
                     classification = dict(FALLBACK_CLASSIFICATION)
@@ -453,6 +478,18 @@ def cmd_poll(args):
         print(f"{len(still_pending)} batch(es) still processing -- run poll again later.")
 
 
+def safe_int(value, default=0):
+    """Defense in depth for rebuild_and_save_bills_json specifically --
+    this function is the single point of failure that would lose an
+    entire run's already-merged results if it crashes, so it can't
+    trust that every signal's numeric fields are actually numeric,
+    regardless of what upstream sanitization is supposed to guarantee."""
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
 def rebuild_and_save_bills_json(signals, new_signals_count):
     """Shared by poll (after merging fresh batch results) and repair
     (rewriting the summary from existing signals only, no new data) --
@@ -478,7 +515,7 @@ def rebuild_and_save_bills_json(signals, new_signals_count):
         "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
         "summary": {
             "bills_tracked": len(signals),
-            "high_impact": sum(1 for s in signals if s.get("impact_score", 0) >= 70),
+            "high_impact": sum(1 for s in signals if safe_int(s.get("impact_score")) >= 70),
             "new_signals_today": new_signals_count,
             "industries_affected": len({s.get("industry") for s in signals if s.get("industry")}),
             "total_bills_this_congress": total_bills_this_congress,
