@@ -1,10 +1,4 @@
 {
   "last_offset": 5750,
-  "pending_batches": [
-    {
-      "batch_id": "msgbatch_01GtfTUm77NVr31ey2e9Smi7",
-      "submitted_at": "recovered-manually",
-      "meta": {}
-    }
-  ]
+  "pending_batches": []
 }
