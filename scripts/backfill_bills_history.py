@@ -418,6 +418,7 @@ def cmd_poll(args):
 
     for entry in checkpoint["pending_batches"]:
         batch_id = entry["batch_id"]
+        print(f"DEBUG: attempting to retrieve batch_id={batch_id!r} (length {len(batch_id)})")
         batch = client.messages.batches.retrieve(batch_id)
         print(f"Batch {batch_id}: {batch.processing_status} ({batch.request_counts})")
 
