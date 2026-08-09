@@ -1,7 +1,18 @@
 {
-  "updated_at": "2026-08-08T13:40:19.437942Z",
+  "updated_at": "2026-08-09T13:43:49.001153Z",
   "lookback_days": 30,
   "trades": [
+    {
+      "lawmaker": "Gary Peters",
+      "chamber": "Senate",
+      "symbol": "O",
+      "amount": 8000,
+      "direction": "buy",
+      "trade_date": "2026-07-23",
+      "filed_date": "2026-08-07",
+      "is_new": true,
+      "linked": false
+    },
     {
       "lawmaker": "Shelley Moore Capito",
       "chamber": "Senate",
@@ -71,6 +82,28 @@
     {
       "lawmaker": "David Taylor",
       "chamber": "House",
+      "symbol": "MSFT",
+      "amount": 8000,
+      "direction": "buy",
+      "trade_date": "2026-07-24",
+      "filed_date": "2026-08-07",
+      "is_new": true,
+      "linked": true
+    },
+    {
+      "lawmaker": "David Taylor",
+      "chamber": "House",
+      "symbol": "MSFT",
+      "amount": 8000,
+      "direction": "buy",
+      "trade_date": "2026-07-24",
+      "filed_date": "2026-08-07",
+      "is_new": true,
+      "linked": true
+    },
+    {
+      "lawmaker": "David Taylor",
+      "chamber": "House",
       "symbol": "MPC",
       "amount": 8000,
       "direction": "sell",
@@ -82,20 +115,9 @@
     {
       "lawmaker": "David Taylor",
       "chamber": "House",
-      "symbol": "MSFT",
+      "symbol": "MPC",
       "amount": 8000,
-      "direction": "buy",
-      "trade_date": "2026-07-24",
-      "filed_date": "2026-08-07",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "David Taylor",
-      "chamber": "House",
-      "symbol": "MSFT",
-      "amount": 8000,
-      "direction": "buy",
+      "direction": "sell",
       "trade_date": "2026-07-24",
       "filed_date": "2026-08-07",
       "is_new": true,
@@ -115,40 +137,18 @@
     {
       "lawmaker": "David Taylor",
       "chamber": "House",
-      "symbol": "MSFT",
-      "amount": 8000,
-      "direction": "buy",
-      "trade_date": "2026-07-24",
-      "filed_date": "2026-08-07",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "David Taylor",
-      "chamber": "House",
-      "symbol": "MPC",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-24",
-      "filed_date": "2026-08-07",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "David Taylor",
-      "chamber": "House",
-      "symbol": "MPC",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-24",
-      "filed_date": "2026-08-07",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "David Taylor",
-      "chamber": "House",
       "symbol": "FITB",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-24",
+      "filed_date": "2026-08-07",
+      "is_new": true,
+      "linked": true
+    },
+    {
+      "lawmaker": "David Taylor",
+      "chamber": "House",
+      "symbol": "MPC",
       "amount": 8000,
       "direction": "sell",
       "trade_date": "2026-07-24",
@@ -179,11 +179,33 @@
       "linked": false
     },
     {
+      "lawmaker": "David Taylor",
+      "chamber": "House",
+      "symbol": "MSFT",
+      "amount": 8000,
+      "direction": "buy",
+      "trade_date": "2026-07-24",
+      "filed_date": "2026-08-07",
+      "is_new": true,
+      "linked": true
+    },
+    {
       "lawmaker": "April Delaney",
       "chamber": "House",
-      "symbol": "CHRW",
+      "symbol": "SGI",
       "amount": 32500,
       "direction": "buy",
+      "trade_date": "2026-07-30",
+      "filed_date": "2026-08-04",
+      "is_new": true,
+      "linked": false
+    },
+    {
+      "lawmaker": "April Delaney",
+      "chamber": "House",
+      "symbol": "TSCO",
+      "amount": 32500,
+      "direction": "sell",
       "trade_date": "2026-07-27",
       "filed_date": "2026-08-04",
       "is_new": true,
@@ -192,10 +214,76 @@
     {
       "lawmaker": "April Delaney",
       "chamber": "House",
+      "symbol": "SCI",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-30",
+      "filed_date": "2026-08-04",
+      "is_new": true,
+      "linked": true
+    },
+    {
+      "lawmaker": "April Delaney",
+      "chamber": "House",
       "symbol": "CHRW",
-      "amount": 32500,
+      "amount": 8000,
       "direction": "buy",
-      "trade_date": "2026-07-31",
+      "trade_date": "2026-07-24",
+      "filed_date": "2026-08-04",
+      "is_new": true,
+      "linked": true
+    },
+    {
+      "lawmaker": "April Delaney",
+      "chamber": "House",
+      "symbol": "STE",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-24",
+      "filed_date": "2026-08-04",
+      "is_new": true,
+      "linked": true
+    },
+    {
+      "lawmaker": "April Delaney",
+      "chamber": "House",
+      "symbol": "TDG",
+      "amount": 8000,
+      "direction": "buy",
+      "trade_date": "2026-07-28",
+      "filed_date": "2026-08-04",
+      "is_new": true,
+      "linked": true
+    },
+    {
+      "lawmaker": "April Delaney",
+      "chamber": "House",
+      "symbol": "FWONK",
+      "amount": 8000,
+      "direction": "buy",
+      "trade_date": "2026-07-29",
+      "filed_date": "2026-08-04",
+      "is_new": true,
+      "linked": false
+    },
+    {
+      "lawmaker": "April Delaney",
+      "chamber": "House",
+      "symbol": "SCI",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-17",
+      "filed_date": "2026-08-04",
+      "is_new": true,
+      "linked": true
+    },
+    {
+      "lawmaker": "April Delaney",
+      "chamber": "House",
+      "symbol": "MKL",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-29",
       "filed_date": "2026-08-04",
       "is_new": true,
       "linked": true
@@ -229,83 +317,6 @@
       "amount": 8000,
       "direction": "buy",
       "trade_date": "2026-07-22",
-      "filed_date": "2026-08-04",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "April Delaney",
-      "chamber": "House",
-      "symbol": "MKL",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-29",
-      "filed_date": "2026-08-04",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "April Delaney",
-      "chamber": "House",
-      "symbol": "FWONK",
-      "amount": 8000,
-      "direction": "buy",
-      "trade_date": "2026-07-29",
-      "filed_date": "2026-08-04",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "April Delaney",
-      "chamber": "House",
-      "symbol": "FLT",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-28",
-      "filed_date": "2026-08-04",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "April Delaney",
-      "chamber": "House",
-      "symbol": "FLT",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-30",
-      "filed_date": "2026-08-04",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "April Delaney",
-      "chamber": "House",
-      "symbol": "MLM",
-      "amount": 8000,
-      "direction": "buy",
-      "trade_date": "2026-07-20",
-      "filed_date": "2026-08-04",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "April Delaney",
-      "chamber": "House",
-      "symbol": "MKL",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-24",
-      "filed_date": "2026-08-04",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "April Delaney",
-      "chamber": "House",
-      "symbol": "MLM",
-      "amount": 8000,
-      "direction": "buy",
-      "trade_date": "2026-07-17",
       "filed_date": "2026-08-04",
       "is_new": true,
       "linked": true
