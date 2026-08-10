@@ -75,6 +75,7 @@ from fetch_bills import (
     CLASSIFICATION_SCHEMA_VERSION,
     CLASSIFY_PROMPT,
     INDUSTRY_TAXONOMY,
+    write_slim_data_files,
     FALLBACK_CLASSIFICATION,
     BILLS_JSON_PATH,
     BILL_ID_RE,
