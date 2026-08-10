@@ -587,6 +587,7 @@ def rebuild_and_save_bills_json(signals, new_signals_count):
     os.makedirs("data", exist_ok=True)
     with open(BILLS_JSON_PATH, "w") as f:
         json.dump(output, f, indent=2)
+    write_slim_data_files(signals)
 
     return output
 
