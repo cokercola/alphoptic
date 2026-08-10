@@ -1,7 +1,5 @@
 name: Backfill bills history
 on:
-  schedule:
-    - cron: "0 */3 * * *"   # automatic poll every 3 hours - harmless no-op if nothing's pending
   workflow_dispatch:
     inputs:
       mode:
