@@ -74,6 +74,7 @@ from fetch_bills import (
     CURRENT_CONGRESS,
     CLASSIFICATION_SCHEMA_VERSION,
     CLASSIFY_PROMPT,
+    INDUSTRY_TAXONOMY,
     FALLBACK_CLASSIFICATION,
     BILLS_JSON_PATH,
     BILL_ID_RE,
@@ -250,7 +251,8 @@ def cmd_submit(args):
                     "messages": [{
                         "role": "user",
                         "content": CLASSIFY_PROMPT.format(
-                            title=title, status=status, summary=summary_text or "No summary available."
+                            title=title, status=status, summary=summary_text or "No summary available.",
+                            industry_list=", ".join(f'"{i}"' for i in INDUSTRY_TAXONOMY),
                         ),
                     }],
                 },
@@ -434,6 +436,8 @@ def sanitize_classification(classification):
                     c["exposure"] = int(c["exposure"])
                 except (TypeError, ValueError):
                     c["exposure"] = 0
+    if classification.get("industry") not in INDUSTRY_TAXONOMY:
+        classification["industry"] = "Other / Cross-Sector"
     return classification
 
 
