@@ -1,0 +1,34 @@
+name: Normalize industry labels
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: normalize-industries
+  cancel-in-progress: false
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install requests anthropic
+      - name: Run normalization
+        env:
+          CONGRESS_API_KEY: ${{ secrets.CONGRESS_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/normalize_industries.py
+      - name: Commit updated data
+        if: always()
+        run: |
+          git config user.name "alphoptic-bot"
+          git config user.email "actions@github.com"
+          git add data/bills.json
+          git diff --staged --quiet || git commit -m "Normalize industry labels to canonical taxonomy"
+          git pull --rebase --autostash origin main
+          git push
