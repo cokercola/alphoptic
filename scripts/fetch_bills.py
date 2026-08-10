@@ -163,12 +163,48 @@ COMMUNITY_CATEGORY_LABELS = {
     "none": "None",
 }
 
+# Fixed taxonomy for the "industry" field. Same reasoning as
+# COMMUNITY_CATEGORIES above - this MUST stay a closed list so the
+# Companies and Industries pages can group bills reliably instead of
+# splintering into thousands of one-off free-text variants (e.g.
+# "Aerospace & Defense" vs "Defense & Aerospace" vs "Defense & National
+# Security" all meaning the same thing).
+INDUSTRY_TAXONOMY = [
+    "Healthcare & Pharmaceuticals",
+    "Education",
+    "Defense & Aerospace",
+    "Agriculture & Food",
+    "Government & Public Administration",
+    "Financial Services & Banking",
+    "Insurance",
+    "Telecommunications & Media",
+    "Energy & Utilities",
+    "Transportation & Infrastructure",
+    "Real Estate & Housing",
+    "Immigration & Legal Services",
+    "Technology",
+    "Environmental Protection & Natural Resources",
+    "Manufacturing & Industrial",
+    "Retail & Consumer Goods",
+    "Tourism, Sports & Entertainment",
+    "Labor & Employment",
+    "Criminal Justice & Law Enforcement",
+    "Veterans Affairs",
+    "International Affairs & Trade",
+    "Nonprofit & Philanthropy",
+    "Social Services & Welfare",
+    "Civil Rights & Social Justice",
+    "Science & Research",
+    "Other / Cross-Sector",
+]
+
 CLASSIFY_PROMPT = """You are a legislative impact analyst. Given a bill's
 title, status, and summary, respond with ONLY a JSON object (no markdown
 fences, no preamble) matching this schema:
 
 {{
-  "industry": "primary industry affected",
+  "industry": "primary industry affected - MUST be exactly one string from
+    this fixed list, copied verbatim, no variations: {industry_list}",
   "direction": "positive" | "negative" | "mixed",
   "impact_score": integer 0-100,
   "confidence": integer 0-100,
@@ -224,7 +260,8 @@ def classify(title, status, summary, bill_id="unknown"):
         messages=[{
             "role": "user",
             "content": CLASSIFY_PROMPT.format(
-                title=title, status=status, summary=summary or "No summary available."
+                title=title, status=status, summary=summary or "No summary available.",
+                industry_list=", ".join(f'"{i}"' for i in INDUSTRY_TAXONOMY),
             ),
         }],
     )
