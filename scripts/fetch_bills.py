@@ -493,7 +493,11 @@ def main():
     classified = 0
 
     for bill_id, ref in all_refs.items():
-        bill = bill_cache.get(bill_id) or fetch_bill(ref["congress"], ref["type"], ref["number"])
+        try:
+            bill = bill_cache.get(bill_id) or fetch_bill(ref["congress"], ref["type"], ref["number"])
+        except requests.exceptions.RequestException as e:
+            print(f"WARNING: bill fetch failed for {bill_id} ({e}); skipping this bill this run.")
+            continue
         title = bill.get("title", "")
         status = bill.get("latestAction", {}).get("text", "")
         status_date = bill.get("latestAction", {}).get("actionDate", "")
