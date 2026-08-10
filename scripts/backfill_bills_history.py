@@ -306,7 +306,21 @@ def cmd_submit(args):
         print(f"Deduplicated {len(pending_requests) - len(deduped_requests)} bill(s) "
               f"re-scanned mid-run (likely updated while this scan was in progress).")
 
-    batch = client.messages.batches.create(requests=deduped_requests)
+    batch = None
+    max_attempts = 4
+    for attempt in range(1, max_attempts + 1):
+        try:
+            batch = client.messages.batches.create(requests=deduped_requests)
+            break
+        except (anthropic.APIConnectionError, anthropic.APITimeoutError) as e:
+            if attempt == max_attempts:
+                raise
+            wait = 30 * attempt
+            print(f"WARNING: batch submission attempt {attempt} failed ({e}); "
+                  f"retrying in {wait}s (this network drop may still have gone "
+                  f"through server-side -- check the Anthropic Console before "
+                  f"re-submitting by hand if all retries fail).")
+            time.sleep(wait)
     print(f"\nSubmitted batch {batch.id} with {len(deduped_requests)} requests. "
           f"Status: {batch.processing_status}")
 
