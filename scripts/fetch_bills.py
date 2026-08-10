@@ -476,6 +476,52 @@ def load_previous_signals():
     return {s["bill_id"]: s for s in previous.get("signals", [])}
 
 
+# Slim, page-specific exports so browser pages stop needing to fetch and
+# parse the full bills.json (23MB+ and growing) just to render a list.
+# Called from both the daily update (main(), below) and the backfill
+# script's rebuild_and_save_bills_json(), so the two write paths can't
+# drift out of sync with each other.
+BILLS_INDEX_JSON_PATH = "data/bills-index.json"
+COMPANIES_JSON_PATH = "data/companies.json"
+
+
+def write_slim_data_files(signals):
+    index_rows = [
+        {
+            "bill_id": s.get("bill_id"),
+            "title": s.get("title"),
+            "industry": s.get("industry"),
+            "direction": s.get("direction"),
+            "stage": s.get("stage"),
+            "impact_score": s.get("impact_score"),
+            "sponsor": s.get("sponsor"),
+            "community_category": s.get("community_category"),
+            "last_action_date": s.get("last_action_date"),
+        }
+        for s in signals
+    ]
+    with open(BILLS_INDEX_JSON_PATH, "w") as f:
+        json.dump(index_rows, f, separators=(",", ":"))
+
+    company_rows = []
+    for s in signals:
+        for c in s.get("companies") or []:
+            company_rows.append({
+                "ticker": c.get("ticker"),
+                "name": c.get("name"),
+                "effect": c.get("effect"),
+                "exposure": c.get("exposure"),
+                "bill_id": s.get("bill_id"),
+                "bill_title": s.get("title"),
+                "industry": s.get("industry"),
+            })
+    with open(COMPANIES_JSON_PATH, "w") as f:
+        json.dump(company_rows, f, separators=(",", ":"))
+
+    print(f"Wrote {BILLS_INDEX_JSON_PATH} ({len(index_rows)} rows) and "
+          f"{COMPANIES_JSON_PATH} ({len(company_rows)} rows).")
+
+
 def main():
     previous_by_id = load_previous_signals()
 
@@ -660,6 +706,7 @@ def main():
     os.makedirs("data", exist_ok=True)
     with open(BILLS_JSON_PATH, "w") as f:
         json.dump(output, f, indent=2)
+    write_slim_data_files(signals)
 
     print(f"Wrote {len(signals)} signals to {BILLS_JSON_PATH} "
           f"({classified} newly classified, {reused} reused from cache)")
