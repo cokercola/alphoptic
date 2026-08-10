@@ -51,6 +51,23 @@ import time
 import anthropic
 import requests
 
+def _call_with_retry(fn, description, max_attempts=4):
+    """Retries an Anthropic API call after a dropped/reset connection.
+    Batch retrieve/results calls are safe to simply re-request from
+    scratch -- they return the same completed data each time, no
+    resume state needed."""
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return fn()
+        except (anthropic.APIConnectionError, anthropic.APITimeoutError) as e:
+            if attempt == max_attempts:
+                raise
+            wait = 30 * attempt
+            print(f"WARNING: {description} attempt {attempt} failed ({e}); "
+                  f"retrying in {wait}s.")
+            time.sleep(wait)
+
+
 from fetch_bills import (
     CONGRESS_BASE,
     CONGRESS_API_KEY,
