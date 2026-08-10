@@ -504,7 +504,7 @@ def main():
 
         try:
             cosponsor_names = fetch_bill_cosponsors(ref["congress"], ref["type"], ref["number"])
-        except requests.HTTPError as e:
+        except requests.exceptions.RequestException as e:
             print(f"WARNING: cosponsor fetch failed for {bill_id} ({e}); leaving list empty this run.")
             cosponsor_names = []
 
