@@ -450,7 +450,10 @@ def cmd_poll(args):
     for entry in checkpoint["pending_batches"]:
         batch_id = entry["batch_id"]
         print(f"DEBUG: attempting to retrieve batch_id={batch_id!r} (length {len(batch_id)})")
-        batch = client.messages.batches.retrieve(batch_id)
+        batch = _call_with_retry(
+            lambda: client.messages.batches.retrieve(batch_id),
+            f"retrieve batch {batch_id}",
+        )
         print(f"Batch {batch_id}: {batch.processing_status} ({batch.request_counts})")
 
         if batch.processing_status != "ended":
@@ -460,7 +463,11 @@ def cmd_poll(args):
         succeeded = 0
         failed = 0
         reconstructed = 0
-        for result in client.messages.batches.results(batch_id):
+        results = _call_with_retry(
+            lambda: list(client.messages.batches.results(batch_id)),
+            f"fetch results for batch {batch_id}",
+        )
+        for result in results:
             meta = entry.get("meta", {}).get(result.custom_id)
             if not meta:
                 meta = reconstruct_meta_from_bill_id(result.custom_id)
