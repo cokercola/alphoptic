@@ -32,7 +32,9 @@
 <script>
 async function init() {
   renderSidebar('industries');
-  const data = await fetchSiteData();
+  const res = await fetch('/data/bills-index.json');
+  if (!res.ok) throw new Error('Failed to load /data/bills-index.json');
+  const data = await res.json();
   document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
 
   // Claude's industry classification is free text, not a fixed list
