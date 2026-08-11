@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-10T14:16:59.344225Z",
+  "updated_at": "2026-08-11T14:15:54.315046Z",
   "lookback_days": 30,
   "lawmakers": [
     {
@@ -19,107 +19,76 @@
       ]
     },
     {
-      "name": "April Delaney",
+      "name": "Maria Elvira Salazar",
       "party": null,
       "chamber": "House",
       "trades": [
         {
-          "symbol": "WAB",
+          "symbol": "CARR",
           "amount": 32500,
           "direction": "sell",
-          "trade_date": "2026-07-23",
-          "filed_date": "2026-08-04",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-10",
           "is_new": true,
           "linked": true
         },
         {
-          "symbol": "BWXT",
+          "symbol": "CARR",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-10",
+          "is_new": true,
+          "linked": true
+        }
+      ]
+    },
+    {
+      "name": "Michael Rulli",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "CCI",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-08-06",
+          "filed_date": "2026-08-10",
+          "is_new": true,
+          "linked": true
+        }
+      ]
+    },
+    {
+      "name": "Shelley Moore Capito",
+      "party": null,
+      "chamber": "Senate",
+      "trades": [
+        {
+          "symbol": "MSFT",
           "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-24",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "TSCO",
-          "amount": 32500,
           "direction": "sell",
-          "trade_date": "2026-07-27",
+          "trade_date": "2026-07-21",
           "filed_date": "2026-08-04",
-          "is_new": true,
+          "is_new": false,
           "linked": true
         },
         {
-          "symbol": "WAB",
+          "symbol": "CSCO",
           "amount": 8000,
           "direction": "sell",
-          "trade_date": "2026-07-28",
+          "trade_date": "2026-07-21",
           "filed_date": "2026-08-04",
-          "is_new": true,
+          "is_new": false,
           "linked": true
         },
         {
-          "symbol": "CHRW",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-28",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "CLH",
+          "symbol": "AAPL",
           "amount": 8000,
           "direction": "sell",
-          "trade_date": "2026-07-28",
+          "trade_date": "2026-07-21",
           "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "TDG",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-28",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "STE",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-29",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "STE",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-24",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "STE",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-27",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "VIK",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-23",
-          "filed_date": "2026-08-04",
-          "is_new": true,
+          "is_new": false,
           "linked": true
         }
       ]
@@ -139,27 +108,18 @@
           "linked": true
         },
         {
+          "symbol": "MSFT",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-07",
+          "is_new": true,
+          "linked": true
+        },
+        {
           "symbol": "MPC",
           "amount": 8000,
           "direction": "sell",
-          "trade_date": "2026-07-24",
-          "filed_date": "2026-08-07",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "MSFT",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-24",
-          "filed_date": "2026-08-07",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "MSFT",
-          "amount": 8000,
-          "direction": "buy",
           "trade_date": "2026-07-24",
           "filed_date": "2026-08-07",
           "is_new": true,
@@ -184,18 +144,18 @@
           "linked": true
         },
         {
-          "symbol": "KR",
+          "symbol": "FITB",
           "amount": 8000,
-          "direction": "buy",
+          "direction": "sell",
           "trade_date": "2026-07-24",
           "filed_date": "2026-08-07",
           "is_new": true,
           "linked": true
         },
         {
-          "symbol": "FITB",
+          "symbol": "KR",
           "amount": 8000,
-          "direction": "sell",
+          "direction": "buy",
           "trade_date": "2026-07-24",
           "filed_date": "2026-08-07",
           "is_new": true,
@@ -208,7 +168,16 @@
           "trade_date": "2026-07-24",
           "filed_date": "2026-08-07",
           "is_new": true,
-          "linked": false
+          "linked": true
+        },
+        {
+          "symbol": "MSFT",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-07",
+          "is_new": true,
+          "linked": true
         },
         {
           "symbol": "MPC",
@@ -222,52 +191,25 @@
       ]
     },
     {
-      "name": "Shelley Moore Capito",
+      "name": "John Fetterman",
       "party": null,
       "chamber": "Senate",
       "trades": [
         {
-          "symbol": "MSFT",
-          "amount": 32500,
+          "symbol": "HAS",
+          "amount": 8000,
           "direction": "sell",
-          "trade_date": "2026-07-21",
-          "filed_date": "2026-08-04",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-10",
           "is_new": true,
           "linked": true
         },
         {
-          "symbol": "AAPL",
+          "symbol": "FCX",
           "amount": 8000,
           "direction": "sell",
-          "trade_date": "2026-07-21",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "INTC",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-21",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "KO",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-21",
-          "filed_date": "2026-08-04",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "CSCO",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-21",
-          "filed_date": "2026-08-04",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-10",
           "is_new": true,
           "linked": true
         }
