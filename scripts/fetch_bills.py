@@ -483,6 +483,39 @@ def load_previous_signals():
 # drift out of sync with each other.
 BILLS_INDEX_JSON_PATH = "data/bills-index.json"
 COMPANIES_JSON_PATH = "data/companies.json"
+BILLS_CHUNKS_DIR = "data/bills-chunks"
+NUM_BILL_CHUNKS = 40
+
+
+def bill_chunk_index(bill_id, num_chunks=NUM_BILL_CHUNKS):
+    """Deterministic partition of a bill_id into one of num_chunks buckets.
+    Must produce identical results here and in the matching JS function on
+    the bill detail page - same simple char-code-sum-mod-N approach in
+    both places, so the browser can compute which chunk file to fetch
+    without needing a separate lookup index."""
+    return sum(ord(c) for c in bill_id) % num_chunks
+
+
+def write_bill_chunks(signals):
+    """Partitions full bill detail into a fixed number of chunk files so
+    the bill detail page can fetch ~1/40th of the archive instead of all
+    23MB+ just to show one bill. Full signal dicts (every field) go in
+    here, unlike the slim exports above - the detail page needs
+    everything (summary, companies, cosponsor_names, etc.)."""
+    updated_at = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
+    os.makedirs(BILLS_CHUNKS_DIR, exist_ok=True)
+
+    chunks = [{} for _ in range(NUM_BILL_CHUNKS)]
+    for s in signals:
+        idx = bill_chunk_index(s["bill_id"])
+        chunks[idx][s["bill_id"]] = s
+
+    for i, chunk in enumerate(chunks):
+        path = f"{BILLS_CHUNKS_DIR}/chunk-{i}.json"
+        with open(path, "w") as f:
+            json.dump({"updated_at": updated_at, "bills": chunk}, f, separators=(",", ":"))
+
+    print(f"Wrote {NUM_BILL_CHUNKS} bill detail chunks to {BILLS_CHUNKS_DIR}/.")
 
 
 def write_slim_data_files(signals):
@@ -709,6 +742,7 @@ def main():
     with open(BILLS_JSON_PATH, "w") as f:
         json.dump(output, f, indent=2)
     write_slim_data_files(signals)
+    write_bill_chunks(signals)
 
     print(f"Wrote {len(signals)} signals to {BILLS_JSON_PATH} "
           f"({classified} newly classified, {reused} reused from cache)")
