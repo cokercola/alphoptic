@@ -76,6 +76,7 @@ from fetch_bills import (
     CLASSIFY_PROMPT,
     INDUSTRY_TAXONOMY,
     write_slim_data_files,
+    write_bill_chunks,
     FALLBACK_CLASSIFICATION,
     BILLS_JSON_PATH,
     BILL_ID_RE,
@@ -588,6 +589,7 @@ def rebuild_and_save_bills_json(signals, new_signals_count):
     with open(BILLS_JSON_PATH, "w") as f:
         json.dump(output, f, indent=2)
     write_slim_data_files(signals)
+    write_bill_chunks(signals)
 
     return output
 
