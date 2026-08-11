@@ -411,7 +411,7 @@ def find_community_candidate_refs(existing_bill_ids, bill_cache):
             continue
         bill_cache[bill_id] = bill
         policy_area = bill.get("policyArea", {}).get("name")
-        if derive_community_category(policy_area) != "none":
+        if derive_community_category(policy_area, bill.get("title")) != "none":
             found[bill_id] = ref
 
     return found
