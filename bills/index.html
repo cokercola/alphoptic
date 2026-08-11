@@ -158,10 +158,12 @@ function goToPage(page) {
 
 async function init() {
   renderSidebar(new URLSearchParams(window.location.search).get('stalled') === '1' ? 'stalled' : 'bills');
-  const data = await fetchSiteData();
+  const res = await fetch('/data/bills-index.json');
+  if (!res.ok) throw new Error('Failed to load /data/bills-index.json');
+  const data = await res.json();
   document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
 
-  if (!data.signals.length) {
+  if (!data.bills.length) {
     document.getElementById('bills-body').innerHTML = `<tr><td colspan="6" class="empty-note">No bills tracked yet.</td></tr>`;
     return;
   }
@@ -170,7 +172,7 @@ async function init() {
   // the summary's stage_breakdown (same source the bar/tabs use).
   const labelByStage = {};
   (data.summary.stage_breakdown || []).forEach(s => { labelByStage[s.stage] = s.label; });
-  allSignals = data.signals.map(s => ({ ...s, stageLabel: labelByStage[s.stage] || s.stage }));
+  allSignals = data.bills.map(s => ({ ...s, stageLabel: labelByStage[s.stage] || s.stage }));
 
   renderStageBreakdown('stage-breakdown', data.summary, (stage) => renderBillsTable(stage));
 
