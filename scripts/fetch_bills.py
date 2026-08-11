@@ -486,6 +486,8 @@ COMPANIES_JSON_PATH = "data/companies.json"
 
 
 def write_slim_data_files(signals):
+    updated_at = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
+
     index_rows = [
         {
             "bill_id": s.get("bill_id"),
@@ -501,7 +503,7 @@ def write_slim_data_files(signals):
         for s in signals
     ]
     with open(BILLS_INDEX_JSON_PATH, "w") as f:
-        json.dump(index_rows, f, separators=(",", ":"))
+        json.dump({"updated_at": updated_at, "bills": index_rows}, f, separators=(",", ":"))
 
     company_rows = []
     for s in signals:
@@ -516,7 +518,7 @@ def write_slim_data_files(signals):
                 "industry": s.get("industry"),
             })
     with open(COMPANIES_JSON_PATH, "w") as f:
-        json.dump(company_rows, f, separators=(",", ":"))
+        json.dump({"updated_at": updated_at, "companies": company_rows}, f, separators=(",", ":"))
 
     print(f"Wrote {BILLS_INDEX_JSON_PATH} ({len(index_rows)} rows) and "
           f"{COMPANIES_JSON_PATH} ({len(company_rows)} rows).")
