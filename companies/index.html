@@ -23,10 +23,7 @@
   <main>
     <div class="breadcrumb"><a href="/index.html">Dashboard</a> / Companies</div>
     <div class="section-label" id="section-title">Companies with legislative exposure</div>
-    <table class="data-table">
-      <thead><tr><th>Ticker</th><th>Company</th><th>Bill</th><th>Effect</th><th>Exposure</th></tr></thead>
-      <tbody id="companies-body"></tbody>
-    </table>
+    <div id="companies-groups"></div>
   </main>
 </div>
 <script src="/assets/site.js"></script>
@@ -37,34 +34,62 @@ async function init() {
   renderSidebar('companies');
   const params = new URLSearchParams(window.location.search);
   const filterTicker = params.get('ticker');
-  const data = await fetchSiteData();
-  document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
-  let rows = [];
-  data.signals.forEach(s => {
-    s.companies.forEach(c => rows.push({ ...c, bill_id: s.bill_id, bill_title: s.title }));
-  });
+
+  const res = await fetch('/data/companies.json');
+  if (!res.ok) throw new Error('Failed to load /data/companies.json');
+  const data = await res.json();
+
+  const updatedEl = document.getElementById('updated-at');
+  if (updatedEl) {
+    updatedEl.textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
+  }
+
+  let rows = data.companies;
   if (filterTicker) {
     rows = rows.filter(r => r.ticker === filterTicker);
     document.getElementById('section-title').textContent = `Legislative exposure — ${filterTicker}`;
   }
-  const body = document.getElementById('companies-body');
+
+  const container = document.getElementById('companies-groups');
   if (!rows.length) {
-    body.innerHTML = `<tr><td colspan="5" class="empty-note">No company exposure data${filterTicker ? ' for ' + filterTicker : ''}.</td></tr>`;
+    container.innerHTML = `<p class="empty-note">No company exposure data${filterTicker ? ' for ' + filterTicker : ''}.</p>`;
     return;
   }
-  body.innerHTML = rows.map(r => `
-    <tr>
-      <td>${r.ticker}</td>
-      <td>${r.name}</td>
-      <td><a href="/bills/detail.html?id=${r.bill_id}">${r.bill_id}</a> — ${r.bill_title}</td>
-      <td>${directionPill(r.effect)}</td>
-      <td>${r.exposure}/100</td>
-    </tr>
+
+  // Group by industry, largest group first, so a browsing user sees the
+  // most heavily-legislated sectors up top instead of an alphabetical
+  // list where "Agriculture" always wins by default.
+  const byIndustry = new Map();
+  rows.forEach(r => {
+    const key = r.industry || 'Other / Cross-Sector';
+    if (!byIndustry.has(key)) byIndustry.set(key, []);
+    byIndustry.get(key).push(r);
+  });
+  const groups = [...byIndustry.entries()].sort((a, b) => b[1].length - a[1].length);
+
+  container.innerHTML = groups.map(([industry, groupRows]) => `
+    <details class="industry-group" ${filterTicker ? 'open' : ''}>
+      <summary class="industry-group-header">${industry} <span class="industry-group-count">(${groupRows.length})</span></summary>
+      <table class="data-table">
+        <thead><tr><th>Ticker</th><th>Company</th><th>Bill</th><th>Effect</th><th>Exposure</th></tr></thead>
+        <tbody>
+          ${groupRows.map(r => `
+            <tr>
+              <td>${r.ticker}</td>
+              <td>${r.name}</td>
+              <td><a href="/bills/detail.html?id=${r.bill_id}">${r.bill_id}</a> — ${r.bill_title}</td>
+              <td>${directionPill(r.effect)}</td>
+              <td>${r.exposure}/100</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </details>
   `).join('');
 }
 init().catch(err => {
   console.error(err);
-  document.getElementById('companies-body').innerHTML = `<tr><td colspan="5" class="empty-note">Could not load company data.</td></tr>`;
+  document.getElementById('companies-groups').innerHTML = `<p class="empty-note">Could not load company data.</p>`;
 });
 </script>
   <div id="site-footer"></div>
