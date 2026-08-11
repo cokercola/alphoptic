@@ -74,7 +74,7 @@ jobs:
         run: |
           git config user.name "alphoptic-bot"
           git config user.email "actions@github.com"
-          for f in data/bills.json data/.backfill-bills-checkpoint.json; do
+          for f in data/bills.json data/.backfill-bills-checkpoint.json data/bills-index.json data/companies.json; do
             [ -f "$f" ] && git add "$f"
           done
           git diff --staged --quiet || git commit -m "Backfill bills history"
