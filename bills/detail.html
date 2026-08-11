@@ -28,16 +28,42 @@
 <script src="/assets/donate.js"></script>
 <script src="/assets/header.js"></script>
 <script>
+<script>
+// Must exactly match bill_chunk_index() in scripts/fetch_bills.py - a
+// simple char-code-sum-mod-N hash lets this page know which chunk file
+// holds a given bill without needing a separate lookup index fetched
+// first (that would just be another network round-trip).
+const NUM_BILL_CHUNKS = 40;
+function billChunkIndex(billId) {
+  let sum = 0;
+  for (let i = 0; i < billId.length; i++) sum += billId.charCodeAt(i);
+  return sum % NUM_BILL_CHUNKS;
+}
+
 async function init() {
   renderSidebar('bills');
   const params = new URLSearchParams(window.location.search);
   const billId = params.get('id');
-  const data = await fetchSiteData();
-  document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
-  const bill = data.signals.find(s => s.bill_id === billId);
   const content = document.getElementById('content');
+
+  if (!billId) {
+    content.innerHTML += `<div class="empty-note">No bill found for "". <a href="index.html">Back to all bills</a>.</div>`;
+    return;
+  }
+
+  const chunkIdx = billChunkIndex(billId);
+  const res = await fetch(`/data/bills-chunks/chunk-${chunkIdx}.json`);
+  if (!res.ok) throw new Error(`Failed to load /data/bills-chunks/chunk-${chunkIdx}.json`);
+  const data = await res.json();
+
+  const updatedEl = document.getElementById('updated-at');
+  if (updatedEl) {
+    updatedEl.textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
+  }
+
+  const bill = data.bills[billId];
   if (!bill) {
-    content.innerHTML += `<div class="empty-note">No bill found for "${billId || ''}". <a href="index.html">Back to all bills</a>.</div>`;
+    content.innerHTML += `<div class="empty-note">No bill found for "${billId}". <a href="index.html">Back to all bills</a>.</div>`;
     return;
   }
   document.getElementById('crumb-id').textContent = bill.bill_id;
