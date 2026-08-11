@@ -657,7 +657,7 @@ def main():
         # Deterministic, not from Claude - derived fresh from this
         # bill's live policyArea every run, regardless of whether the
         # rest of the classification came from cache.
-        community_category = derive_community_category(bill.get("policyArea", {}).get("name"))
+        community_category = derive_community_category(bill.get("policyArea", {}).get("name"), title)
 
         # If this run's classification failed and fell back to the
         # placeholder, don't stamp a valid schema_version - that keeps
