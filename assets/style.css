@@ -267,6 +267,41 @@ table.data-table td {
 table.data-table tr:last-child td { border-bottom: none; }
 table.data-table a { color: var(--blue); text-decoration: none; }
 
+.industry-group {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.industry-group-header {
+  cursor: pointer;
+  list-style: none;
+  padding: 12px 14px;
+  font-weight: bold;
+  font-size: 14px;
+  background: var(--panel);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.industry-group-header::-webkit-details-marker { display: none; }
+.industry-group-header::before {
+  content: "▸";
+  color: var(--text-muted);
+  transition: transform 0.15s ease;
+}
+.industry-group[open] > .industry-group-header::before {
+  transform: rotate(90deg);
+}
+.industry-group-count {
+  font-weight: normal;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.industry-group table.data-table {
+  border-top: 1px solid var(--border);
+}
+
 .pill {
   display: inline-block;
   padding: 2px 8px;
