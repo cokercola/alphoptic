@@ -357,7 +357,7 @@ def cmd_submit(args):
 
 def build_signal_from_result(meta, classification, schema_version):
     stage = bill_stage(meta["status"])
-    community_category = derive_community_category(meta.get("policy_area", ""))
+    ccommunity_category = derive_community_category(meta.get("policy_area", ""), meta.get("title"))
     bill_like = {"cosponsors": {"count": meta.get("cosponsors", 0)}}
     return {
         "bill_id": meta["bill_id"],
