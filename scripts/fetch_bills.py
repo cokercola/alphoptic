@@ -518,7 +518,7 @@ def write_bill_chunks(signals):
     print(f"Wrote {NUM_BILL_CHUNKS} bill detail chunks to {BILLS_CHUNKS_DIR}/.")
 
 
-def write_slim_data_files(signals):
+def write_slim_data_files(signals, summary=None):
     updated_at = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
 
     index_rows = [
@@ -528,7 +528,9 @@ def write_slim_data_files(signals):
             "industry": s.get("industry"),
             "direction": s.get("direction"),
             "stage": s.get("stage"),
+            "status": s.get("status"),
             "impact_score": s.get("impact_score"),
+            "passage_probability": s.get("passage_probability"),
             "sponsor": s.get("sponsor"),
             "community_category": s.get("community_category"),
             "last_action_date": s.get("last_action_date"),
@@ -536,7 +538,10 @@ def write_slim_data_files(signals):
         for s in signals
     ]
     with open(BILLS_INDEX_JSON_PATH, "w") as f:
-        json.dump({"updated_at": updated_at, "bills": index_rows}, f, separators=(",", ":"))
+        json.dump(
+            {"updated_at": updated_at, "summary": summary, "bills": index_rows},
+            f, separators=(",", ":"),
+        )
 
     company_rows = []
     for s in signals:
@@ -741,7 +746,7 @@ def main():
     os.makedirs("data", exist_ok=True)
     with open(BILLS_JSON_PATH, "w") as f:
         json.dump(output, f, indent=2)
-    write_slim_data_files(signals)
+    write_slim_data_files(signals, summary=output["summary"])
     write_bill_chunks(signals)
 
     print(f"Wrote {len(signals)} signals to {BILLS_JSON_PATH} "
