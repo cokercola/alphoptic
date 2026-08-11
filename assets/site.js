@@ -21,7 +21,8 @@ function renderSidebar(activePage) {
   ).join('');
 }
 function directionPill(direction) {
-  return `<span class="pill ${direction}">${direction.toUpperCase()}</span>`;
+  const d = direction || 'unknown';
+  return `<span class="pill ${d}">${d.toUpperCase()}</span>`;
 }
 function infoIcon(text) {
   return `<span class="info-icon">i<span class="tooltip-popover">${text}</span></span>`;
