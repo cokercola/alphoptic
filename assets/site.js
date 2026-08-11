@@ -176,7 +176,7 @@ function renderCommunityPage(containerId, data) {
   const categories = [...((data.summary && data.summary.community_categories) || [])]
     .sort((a, b) => a.label.localeCompare(b.label));
   const byCategory = {};
-  data.signals.forEach(s => {
+  data.bills.forEach(s => {
     if (s.community_category === 'none') return;
     (byCategory[s.community_category] = byCategory[s.community_category] || []).push(s);
   });
