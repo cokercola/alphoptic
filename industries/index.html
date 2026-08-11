@@ -52,7 +52,7 @@ async function init() {
   }
 
   const byIndustry = {};
-  data.signals.forEach(s => {
+  data.bills.forEach(s => {
     const key = normalizeIndustryLabel(s.industry);
     if (!byIndustry[key]) byIndustry[key] = [];
     byIndustry[key].push(s);
