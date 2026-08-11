@@ -33,7 +33,9 @@
 <script>
 async function init() {
   renderSidebar('community');
-  const data = await fetchSiteData();
+  const res = await fetch('/data/bills-index.json');
+  if (!res.ok) throw new Error('Failed to load /data/bills-index.json');
+  const data = await res.json();
   document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
   renderCommunityPage('community-page', data);
 }
