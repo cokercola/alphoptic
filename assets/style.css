@@ -215,7 +215,9 @@ body {
   }
 }
 
-.layout.two-col { grid-template-columns: 160px 1fr; }
+@media (min-width: 901px) {
+  .layout.two-col { grid-template-columns: 160px 1fr; }
+}
 
 .breadcrumb {
   font-size: 12px;
