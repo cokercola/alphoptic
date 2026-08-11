@@ -330,7 +330,7 @@ def fetch_total_bill_count():
     return resp.json().get("pagination", {}).get("count")
 
 
-def derive_community_category(policy_area_name):
+def derive_community_category(policy_area_name, title=None):
     """Maps Congress.gov's own official policyArea term (assigned by
     CRS, one of ~32 controlled terms, returned for free on every bill
     detail response) to our fixed community category taxonomy.
@@ -348,7 +348,22 @@ def derive_community_category(policy_area_name):
     doesn't match anything below falls through to "none" and gets
     logged, so real unmapped values show up in the Action logs and the
     mapping can be refined from actual data over time.
+
+    Veterans and Consumer Protection are special cases: neither is an
+    actual term in Congress.gov's controlled policyArea vocabulary.
+    Veterans' issues are folded into the broad "Armed Forces and
+    National Security" area; consumer affairs is folded into the
+    broad "Commerce" area. policyArea alone can never distinguish
+    either one (both were silently broken, stuck at 0 bills, until
+    caught by inspection), so a title check is used instead - checked
+    first, ahead of and independent from the policyArea checks below.
     """
+    title_lower = (title or "").lower()
+    if "veteran" in title_lower:
+        return "veterans"
+    if "consumer" in title_lower:
+        return "consumer_protection"
+
     name = (policy_area_name or "").lower()
     if not name:
         return "none"
@@ -357,12 +372,10 @@ def derive_community_category(policy_area_name):
         ("healthcare_access", ["health"]),
         ("housing", ["housing", "community development"]),
         ("wages_labor", ["labor", "employment"]),
-        ("consumer_protection", ["consumer affairs"]),
         ("safety", ["crime and law enforcement", "law enforcement"]),
         ("education", ["education"]),
         ("civil_rights", ["civil rights", "civil liberties"]),
         ("environment", ["environmental protection", "public lands", "natural resources"]),
-        ("veterans", ["veteran"]),
         ("immigration", ["immigration"]),
     ]
     for category, keywords in checks:
