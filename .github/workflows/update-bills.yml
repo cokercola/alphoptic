@@ -32,12 +32,18 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python scripts/fetch_bills.py
 
+      - name: Build lawmakers directory
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/build_lawmakers_index.py
+
       - name: Commit updated data
         run: |
           git config user.name "alphoptic-bot"
           git config user.email "actions@github.com"
           git add data/bills.json data/bills-index.json data/companies.json
           [ -d data/bills-chunks ] && git add data/bills-chunks/
+          git add data/lawmakers.json data/lawmakers-index.json 2>/dev/null || true
           git diff --staged --quiet || git commit -m "Update legislative signals"
           git pull --rebase --autostash origin main
           git push
