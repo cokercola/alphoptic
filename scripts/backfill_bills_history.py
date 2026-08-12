@@ -229,13 +229,16 @@ def cmd_submit(args):
 
             policy_area = detail.get("policyArea", {}).get("name", "")
             sponsor_name = detail.get("sponsors", [{}])[0].get("fullName", "Unknown")
+            sponsor_bioguide_id = detail.get("sponsors", [{}])[0].get("bioguideId")
 
             try:
-                cosponsor_names = fetch_with_retry(fetch_bill_cosponsors, CURRENT_CONGRESS, bill_type, number)
+                cosponsors = fetch_with_retry(fetch_bill_cosponsors, CURRENT_CONGRESS, bill_type, number)
             except requests.exceptions.RequestException as e:
                 print(f"WARNING: cosponsor fetch failed for {bill_id} after retries ({e}); "
                       f"continuing with empty cosponsor list.", file=sys.stderr)
-                cosponsor_names = []
+                cosponsors = []
+            cosponsor_names = [c["name"] for c in cosponsors]
+            cosponsor_ids = [c["bioguide_id"] for c in cosponsors if c.get("bioguide_id")]
 
             try:
                 summary_text = fetch_with_retry(fetch_bill_summary, CURRENT_CONGRESS, bill_type, number)
@@ -268,9 +271,12 @@ def cmd_submit(args):
                 "status": status,
                 "status_date": status_date,
                 "sponsor": sponsor_name,
+                "sponsor_bioguide_id": sponsor_bioguide_id,
                 "cosponsors": len(cosponsor_names),
                 "cosponsor_names": cosponsor_names,
+                "cosponsor_ids": cosponsor_ids,
                 "policy_area": policy_area,
+            }
             }
             total_queued += 1
 
@@ -367,8 +373,10 @@ def build_signal_from_result(meta, classification, schema_version):
         "last_action": meta["status"],
         "last_action_date": meta["status_date"],
         "sponsor": meta.get("sponsor", "Unknown"),
+        "sponsor_bioguide_id": meta.get("sponsor_bioguide_id"),
         "cosponsors": meta.get("cosponsors", 0),
         "cosponsor_names": meta.get("cosponsor_names", []),
+        "cosponsor_ids": meta.get("cosponsor_ids", []),
         "stage": stage,
         "stage_label": STAGE_LABELS[stage],
         "passage_probability": passage_probability(bill_like, stage),
@@ -399,9 +407,11 @@ def reconstruct_meta_from_bill_id(bill_id):
         return None
 
     try:
-        cosponsor_names = fetch_with_retry(fetch_bill_cosponsors, CURRENT_CONGRESS, bill_type, number)
+        cosponsors = fetch_with_retry(fetch_bill_cosponsors, CURRENT_CONGRESS, bill_type, number)
     except requests.exceptions.RequestException:
-        cosponsor_names = []
+        cosponsors = []
+    cosponsor_names = [c["name"] for c in cosponsors]
+    cosponsor_ids = [c["bioguide_id"] for c in cosponsors if c.get("bioguide_id")]
 
     return {
         "bill_id": bill_id,
@@ -410,8 +420,10 @@ def reconstruct_meta_from_bill_id(bill_id):
         "status": detail.get("latestAction", {}).get("text", ""),
         "status_date": detail.get("latestAction", {}).get("actionDate", ""),
         "sponsor": detail.get("sponsors", [{}])[0].get("fullName", "Unknown"),
+        "sponsor_bioguide_id": detail.get("sponsors", [{}])[0].get("bioguideId"),
         "cosponsors": len(cosponsor_names),
         "cosponsor_names": cosponsor_names,
+        "cosponsor_ids": cosponsor_ids,
         "policy_area": detail.get("policyArea", {}).get("name", ""),
     }
 
