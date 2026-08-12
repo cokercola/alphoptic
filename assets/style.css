@@ -926,3 +926,72 @@ table.data-table a { color: var(--blue); text-decoration: none; }
   opacity: 0.4;
   cursor: default;
 }
+/* Lawmakers directory page */
+.state-select {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  width: 220px;
+  max-width: 100%;
+}
+.lawmakers-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 16px;
+}
+@media (max-width: 720px) {
+  .lawmakers-grid { grid-template-columns: 1fr; }
+}
+.lawmaker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.lawmaker-list-item {
+  background: var(--panel);
+  border-left: 3px solid var(--border);
+  border-radius: 0 6px 6px 0;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.lawmaker-list-item:hover { border-left-color: var(--blue); }
+.lawmaker-list-item.active { border-left-color: var(--blue); }
+.lawmaker-list-item .lawmaker-list-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.lawmaker-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.lawmaker-stat-card {
+  background: var(--panel);
+  border-radius: 6px;
+  padding: 10px;
+}
+.lawmaker-stat-card .lawmaker-stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.lawmaker-stat-card .lawmaker-stat-value {
+  font-size: 15px;
+  font-weight: bold;
+  margin-top: 3px;
+}
+.lawmaker-section-heading {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
