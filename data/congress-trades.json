@@ -1,20 +1,178 @@
 {
-  "updated_at": "2026-08-11T14:15:54.315046Z",
+  "updated_at": "2026-08-12T14:17:46.285597Z",
   "lookback_days": 30,
   "lawmakers": [
     {
-      "name": "Gary Peters",
+      "name": "John McGuire",
       "party": null,
-      "chamber": "Senate",
+      "chamber": "House",
       "trades": [
         {
-          "symbol": "O",
+          "symbol": "PANW",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-31",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "BLK",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-14",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "AMAT",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-15",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        }
+      ]
+    },
+    {
+      "name": "Josh Gottheimer",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "GOOGL",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "GOOGL",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "MNST",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-17",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "IBM",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-15",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "IBM",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-16",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "PANW",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-16",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "CCI",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "CRWD",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-15",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "FN",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-14",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "GOOGL",
           "amount": 8000,
           "direction": "buy",
           "trade_date": "2026-07-23",
-          "filed_date": "2026-08-07",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "NICE",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-20",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "GTLS",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-17",
+          "filed_date": "2026-08-11",
           "is_new": true,
           "linked": false
+        },
+        {
+          "symbol": "GOOGL",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        }
+      ]
+    },
+    {
+      "name": "Michael Rulli",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "CCI",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-08-06",
+          "filed_date": "2026-08-10",
+          "is_new": true,
+          "linked": true
         }
       ]
     },
@@ -44,15 +202,24 @@
       ]
     },
     {
-      "name": "Michael Rulli",
+      "name": "John Fetterman",
       "party": null,
-      "chamber": "House",
+      "chamber": "Senate",
       "trades": [
         {
-          "symbol": "CCI",
+          "symbol": "FCX",
           "amount": 8000,
           "direction": "sell",
-          "trade_date": "2026-08-06",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-10",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "HAS",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-24",
           "filed_date": "2026-08-10",
           "is_new": true,
           "linked": true
@@ -74,7 +241,7 @@
           "linked": true
         },
         {
-          "symbol": "CSCO",
+          "symbol": "AAPL",
           "amount": 8000,
           "direction": "sell",
           "trade_date": "2026-07-21",
@@ -83,13 +250,83 @@
           "linked": true
         },
         {
-          "symbol": "AAPL",
+          "symbol": "INTC",
           "amount": 8000,
           "direction": "sell",
           "trade_date": "2026-07-21",
           "filed_date": "2026-08-04",
           "is_new": false,
           "linked": true
+        }
+      ]
+    },
+    {
+      "name": "Kevin Hern",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "DEO",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-08-05",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "VSNT",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-08-05",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "CMCSA",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-08-05",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "MDLZ",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-08-05",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "EL",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-08-05",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "KVUE",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-08-05",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "OGN",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-08-05",
+          "filed_date": "2026-08-11",
+          "is_new": true,
+          "linked": false
         }
       ]
     },
@@ -108,27 +345,9 @@
           "linked": true
         },
         {
-          "symbol": "MSFT",
+          "symbol": "KR",
           "amount": 8000,
           "direction": "buy",
-          "trade_date": "2026-07-24",
-          "filed_date": "2026-08-07",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "MPC",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-24",
-          "filed_date": "2026-08-07",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "MPC",
-          "amount": 8000,
-          "direction": "sell",
           "trade_date": "2026-07-24",
           "filed_date": "2026-08-07",
           "is_new": true,
@@ -153,25 +372,7 @@
           "linked": true
         },
         {
-          "symbol": "KR",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-24",
-          "filed_date": "2026-08-07",
-          "is_new": true,
-          "linked": true
-        },
-        {
           "symbol": "AVGO",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-24",
-          "filed_date": "2026-08-07",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "MSFT",
           "amount": 8000,
           "direction": "buy",
           "trade_date": "2026-07-24",
@@ -187,31 +388,58 @@
           "filed_date": "2026-08-07",
           "is_new": true,
           "linked": true
-        }
-      ]
-    },
-    {
-      "name": "John Fetterman",
-      "party": null,
-      "chamber": "Senate",
-      "trades": [
+        },
         {
-          "symbol": "HAS",
+          "symbol": "MPC",
           "amount": 8000,
           "direction": "sell",
           "trade_date": "2026-07-24",
-          "filed_date": "2026-08-10",
+          "filed_date": "2026-08-07",
           "is_new": true,
           "linked": true
         },
         {
-          "symbol": "FCX",
+          "symbol": "MPC",
           "amount": 8000,
           "direction": "sell",
           "trade_date": "2026-07-24",
-          "filed_date": "2026-08-10",
+          "filed_date": "2026-08-07",
           "is_new": true,
           "linked": true
+        },
+        {
+          "symbol": "MSFT",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-07",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "MSFT",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-24",
+          "filed_date": "2026-08-07",
+          "is_new": true,
+          "linked": true
+        }
+      ]
+    },
+    {
+      "name": "Gary Peters",
+      "party": null,
+      "chamber": "Senate",
+      "trades": [
+        {
+          "symbol": "O",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-07",
+          "is_new": true,
+          "linked": false
         }
       ]
     }
