@@ -14,6 +14,7 @@ function renderSidebar(activePage) {
     { href: '/trades/index.html', label: 'Trades', key: 'trades' },
     { href: '/watchlist/index.html', label: 'Watchlist', key: 'watchlist' },
     { href: '/community/index.html', label: 'Community', key: 'community' },
+    { href: '/lawmakers/index.html', label: 'Lawmakers', key: 'lawmakers' },
   ];
   const nav = document.getElementById('sidebar');
   nav.innerHTML = items.map(i =>
