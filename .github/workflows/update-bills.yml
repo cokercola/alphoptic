@@ -34,6 +34,7 @@ jobs:
 
       - name: Build lawmakers directory
         env:
+          CONGRESS_API_KEY: ${{ secrets.CONGRESS_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python scripts/build_lawmakers_index.py
 
