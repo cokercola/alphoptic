@@ -111,14 +111,22 @@ def fetch_bill(congress, bill_type, number):
 
 def fetch_bill_cosponsors(congress, bill_type, number):
     """Congress.gov's bill detail response only includes a cosponsor
-    COUNT - the actual names live on this separate endpoint. Needed for
+    COUNT - the actual names (and bioguideIds, for joining against the
+    lawmakers directory) live on this separate endpoint. Needed for
     'what bills is person X cosponsoring' style questions, which a
-    count alone can't answer."""
+    count alone can't answer.
+
+    Returns a list of {"name", "bioguide_id"} dicts rather than plain
+    strings, so callers can derive BOTH cosponsor_names (existing field)
+    and cosponsor_ids (new) from one API call instead of two."""
     url = f"{CONGRESS_BASE}/bill/{congress}/{bill_type}/{number}/cosponsors"
     params = {"api_key": CONGRESS_API_KEY, "format": "json"}
     resp = requests.get(url, params=params, timeout=30)
     resp.raise_for_status()
-    return [c.get("fullName", "Unknown") for c in resp.json().get("cosponsors", [])]
+    return [
+        {"name": c.get("fullName", "Unknown"), "bioguide_id": c.get("bioguideId")}
+        for c in resp.json().get("cosponsors", [])
+    ]
 
 
 def fetch_bill_summary(congress, bill_type, number):
@@ -639,10 +647,12 @@ def main():
         status_date = bill.get("latestAction", {}).get("actionDate", "")
 
         try:
-            cosponsor_names = fetch_bill_cosponsors(ref["congress"], ref["type"], ref["number"])
+            cosponsors = fetch_bill_cosponsors(ref["congress"], ref["type"], ref["number"])
         except requests.exceptions.RequestException as e:
             print(f"WARNING: cosponsor fetch failed for {bill_id} ({e}); leaving list empty this run.")
-            cosponsor_names = []
+            cosponsors = []
+        cosponsor_names = [c["name"] for c in cosponsors]
+        cosponsor_ids = [c["bioguide_id"] for c in cosponsors if c.get("bioguide_id")]
 
         cached = previous_by_id.get(bill_id)
         # Cache is only reused if the status is unchanged, the schema_version
@@ -694,8 +704,10 @@ def main():
             "community_category": community_category,
             "community_category_label": COMMUNITY_CATEGORY_LABELS.get(community_category, "None"),
             "sponsor": bill.get("sponsors", [{}])[0].get("fullName", "Unknown"),
+            "sponsor_bioguide_id": bill.get("sponsors", [{}])[0].get("bioguideId"),
             "cosponsors": bill.get("cosponsors", {}).get("count", 0),
             "cosponsor_names": cosponsor_names,
+            "cosponsor_ids": cosponsor_ids,
             "last_action": status,
             "last_action_date": status_date,
             "next_event": "TBD",
