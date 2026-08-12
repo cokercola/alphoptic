@@ -12,8 +12,8 @@ anything in your tracked bill set.
 
 Membership barely changes between elections (occasional special
 elections/appointments aside), so this doesn't need to run daily --
-weekly is plenty. Suggested: .github/workflows/update-members.yml on
-a weekly cron, or just run manually after a special election.
+weekly is plenty. Runs via .github/workflows/update-members.yml on a
+weekly cron, or manually after a special election.
 
 Required environment variables (same as fetch_bills.py):
   CONGRESS_API_KEY
@@ -43,10 +43,6 @@ PARTY_CODES = {
     "Libertarian": "L",
 }
 
-# Congress.gov's member endpoint reports the state as a full name
-# (e.g. "South Carolina"), but bill cosponsor/sponsor records elsewhere
-# in this project already use two-letter codes -- normalize here so
-# the lawmakers directory can join against both consistently.
 STATE_NAME_TO_CODE = {
     "Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR",
     "California": "CA", "Colorado": "CO", "Connecticut": "CT", "Delaware": "DE",
