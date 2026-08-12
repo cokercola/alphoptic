@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6P0HCH9X77"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6P0HCH9X77');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lawmakers — Alphoptic</title>
+<meta name="description" content="Browse every member of Congress by state and see the bills they've sponsored and cosponsored.">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+</head>
+<body>
+<div id="site-header"></div>
+<div class="layout two-col">
+  <nav class="sidebar" id="sidebar"></nav>
+  <main>
+    <div class="breadcrumb"><a href="/index.html">Dashboard</a> / Lawmakers</div>
+    <div class="section-label" id="section-title">Lawmakers</div>
+    <select class="state-select" id="state-select">
+      <option value="">Select a state…</option>
+    </select>
+    <div class="lawmakers-grid">
+      <div class="lawmaker-list" id="lawmaker-list">
+        <p class="empty-note">Choose a state to see its lawmakers.</p>
+      </div>
+      <div id="lawmaker-detail">
+        <p class="empty-note">Select a lawmaker to see the bills they've sponsored and cosponsored.</p>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="/assets/site.js"></script>
+<script src="/assets/donate.js"></script>
+<script src="/assets/lawmakers.js"></script>
+<script src="/assets/header.js"></script>
+<script>
+renderSidebar('lawmakers');
+initLawmakersPage();
+</script>
+  <div id="site-footer"></div>
+  <script src="/assets/footer.js"></script>
+</body>
+</html>
