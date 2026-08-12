@@ -645,21 +645,20 @@ def main():
             cosponsor_names = []
 
         cached = previous_by_id.get(bill_id)
-        # Cache is only reused if the status is unchanged AND the
-        # cached record's schema_version matches CLASSIFICATION_SCHEMA_VERSION
-        # above - bump that constant any time CLASSIFY_PROMPT changes in
-        # a way that should force fresh classification for everyone.
-        if cached and cached.get("status") == status and cached.get("schema_version") == CLASSIFICATION_SCHEMA_VERSION:
+        # Cache is only reused if the status is unchanged, the schema_version
+        # matches CLASSIFICATION_SCHEMA_VERSION, AND the cached record actually
+        # has every field we're about to read off it. That last check guards
+        # against malformed records (e.g. from a backfill run that stamped a
+        # valid schema_version onto an incomplete classification) - instead
+        # of crashing the whole run, a bad record just falls through to
+        # getting reclassified fresh below, like a normal cache miss.
+        REQUIRED_CACHE_FIELDS = ("industry", "direction", "impact_score", "confidence", "summary", "companies")
+        if (cached and cached.get("status") == status
+                and cached.get("schema_version") == CLASSIFICATION_SCHEMA_VERSION
+                and all(field in cached for field in REQUIRED_CACHE_FIELDS)):
             # Nothing has changed since last run - reuse the existing
             # classification instead of calling Claude again.
-            classification = {
-                "industry": cached["industry"],
-                "direction": cached["direction"],
-                "impact_score": cached["impact_score"],
-                "confidence": cached["confidence"],
-                "summary": cached["summary"],
-                "companies": cached["companies"],
-            }
+            classification = {field: cached[field] for field in REQUIRED_CACHE_FIELDS}
             reused += 1
         else:
             summary_text = fetch_bill_summary(ref["congress"], ref["type"], ref["number"])
