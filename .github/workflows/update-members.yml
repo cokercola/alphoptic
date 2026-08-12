@@ -1,0 +1,41 @@
+name: Update member roster
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-members
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests anthropic
+
+      - name: Fetch member roster
+        env:
+          CONGRESS_API_KEY: ${{ secrets.CONGRESS_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/fetch_members.py
+
+      - name: Commit updated roster
+        run: |
+          git config user.name "alphoptic-bot"
+          git config user.email "actions@github.com"
+          git add data/members.json
+          git diff --staged --quiet || git commit -m "Update member roster"
+          git pull --rebase --autostash origin main
+          git push
