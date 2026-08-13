@@ -539,6 +539,33 @@ def write_bill_chunks(signals):
     print(f"Wrote {NUM_BILL_CHUNKS} bill detail chunks to {BILLS_CHUNKS_DIR}/.")
 
 
+BILLS_LOOKUP_JSON_PATH = "data/bills-lookup.json"
+
+
+def write_bills_lookup(signals):
+    """A much smaller companion to bills-index.json, carrying only what
+    a page needs to resolve a bare bill_id into something displayable
+    (title/stage/date) without loading every other field on every bill.
+    First consumer: the lawmakers directory page, which only needs to
+    label a list of bill_ids, not analyze them.
+
+    Values are arrays [title, stage, last_action_date] rather than
+    {"title": ..., "stage": ..., ...} objects -- skipping the repeated
+    key names across 14,000+ bills is most of the size difference from
+    bills-index.json. Small tradeoff: any future consumer has to know
+    the array's field order (see the comment below) rather than reading
+    self-describing keys."""
+    updated_at = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
+    # Array order: [title, stage, last_action_date]
+    lookup = {
+        s.get("bill_id"): [s.get("title"), s.get("stage"), s.get("last_action_date")]
+        for s in signals
+    }
+    with open(BILLS_LOOKUP_JSON_PATH, "w") as f:
+        json.dump({"updated_at": updated_at, "bills": lookup}, f, separators=(",", ":"))
+    print(f"Wrote {BILLS_LOOKUP_JSON_PATH} ({len(lookup)} bills).")
+
+
 def write_slim_data_files(signals, summary=None):
     updated_at = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
 
@@ -772,6 +799,7 @@ def main():
         json.dump(output, f, indent=2)
     write_slim_data_files(signals, summary=output["summary"])
     write_bill_chunks(signals)
+    write_bills_lookup(signals)
 
     print(f"Wrote {len(signals)} signals to {BILLS_JSON_PATH} "
           f"({classified} newly classified, {reused} reused from cache)")
