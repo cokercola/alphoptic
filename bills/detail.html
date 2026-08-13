@@ -70,11 +70,15 @@ async function init() {
   document.title = bill.bill_id + ' — Alphoptic';
 
   const cosponsorNames = bill.cosponsor_names || [];
+  const cosponsorIds = bill.cosponsor_ids || [];
   const shownCosponsors = cosponsorNames.slice(0, 3);
   const remainingCount = cosponsorNames.length - shownCosponsors.length;
-  const cosponsorChips = shownCosponsors.map(name =>
-    `<span class="cosponsor-chip">${name}</span>`
-  ).join('') + (remainingCount > 0 ? `<span class="cosponsor-chip">+${remainingCount} more</span>` : '');
+  const cosponsorChips = shownCosponsors.map((name, i) => {
+    const id = cosponsorIds[i];
+    return id
+      ? `<a class="cosponsor-chip" href="/lawmakers/index.html?id=${id}">${name}</a>`
+      : `<span class="cosponsor-chip">${name}</span>`;
+  }).join('') + (remainingCount > 0 ? `<span class="cosponsor-chip">+${remainingCount} more</span>` : '');
 
   const lastActionDate = bill.last_action_date
     ? new Date(bill.last_action_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -83,7 +87,7 @@ async function init() {
   content.innerHTML += `
     <div class="detail-header">
       <h1>${bill.bill_id} — ${bill.title}</h1>
-      <div class="meta">${bill.status} · Sponsor: ${bill.sponsor} · ${bill.cosponsors} cosponsors</div>
+      <div class="meta">${bill.status} · Sponsor: ${bill.sponsor_bioguide_id ? `<a href="/lawmakers/index.html?id=${bill.sponsor_bioguide_id}">${bill.sponsor}</a>` : bill.sponsor} · ${bill.cosponsors} cosponsors</div>
       ${cosponsorChips ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">${cosponsorChips}</div>` : ''}
     </div>
     <p style="color:var(--text-secondary); max-width:640px;">${bill.summary}</p>
