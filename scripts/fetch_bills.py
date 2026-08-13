@@ -679,7 +679,7 @@ def main():
             print(f"WARNING: cosponsor fetch failed for {bill_id} ({e}); leaving list empty this run.")
             cosponsors = []
         cosponsor_names = [c["name"] for c in cosponsors]
-        cosponsor_ids = [c["bioguide_id"] for c in cosponsors if c.get("bioguide_id")]
+        cosponsor_ids = [c.get("bioguide_id") for c in cosponsors]
 
         cached = previous_by_id.get(bill_id)
         # Cache is only reused if the status is unchanged, the schema_version
