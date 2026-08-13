@@ -410,8 +410,7 @@ def reconstruct_meta_from_bill_id(bill_id):
     except requests.exceptions.RequestException:
         cosponsors = []
     cosponsor_names = [c["name"] for c in cosponsors]
-    cosponsor_ids = [c["bioguide_id"] for c in cosponsors if c.get("bioguide_id")]
-
+    cosponsor_ids = [c.get("bioguide_id") for c in cosponsors]
     return {
         "bill_id": bill_id,
         "congress": CURRENT_CONGRESS,
