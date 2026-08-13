@@ -277,7 +277,6 @@ def cmd_submit(args):
                 "cosponsor_ids": cosponsor_ids,
                 "policy_area": policy_area,
             }
-            }
             total_queued += 1
 
             if args.limit and total_queued >= args.limit:
@@ -428,6 +427,15 @@ def reconstruct_meta_from_bill_id(bill_id):
     }
 
 
+# The same six fields fetch_bills.py always writes on a successful
+# classification (see its FALLBACK_CLASSIFICATION). A record missing
+# any of these was the root cause of the KeyError that once crashed
+# fetch_bills.py's daily run -- this backfill script was stamping
+# schema_version as valid on classifications that hadn't actually been
+# confirmed complete.
+REQUIRED_CLASSIFICATION_FIELDS = ("industry", "direction", "impact_score", "confidence", "summary", "companies")
+
+
 def sanitize_classification(classification):
     """Claude's CLASSIFY_PROMPT schema specifies impact_score/confidence
     as integers and exposure as integers, but nothing enforces that on
@@ -436,7 +444,17 @@ def sanitize_classification(classification):
     crashes any later int comparison/sum on that field. Coerce here,
     once, right after parsing, so a bad type from one bill can never
     take down the whole summary rebuild after a merge has already
-    succeeded."""
+    succeeded.
+
+    Also validates that all REQUIRED_CLASSIFICATION_FIELDS are present.
+    Claude's response is occasionally syntactically valid JSON that
+    just omits a field outright (not a type problem) -- raising here
+    routes that case through the same except-and-fall-back-to-
+    FALLBACK_CLASSIFICATION path as a JSON parse failure, instead of
+    silently shipping an incomplete record stamped as schema-valid."""
+    missing = [f for f in REQUIRED_CLASSIFICATION_FIELDS if f not in classification]
+    if missing:
+        raise ValueError(f"classification missing required field(s): {missing}")
     for field in ("impact_score", "confidence"):
         if field in classification:
             try:
