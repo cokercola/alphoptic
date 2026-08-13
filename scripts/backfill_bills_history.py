@@ -238,7 +238,7 @@ def cmd_submit(args):
                       f"continuing with empty cosponsor list.", file=sys.stderr)
                 cosponsors = []
             cosponsor_names = [c["name"] for c in cosponsors]
-            cosponsor_ids = [c["bioguide_id"] for c in cosponsors if c.get("bioguide_id")]
+            cosponsor_ids = [c.get("bioguide_id") for c in cosponsors]
 
             try:
                 summary_text = fetch_with_retry(fetch_bill_summary, CURRENT_CONGRESS, bill_type, number)
