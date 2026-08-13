@@ -5,21 +5,34 @@
  *
  *   /data/lawmakers-index.json  - slim, one row per member (~535 rows)
  *   /data/lawmakers.json        - full detail, bill_id lists per member
- *   /data/bills-index.json      - title/stage lookup for those bill_ids
+ *   /data/bills-lookup.json     - title/stage lookup for those bill_ids
  *
- * Note: bills-index.json is several MB at current tracked-bill volume.
- * That's consistent with how the dashboard already loads the (larger)
- * full bills.json, but worth revisiting with a smaller title-only
- * lookup file if this page's load time becomes a problem as bill
- * coverage keeps growing.
+ * bills-lookup.json is a purpose-built slim file (~1.5MB vs. the ~6MB
+ * bills-index.json would cost) - see write_bills_lookup() in
+ * fetch_bills.py. Its records are [title, stage, last_action_date]
+ * arrays rather than {title:..., stage:..., ...} objects (skipping
+ * repeated key names across 14,000+ bills is most of the size win),
+ * so they get normalized into the same {title, stage, last_action_date}
+ * shape as before immediately after fetching, below.
  */
+
+// Mirrors STAGE_LABELS in scripts/fetch_bills.py - hardcoded here so this
+// page doesn't need to fetch bills-index.json (a much bigger file) just
+// to look up these six fixed labels. Keep in sync if that dict changes.
+const STAGE_LABELS = {
+  introduced: 'Introduced',
+  committee: 'Committee action',
+  passed_one_chamber: 'Passed one chamber',
+  passed_both: 'Passed both chambers',
+  became_law: 'Became law',
+  failed_vetoed: 'Failed / vetoed',
+};
 
 const LAWMAKERS_VIEW_ALL_THRESHOLD = 5;
 
 let lawmakersIndexById = new Map();   // bioguide_id -> slim row
 let lawmakersDetailById = null;       // full lawmakers.json "lawmakers" object
 let billLookupById = new Map();       // bill_id -> {title, stage, last_action_date}
-let stageLabelByStage = {};
 
 async function initLawmakersPage() {
   const listEl = document.getElementById('lawmaker-list');
@@ -27,18 +40,18 @@ async function initLawmakersPage() {
   const stateSelect = document.getElementById('state-select');
 
   try {
-    const [indexRes, detailRes, billsRes] = await Promise.all([
+    const [indexRes, detailRes, lookupRes] = await Promise.all([
       fetch('/data/lawmakers-index.json'),
       fetch('/data/lawmakers.json'),
-      fetch('/data/bills-index.json'),
+      fetch('/data/bills-lookup.json'),
     ]);
     if (!indexRes.ok) throw new Error('Failed to load lawmakers-index.json');
     if (!detailRes.ok) throw new Error('Failed to load lawmakers.json');
-    if (!billsRes.ok) throw new Error('Failed to load bills-index.json');
+    if (!lookupRes.ok) throw new Error('Failed to load bills-lookup.json');
 
     const indexData = await indexRes.json();
     const detailData = await detailRes.json();
-    const billsData = await billsRes.json();
+    const lookupData = await lookupRes.json();
 
     const updatedEl = document.getElementById('updated-at');
     if (updatedEl) {
@@ -47,9 +60,11 @@ async function initLawmakersPage() {
 
     (indexData.lawmakers || []).forEach(row => lawmakersIndexById.set(row.bioguide_id, row));
     lawmakersDetailById = detailData.lawmakers || {};
-    (billsData.bills || []).forEach(b => billLookupById.set(b.bill_id, b));
-    ((billsData.summary && billsData.summary.stage_breakdown) || []).forEach(s => {
-      stageLabelByStage[s.stage] = s.label;
+    // Each record is [title, stage, last_action_date] - normalize to the
+    // same {title, stage, last_action_date} shape the rest of this file
+    // already expects, so billRow()/sortByRecent() don't need to change.
+    Object.entries(lookupData.bills || {}).forEach(([billId, [title, stage, lastActionDate]]) => {
+      billLookupById.set(billId, { title, stage, last_action_date: lastActionDate });
     });
 
     populateStateDropdown(indexData.lawmakers || []);
@@ -65,9 +80,12 @@ async function initLawmakersPage() {
   });
 
   // Deep-link support: /lawmakers/index.html?state=SC&id=S001234
+  // or just ?id=S001234 on its own - state gets looked up from the
+  // lawmaker's own record, so a link (e.g. a bill's sponsor name) only
+  // needs to know a bioguideId, not which state that person represents.
   const params = new URLSearchParams(window.location.search);
-  const preState = params.get('state');
   const preId = params.get('id');
+  const preState = params.get('state') || (preId && (lawmakersIndexById.get(preId) || {}).state_code);
   if (preState) {
     stateSelect.value = preState;
     renderLawmakerList(preState);
@@ -124,7 +142,7 @@ function billRow(billId) {
   if (!bill) {
     return `<tr><td colspan="2">${billId}</td></tr>`;
   }
-  const label = stageLabelByStage[bill.stage] || bill.stage;
+  const label = STAGE_LABELS[bill.stage] || bill.stage;
   return `
     <tr>
       <td><a href="/bills/detail.html?id=${billId}">${billId}</a> \u2014 ${bill.title}</td>
