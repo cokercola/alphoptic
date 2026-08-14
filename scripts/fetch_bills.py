@@ -724,6 +724,7 @@ def main():
         else:
             summary_text = fetch_bill_summary(ref["congress"], ref["type"], ref["number"])
             classification = classify(title, status, summary_text, bill_id=bill_id)
+            classification["companies"] = resolve_companies(classification["companies"])
             classified += 1
 
         stage = bill_stage(status)
