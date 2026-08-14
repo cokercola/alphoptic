@@ -24,7 +24,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install requests anthropic
+        run: pip install requests anthropic rapidfuzz
 
       - name: Fetch and classify bills
         env:
