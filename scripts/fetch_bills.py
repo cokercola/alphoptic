@@ -612,6 +612,7 @@ def write_slim_data_files(signals, summary=None):
             "industry": s.get("industry"),
             "direction": s.get("direction"),
             "stage": s.get("stage"),
+            "on_calendar": s.get("on_calendar", False),
             "status": s.get("status"),
             "impact_score": s.get("impact_score"),
             "passage_probability": s.get("passage_probability"),
@@ -740,6 +741,7 @@ def main():
             classified += 1
 
         stage = bill_stage(status)
+        on_calendar = is_on_calendar(status)
         # Deterministic, not from Claude - derived fresh from this
         # bill's live policyArea every run, regardless of whether the
         # rest of the classification came from cache.
@@ -764,6 +766,7 @@ def main():
             "confidence": classification["confidence"],
             "status": status,
             "stage": stage,
+            "on_calendar": on_calendar,
             "schema_version": record_schema_version,
             "community_category": community_category,
             "community_category_label": COMMUNITY_CATEGORY_LABELS.get(community_category, "None"),
