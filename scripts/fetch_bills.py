@@ -46,6 +46,8 @@ import anthropic
 
 import re
 
+from company_registry import resolve_company
+
 CONGRESS_API_KEY = os.environ["CONGRESS_API_KEY"]
 CONGRESS_BASE = "https://api.congress.gov/v3"
 BILLS_JSON_PATH = "data/bills.json"
@@ -218,7 +220,7 @@ fences, no preamble) matching this schema:
   "confidence": integer 0-100,
   "summary": "one sentence, plain language, under 30 words",
   "companies": [
-    {{"ticker": "XXX", "name": "Company Name", "effect": "positive"|"negative"|"mixed", "exposure": integer 0-100}}
+    {{"name": "Company Name", "effect": "positive"|"negative"|"mixed", "exposure": integer 0-100}}
   ]
 }}
 
@@ -259,6 +261,28 @@ FALLBACK_CLASSIFICATION = {
     "companies": [],
     "_classification_failed": True,  # never cache this - see main() loop
 }
+
+
+def resolve_companies(companies):
+    """Runs each Claude-named company through the deterministic SEC
+    resolver, replacing the free-recalled ticker with a canonical one.
+    Companies that don't confidently resolve are dropped rather than
+    kept with an unverified guess -- see the ticker cleanup plan's
+    "Open decision" section; flip this to keep-with-a-flag instead if
+    that tradeoff gets revisited."""
+    resolved = []
+    for c in companies or []:
+        match = resolve_company(c.get("name"))
+        if match is None:
+            continue
+        ticker, canonical_name = match
+        resolved.append({
+            "ticker": ticker,
+            "name": canonical_name,
+            "effect": c.get("effect"),
+            "exposure": c.get("exposure"),
+        })
+    return resolved
 
 
 def classify(title, status, summary, bill_id="unknown"):
