@@ -995,3 +995,53 @@ table.data-table a { color: var(--blue); text-decoration: none; }
   margin-bottom: 8px;
   text-transform: uppercase;
 }
+.signal-card.level-high { border-left-color: var(--red); }
+.signal-card.level-medium { border-left-color: var(--amber); }
+.signal-card.level-low { border-left-color: var(--green); }
+
+.signal-level-badge {
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+.signal-level-badge.level-high { background: rgba(224,82,82,0.18); color: var(--red); }
+.signal-level-badge.level-medium { background: rgba(232,178,61,0.18); color: var(--amber); }
+.signal-level-badge.level-low { background: rgba(76,181,107,0.18); color: var(--green); }
+
+.signal-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 10px 0;
+}
+.signal-metric-grid .metric-value {
+  font-size: 15px;
+  font-weight: bold;
+}
+.signal-metric-grid .metric-label {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.signal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.signal-tickers {
+  display: flex;
+  gap: 6px;
+}
+.signal-ticker-chip {
+  font-size: 11px;
+  background: rgba(90,155,255,0.16);
+  color: var(--blue);
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+.signal-why-link {
+  font-size: 11px;
+  color: var(--blue);
+  text-decoration: none;
+}
