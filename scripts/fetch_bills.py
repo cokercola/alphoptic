@@ -317,6 +317,18 @@ def classify(title, status, summary, bill_id="unknown"):
         return dict(FALLBACK_CLASSIFICATION)
 
 
+def is_on_calendar(latest_action_text):
+    """A bill placed on the House Union Calendar or the Senate
+    Legislative Calendar is queued for a floor vote -- Congress.gov
+    doesn't expose a clean "scheduled floor votes" API, but this
+    calendar-placement language reliably precedes one, and it's free:
+    it comes from the same latest-action text already fetched for
+    every bill, no new API calls. Used as the "upcoming votes" signal
+    on the homepage's Alphoptic Signals panel."""
+    text = (latest_action_text or "").lower()
+    return "placed on the union calendar" in text or "placed on senate legislative calendar" in text or "placed on the calendar" in text
+
+
 def bill_stage(latest_action_text):
     """Buckets a bill into one of five stages based on its latest
     action text. Order matters here - check more-advanced stages
