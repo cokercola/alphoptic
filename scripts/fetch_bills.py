@@ -326,7 +326,7 @@ def is_on_calendar(latest_action_text):
     every bill, no new API calls. Used as the "upcoming votes" signal
     on the homepage's Alphoptic Signals panel."""
     text = (latest_action_text or "").lower()
-    return "placed on the union calendar" in text or "placed on senate legislative calendar" in text or "placed on the calendar" in text
+    return "placed on" in text and "calendar" in text
 
 
 def bill_stage(latest_action_text):
