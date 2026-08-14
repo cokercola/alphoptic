@@ -1,99 +1,20 @@
 {
-  "updated_at": "2026-08-13T14:19:24.228888Z",
+  "updated_at": "2026-08-14T14:12:04.229862Z",
   "lookback_days": 30,
   "lawmakers": [
     {
-      "name": "Josh Gottheimer",
-      "party": null,
-      "chamber": "House",
-      "trades": [
-        {
-          "symbol": "IBM",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-16",
-          "filed_date": "2026-08-11",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "IBM",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-15",
-          "filed_date": "2026-08-11",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "MNST",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-17",
-          "filed_date": "2026-08-11",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "NICE",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-20",
-          "filed_date": "2026-08-11",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "PANW",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-16",
-          "filed_date": "2026-08-11",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "GTLS",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-17",
-          "filed_date": "2026-08-11",
-          "is_new": true,
-          "linked": false
-        }
-      ]
-    },
-    {
-      "name": "Shelley Moore Capito",
+      "name": "Gary Peters",
       "party": null,
       "chamber": "Senate",
       "trades": [
         {
-          "symbol": "MSFT",
-          "amount": 32500,
-          "direction": "sell",
-          "trade_date": "2026-07-21",
-          "filed_date": "2026-08-04",
-          "is_new": false,
-          "linked": true
-        },
-        {
-          "symbol": "AAPL",
+          "symbol": "O",
           "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-21",
-          "filed_date": "2026-08-04",
+          "direction": "buy",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-07",
           "is_new": false,
-          "linked": true
-        },
-        {
-          "symbol": "INTC",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-21",
-          "filed_date": "2026-08-04",
-          "is_new": false,
-          "linked": true
+          "linked": false
         }
       ]
     },
@@ -132,96 +53,35 @@
       ]
     },
     {
-      "name": "Gary Peters",
+      "name": "Shelley Moore Capito",
       "party": null,
       "chamber": "Senate",
       "trades": [
         {
-          "symbol": "O",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-23",
-          "filed_date": "2026-08-07",
-          "is_new": true,
-          "linked": false
-        }
-      ]
-    },
-    {
-      "name": "Ro Khanna",
-      "party": null,
-      "chamber": "House",
-      "trades": [
-        {
-          "symbol": "TD",
-          "amount": 175000,
-          "direction": "buy",
-          "trade_date": "2026-07-16",
-          "filed_date": "2026-08-12",
-          "is_new": true,
-          "linked": false
+          "symbol": "MSFT",
+          "amount": 32500,
+          "direction": "sell",
+          "trade_date": "2026-07-21",
+          "filed_date": "2026-08-04",
+          "is_new": false,
+          "linked": true
         },
         {
-          "symbol": "MODG",
+          "symbol": "AAPL",
           "amount": 8000,
           "direction": "sell",
-          "trade_date": "2026-07-22",
-          "filed_date": "2026-08-12",
-          "is_new": true,
+          "trade_date": "2026-07-21",
+          "filed_date": "2026-08-04",
+          "is_new": false,
           "linked": true
         },
         {
-          "symbol": "ACI",
+          "symbol": "INTC",
           "amount": 8000,
           "direction": "sell",
-          "trade_date": "2026-07-23",
-          "filed_date": "2026-08-12",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "PINS",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-30",
-          "filed_date": "2026-08-12",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "UBER",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-23",
-          "filed_date": "2026-08-12",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "PENN",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-16",
-          "filed_date": "2026-08-12",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "ZBH",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-23",
-          "filed_date": "2026-08-12",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "CHWY",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-23",
-          "filed_date": "2026-08-12",
-          "is_new": true,
+          "trade_date": "2026-07-21",
+          "filed_date": "2026-08-04",
+          "is_new": false,
           "linked": true
         }
       ]
@@ -252,15 +112,15 @@
       ]
     },
     {
-      "name": "John McGuire",
+      "name": "Josh Gottheimer",
       "party": null,
       "chamber": "House",
       "trades": [
         {
-          "symbol": "PANW",
+          "symbol": "GOOGL",
           "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-31",
+          "direction": "buy",
+          "trade_date": "2026-07-23",
           "filed_date": "2026-08-11",
           "is_new": true,
           "linked": true
@@ -277,25 +137,95 @@
           "amount": 8000,
           "direction": "sell",
           "trade_date": "2026-08-05",
-          "filed_date": "2026-08-11",
+          "filed_date": "2026-08-13",
+          "is_new": true,
+          "linked": false
+        }
+      ]
+    },
+    {
+      "name": "Ro Khanna",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "TD",
+          "amount": 175000,
+          "direction": "buy",
+          "trade_date": "2026-07-16",
+          "filed_date": "2026-08-12",
           "is_new": true,
           "linked": false
         },
         {
-          "symbol": "DEO",
+          "symbol": "CHWY",
           "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-08-05",
-          "filed_date": "2026-08-11",
+          "direction": "buy",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-12",
           "is_new": true,
           "linked": true
         },
         {
-          "symbol": "CMCSA",
+          "symbol": "PENN",
           "amount": 8000,
           "direction": "sell",
-          "trade_date": "2026-08-05",
-          "filed_date": "2026-08-11",
+          "trade_date": "2026-07-16",
+          "filed_date": "2026-08-12",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "ZBH",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-12",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "MODG",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-22",
+          "filed_date": "2026-08-12",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "PINS",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-30",
+          "filed_date": "2026-08-12",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "ACI",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-12",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "UBER",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-12",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "GEHC",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-30",
+          "filed_date": "2026-08-12",
           "is_new": true,
           "linked": true
         }

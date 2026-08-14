@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-13T14:19:24.229521Z",
+  "updated_at": "2026-08-14T14:12:04.230499Z",
   "lookback_days": 30,
   "trades": [
     {
@@ -32,7 +32,7 @@
       "direction": "buy",
       "trade_date": "2026-07-23",
       "filed_date": "2026-08-07",
-      "is_new": true,
+      "is_new": false,
       "linked": false
     },
     {
@@ -69,6 +69,17 @@
       "linked": true
     },
     {
+      "lawmaker": "Kevin Hern",
+      "chamber": "House",
+      "symbol": "OGN",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-08-05",
+      "filed_date": "2026-08-13",
+      "is_new": true,
+      "linked": false
+    },
+    {
       "lawmaker": "Ro Khanna",
       "chamber": "House",
       "symbol": "TD",
@@ -82,40 +93,7 @@
     {
       "lawmaker": "Ro Khanna",
       "chamber": "House",
-      "symbol": "MODG",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-22",
-      "filed_date": "2026-08-12",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "Ro Khanna",
-      "chamber": "House",
-      "symbol": "ACI",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-23",
-      "filed_date": "2026-08-12",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "Ro Khanna",
-      "chamber": "House",
-      "symbol": "PINS",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-30",
-      "filed_date": "2026-08-12",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "Ro Khanna",
-      "chamber": "House",
-      "symbol": "UBER",
+      "symbol": "CHWY",
       "amount": 8000,
       "direction": "buy",
       "trade_date": "2026-07-23",
@@ -148,10 +126,54 @@
     {
       "lawmaker": "Ro Khanna",
       "chamber": "House",
-      "symbol": "CHWY",
+      "symbol": "MODG",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-22",
+      "filed_date": "2026-08-12",
+      "is_new": true,
+      "linked": true
+    },
+    {
+      "lawmaker": "Ro Khanna",
+      "chamber": "House",
+      "symbol": "PINS",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-30",
+      "filed_date": "2026-08-12",
+      "is_new": true,
+      "linked": true
+    },
+    {
+      "lawmaker": "Ro Khanna",
+      "chamber": "House",
+      "symbol": "ACI",
+      "amount": 8000,
+      "direction": "sell",
+      "trade_date": "2026-07-23",
+      "filed_date": "2026-08-12",
+      "is_new": true,
+      "linked": true
+    },
+    {
+      "lawmaker": "Ro Khanna",
+      "chamber": "House",
+      "symbol": "UBER",
       "amount": 8000,
       "direction": "buy",
       "trade_date": "2026-07-23",
+      "filed_date": "2026-08-12",
+      "is_new": true,
+      "linked": true
+    },
+    {
+      "lawmaker": "Ro Khanna",
+      "chamber": "House",
+      "symbol": "GEHC",
+      "amount": 8000,
+      "direction": "buy",
+      "trade_date": "2026-07-30",
       "filed_date": "2026-08-12",
       "is_new": true,
       "linked": true
@@ -190,111 +212,12 @@
       "linked": true
     },
     {
-      "lawmaker": "Kevin Hern",
-      "chamber": "House",
-      "symbol": "OGN",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-08-05",
-      "filed_date": "2026-08-11",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "Kevin Hern",
-      "chamber": "House",
-      "symbol": "DEO",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-08-05",
-      "filed_date": "2026-08-11",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "Kevin Hern",
-      "chamber": "House",
-      "symbol": "CMCSA",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-08-05",
-      "filed_date": "2026-08-11",
-      "is_new": true,
-      "linked": true
-    },
-    {
       "lawmaker": "Josh Gottheimer",
       "chamber": "House",
-      "symbol": "IBM",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-16",
-      "filed_date": "2026-08-11",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "Josh Gottheimer",
-      "chamber": "House",
-      "symbol": "IBM",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-15",
-      "filed_date": "2026-08-11",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "Josh Gottheimer",
-      "chamber": "House",
-      "symbol": "MNST",
+      "symbol": "GOOGL",
       "amount": 8000,
       "direction": "buy",
-      "trade_date": "2026-07-17",
-      "filed_date": "2026-08-11",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "Josh Gottheimer",
-      "chamber": "House",
-      "symbol": "NICE",
-      "amount": 8000,
-      "direction": "buy",
-      "trade_date": "2026-07-20",
-      "filed_date": "2026-08-11",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "Josh Gottheimer",
-      "chamber": "House",
-      "symbol": "PANW",
-      "amount": 8000,
-      "direction": "buy",
-      "trade_date": "2026-07-16",
-      "filed_date": "2026-08-11",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "Josh Gottheimer",
-      "chamber": "House",
-      "symbol": "GTLS",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-17",
-      "filed_date": "2026-08-11",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "John McGuire",
-      "chamber": "House",
-      "symbol": "PANW",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-31",
+      "trade_date": "2026-07-23",
       "filed_date": "2026-08-11",
       "is_new": true,
       "linked": true
