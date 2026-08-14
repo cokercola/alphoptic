@@ -10,9 +10,7 @@ async function loadDashboard() {
     <div class="stat-card"><div class="label">New signals</div><div class="value" style="color:var(--blue)">${stats.new_signals_today}</div></div>
     <div class="stat-card"><div class="label">Industries</div><div class="value">${stats.industries_affected}</div></div>
   `;
-  cconst hasTooltips = typeof infoIcon === 'function' && typeof TOOLTIP_TEXT !== 'undefined';
-
-  renderCommunityHighlight('community-highlight', data, 3);
+  const hasTooltips = typeof infoIcon === 'function' && typeof TOOLTIP_TEXT !== 'undefined';
 
   renderCommunityHighlight('community-highlight', data, 3);
 
