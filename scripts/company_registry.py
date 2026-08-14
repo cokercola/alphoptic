@@ -53,14 +53,33 @@ _SUFFIX_RE = re.compile(
 _PUNCT_RE = re.compile(r"[^\w\s]")
 _WHITESPACE_RE = re.compile(r"\s+")
 
+# The SEC registry tags a large fraction of titles with a trailing
+# incorporation-state or filing-status marker -- "AGCO CORP /DE",
+# "US BANCORP \DE\", "COSTCO WHOLESALE CORP /NEW", "...CO., LTD./ADR".
+# Without stripping these, an otherwise-perfect match like "AGCO
+# Corporation" vs "AGCO CORP /DE" scores well below threshold on
+# nothing but this noise. Handles both /XX and \XX\ delimiter styles,
+# with or without a trailing slash/backslash.
+_STATE_MARKER_RE = re.compile(r"[/\\]\s*[a-zA-Z]{2,4}[/\\]?\s*$")
+
+# Parenthetical asides ("3M Company (MMM)", "1Life Healthcare (One
+# Medical)") are disambiguating notes, not part of the legal name --
+# strip the whole parenthetical rather than just the parens, since
+# keeping the inner text (a ticker, a brand name, a parent company)
+# tends to hurt the match more than help it.
+_PARENS_RE = re.compile(r"\([^)]*\)")
+
 
 def normalize(name):
-    """Lowercase, strip punctuation, strip a trailing corporate suffix
+    """Lowercase, strip parenthetical asides and SEC state/status
+    markers, strip punctuation, strip a trailing corporate suffix
     (repeatedly, since e.g. "Foo Holdings, Inc." has two), collapse
     whitespace. Not perfect -- see module docstring's confidence-floor
     comment -- but consistent in both directions is what matters, since
     both the query and every registry entry go through this."""
     n = name.lower()
+    n = _PARENS_RE.sub(" ", n)
+    n = _STATE_MARKER_RE.sub("", n)
     n = _PUNCT_RE.sub(" ", n)
     n = _WHITESPACE_RE.sub(" ", n).strip()
     while True:
@@ -103,7 +122,7 @@ class CompanyRegistry:
         if exact:
             return exact
 
-        match = process.extractOne(query, self._choices, scorer=fuzz.token_sort_ratio)
+        match = process.extractOne(query, self._choices, scorer=fuzz.token_set_ratio)
         if match is None:
             return None
         matched_choice, score, _ = match
