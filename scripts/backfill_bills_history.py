@@ -89,6 +89,7 @@ from fetch_bills import (
     fetch_bill_summary,
     fetch_total_bill_count,
     bill_stage,
+    is_on_calendar,
     STAGE_LABELS,
     passage_probability,
     derive_community_category,
@@ -362,6 +363,7 @@ def cmd_submit(args):
 
 def build_signal_from_result(meta, classification, schema_version):
     stage = bill_stage(meta["status"])
+    on_calendar = is_on_calendar(meta["status"])
     community_category = derive_community_category(meta.get("policy_area", ""), meta.get("title"))
     bill_like = {"cosponsors": {"count": meta.get("cosponsors", 0)}}
     return {
@@ -377,6 +379,7 @@ def build_signal_from_result(meta, classification, schema_version):
         "cosponsor_names": meta.get("cosponsor_names", []),
         "cosponsor_ids": meta.get("cosponsor_ids", []),
         "stage": stage,
+        "on_calendar": on_calendar,
         "stage_label": STAGE_LABELS[stage],
         "passage_probability": passage_probability(bill_like, stage),
         "community_category": community_category,
