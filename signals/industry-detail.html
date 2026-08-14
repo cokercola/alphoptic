@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6P0HCH9X77"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6P0HCH9X77');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why we flagged this — Alphoptic</title>
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+</head>
+<body>
+<div id="site-header"></div>
+<div class="layout two-col">
+  <nav class="sidebar" id="sidebar"></nav>
+  <main id="content">
+    <div class="breadcrumb"><a href="/index.html">Dashboard</a> / <span id="crumb-industry">...</span></div>
+  </main>
+</div>
+<script src="/assets/site.js"></script>
+<script src="/assets/donate.js"></script>
+<script src="/assets/header.js"></script>
+<script>
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+function fmtAmount(a) {
+  if (!a) return '';
+  return '$' + (a >= 1000 ? Math.round(a / 1000) + 'k' : a);
+}
+
+function renderEvidenceSection(title, emptyText, rowsHtml, count) {
+  return `
+    <div class="section-label" style="margin-top:22px;">${title} (${count})</div>
+    ${count === 0
+      ? `<div class="empty-note">${emptyText}</div>`
+      : `<div style="display:flex; flex-direction:column; gap:6px;">${rowsHtml}</div>`}
+  `;
+}
+
+async function init() {
+  renderSidebar('signals');
+  const params = new URLSearchParams(window.location.search);
+  const industry = params.get('industry');
+  const content = document.getElementById('content');
+
+  if (!industry) {
+    content.innerHTML += `<div class="empty-note">No industry specified. <a href="/index.html">Back to dashboard</a>.</div>`;
+    return;
+  }
+
+  document.getElementById('crumb-industry').textContent = industry;
+
+  let data;
+  try {
+    const res = await fetch('/data/signals-detail.json');
+    data = await res.json();
+  } catch (e) {
+    content.innerHTML += `<div class="empty-note">Could not load signal data.</div>`;
+    return;
+  }
+
+  const item = (data.items || []).find(i => i.industry === industry);
+  if (!item) {
+    content.innerHTML += `<div class="empty-note">${industry} didn't clear a signal threshold in the last ${data.lookback_days || 3} days. <a href="/index.html">Back to dashboard</a>.</div>`;
+    return;
+  }
+
+  const level = item.level.toLowerCase();
+  const arrow = level === 'low' ? '&darr;' : '&uarr;';
+  const ev = item.evidence || {};
+
+  const tradesRows = (ev.trades || []).map(t => `
+    <div class="signal-card level-${level}" style="border-left-width:2px;">
+      <div class="signal-head" style="font-size:13px;">
+        <span>${t.lawmaker || 'Unknown lawmaker'}${t.chamber ? ' — ' + t.chamber : ''}</span>
+        <span class="prob ${t.direction === 'buy' ? 'positive' : t.direction === 'sell' ? 'negative' : 'mixed'}">${(t.direction || '').toUpperCase()} ${t.ticker || ''}</span>
+      </div>
+      <div class="signal-sub">${fmtAmount(t.amount)} · disclosed ${fmtDate(t.filed_date)}</div>
+    </div>
+  `).join('');
+
+  const billsRows = (ev.new_bills || []).map(b => `
+    <a class="signal-card level-${level}" style="border-left-width:2px;" href="/bills/detail.html?id=${b.bill_id}">
+      <div class="signal-head" style="font-size:13px;">
+        <span>${b.bill_id} — ${b.title}</span>
+      </div>
+      <div class="signal-sub">${b.stage_label || ''} · ${b.last_action || ''} · ${fmtDate(b.last_action_date)}</div>
+    </a>
+  `).join('');
+
+  const meetingsRows = (ev.committee_meetings || []).map(m => `
+    <div class="signal-card level-${level}" style="border-left-width:2px;">
+      <div class="signal-head" style="font-size:13px;">
+        <span>${m.committee}${m.chamber ? ' — ' + m.chamber : ''}</span>
+      </div>
+      <div class="signal-sub">${m.title || 'Committee meeting'} · ${fmtDate(m.date)}</div>
+    </div>
+  `).join('');
+
+  const calendarRows = (ev.calendar_bills || []).map(b => `
+    <a class="signal-card level-${level}" style="border-left-width:2px;" href="/bills/detail.html?id=${b.bill_id}">
+      <div class="signal-head" style="font-size:13px;">
+        <span>${b.bill_id} — ${b.title}</span>
+      </div>
+      <div class="signal-sub">${b.last_action || ''} · ${fmtDate(b.last_action_date)}</div>
+    </a>
+  `).join('');
+
+  content.innerHTML += `
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
+      <h1 style="font-size:22px; margin:0;">${item.industry}</h1>
+      <span class="signal-level-badge level-${level}" style="font-size:13px;">${arrow} ${item.level}</span>
+    </div>
+    <p style="color:var(--text-muted); font-size:13px; margin-top:4px;">
+      Alphoptic flagged ${item.industry} based on ${item.congress_trades} disclosed trade${item.congress_trades === 1 ? '' : 's'},
+      ${item.new_bills} bill${item.new_bills === 1 ? '' : 's'} with recent action,
+      ${item.committee_activity} committee meeting${item.committee_activity === 1 ? '' : 's'},
+      and ${item.upcoming_votes} bill${item.upcoming_votes === 1 ? '' : 's'} newly queued for a floor vote —
+      all in the last ${item.lookback_days} days. This is an activity signal, not a prediction: it means Congress
+      is paying unusually close attention to this sector right now, not that any particular outcome is likely.
+    </p>
+
+    <div class="signal-metric-grid" style="margin:18px 0; max-width:420px;">
+      <div><div class="metric-value">${item.congress_trades}</div><div class="metric-label">congress trades</div></div>
+      <div><div class="metric-value">${item.new_bills}</div><div class="metric-label">new bills</div></div>
+      <div><div class="metric-value">${item.committee_activity}</div><div class="metric-label">committee activity</div></div>
+      <div><div class="metric-value">${item.upcoming_votes}</div><div class="metric-label">upcoming votes</div></div>
+    </div>
+
+    ${renderEvidenceSection('Congressional trades', 'No disclosed trades in tickers tied to this industry in the last ' + item.lookback_days + ' days.', tradesRows, item.congress_trades)}
+    ${renderEvidenceSection('New &amp; updated bills', 'No bills in this industry had action in the last ' + item.lookback_days + ' days.', billsRows, item.new_bills)}
+    ${renderEvidenceSection('Committee activity', 'No committee meetings mapped to this industry in the last ' + item.lookback_days + ' days.', meetingsRows, item.committee_activity)}
+    ${renderEvidenceSection('Queued for a floor vote', 'No bills in this industry were newly placed on a calendar in the last ' + item.lookback_days + ' days.', calendarRows, item.upcoming_votes)}
+  `;
+}
+
+init().catch(err => {
+  console.error(err);
+  document.getElementById('content').innerHTML += `<div class="empty-note">Could not load signal data.</div>`;
+});
+</script>
+  <div id="site-footer"></div>
+  <script src="/assets/footer.js"></script>
+</body>
+</html>
