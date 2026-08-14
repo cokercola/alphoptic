@@ -36,6 +36,7 @@
       <thead><tr><th>Ticker</th><th>Company</th><th>Net effect</th><th>Bills affecting it</th></tr></thead>
       <tbody id="watchlist-body"></tbody>
     </table>
+    <div id="watchlist-pagination" style="margin-top:14px; text-align:center;"></div>
     <div style="font-size:11px; color:var(--text-muted); margin-top:10px;">
       "Net effect" summarizes direction across bills, not a price change. Individual exposure scores are on each bill's detail page.
     </div>
@@ -46,30 +47,63 @@
 <script src="/assets/donate.js"></script>
 <script src="/assets/header.js"></script>
 <script>
+const WATCHLIST_PAGE_SIZE = 25;
+let watchlistPage = 1;
+let watchlistTickers = [];   // sorted list of ticker symbols
+let watchlistByTicker = {};
+
 async function init() {
   renderSidebar('watchlist');
-  const data = await fetchSiteData();
+
+  // companies.json (aggregated, ~7.7MB) instead of the full bills.json
+  // (~26MB via fetchSiteData()) - this page only ever needed per-company
+  // rollups, not full bill records, so this is a straight size win too.
+  const res = await fetch('/data/companies.json');
+  if (!res.ok) throw new Error('Failed to load /data/companies.json');
+  const data = await res.json();
   document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
 
-  const byTicker = {};
-  data.signals.forEach(s => {
-    s.companies.forEach(c => {
-      if (!byTicker[c.ticker]) byTicker[c.ticker] = { name: c.name, effects: [], bills: [] };
-      byTicker[c.ticker].effects.push(c.effect);
-      byTicker[c.ticker].bills.push(s.bill_id);
-    });
+  watchlistByTicker = {};
+  (data.companies || []).forEach(r => {
+    if (!watchlistByTicker[r.ticker]) watchlistByTicker[r.ticker] = { name: r.name, effects: [], count: 0 };
+    watchlistByTicker[r.ticker].effects.push(r.effect);
+    watchlistByTicker[r.ticker].count += 1;
   });
 
-  const body = document.getElementById('watchlist-body');
-  const tickers = Object.keys(byTicker);
+  // Alphabetical by company name (not ticker symbol) - "GOOGL" vs
+  // "Alphabet" is the kind of case where those two orderings diverge,
+  // and company name is what a browsing user is actually scanning for.
+  watchlistTickers = Object.keys(watchlistByTicker)
+    .sort((a, b) => watchlistByTicker[a].name.localeCompare(watchlistByTicker[b].name));
 
-  if (!tickers.length) {
+  watchlistPage = 1;
+  renderWatchlistPage();
+}
+
+function renderWatchlistPage() {
+  const body = document.getElementById('watchlist-body');
+  const pager = document.getElementById('watchlist-pagination');
+
+  if (!watchlistTickers.length) {
     body.innerHTML = `<tr><td colspan="4" class="empty-note">No tracked tickers yet.</td></tr>`;
+    pager.innerHTML = '';
     return;
   }
 
-  body.innerHTML = tickers.map(t => {
-    const info = byTicker[t];
+  const totalPages = Math.ceil(watchlistTickers.length / WATCHLIST_PAGE_SIZE);
+  watchlistPage = Math.min(Math.max(watchlistPage, 1), totalPages);
+  const pageTickers = watchlistTickers.slice(
+    (watchlistPage - 1) * WATCHLIST_PAGE_SIZE,
+    watchlistPage * WATCHLIST_PAGE_SIZE
+  );
+
+  // Every bill link used to get dumped inline in this cell - for a
+  // heavily-legislated company that's 100+ raw links crammed into one
+  // row, which is what made this page unreadable. companies/index.html
+  // already has a clean per-bill breakdown (title, effect, exposure)
+  // behind ?ticker=, so link out to that instead of duplicating it here.
+  body.innerHTML = pageTickers.map(t => {
+    const info = watchlistByTicker[t];
     const positive = info.effects.filter(e => e === 'positive').length;
     const negative = info.effects.filter(e => e === 'negative').length;
     const net = positive > negative ? 'positive' : negative > positive ? 'negative' : 'mixed';
@@ -78,11 +112,36 @@ async function init() {
         <td>${t}</td>
         <td>${info.name}</td>
         <td>${directionPill(net)}</td>
-        <td>${info.bills.map(b => `<a href="/bills/detail.html?id=${b}">${b}</a>`).join(', ')}</td>
+        <td><a href="/companies/index.html?ticker=${t}">${info.count} bill${info.count === 1 ? '' : 's'} &rarr;</a></td>
       </tr>
     `;
   }).join('');
+
+  if (totalPages <= 1) {
+    pager.innerHTML = '';
+    return;
+  }
+
+  const pageOptions = Array.from({ length: totalPages }, (_, i) => i + 1)
+    .map(p => `<option value="${p}" ${p === watchlistPage ? 'selected' : ''}>Page ${p}</option>`)
+    .join('');
+
+  pager.innerHTML = `
+    <button class="pagination-btn" ${watchlistPage === 1 ? 'disabled' : ''} onclick="goToWatchlistPage(${watchlistPage - 1})">&larr; Prev</button>
+    <select class="state-select" style="width:auto; margin:0 10px; display:inline-block;" onchange="goToWatchlistPage(this.value)">
+      ${pageOptions}
+    </select>
+    <span style="font-size:13px; color:var(--text-muted); margin-right:10px;">of ${totalPages} (${watchlistTickers.length} companies)</span>
+    <button class="pagination-btn" ${watchlistPage === totalPages ? 'disabled' : ''} onclick="goToWatchlistPage(${watchlistPage + 1})">Next &rarr;</button>
+  `;
 }
+
+function goToWatchlistPage(page) {
+  watchlistPage = Number(page);
+  renderWatchlistPage();
+  document.querySelector('.data-table').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 init().catch(err => {
   console.error(err);
   document.getElementById('watchlist-body').innerHTML = `<tr><td colspan="4" class="empty-note">Could not load data.</td></tr>`;
