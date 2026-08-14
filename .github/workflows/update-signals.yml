@@ -1,0 +1,37 @@
+name: Update Alphoptic Signals
+on:
+  schedule:
+    - cron: "0 14 * * *"  # after update-bills.yml (12:00) and update-congress-trades.yml (13:00)
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: update-signals
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install requests anthropic rapidfuzz
+
+      - name: Fetch committee activity
+        env:
+          CONGRESS_API_KEY: ${{ secrets.CONGRESS_API_KEY }}
+        run: python scripts/fetch_committee_activity.py
+
+      - name: Build combined signals
+        run: python scripts/build_signals.py
+
+      - name: Commit updated data
+        run: |
+          git config user.name "alphoptic-bot"
+          git config user.email "actions@github.com"
+          git add data/committee-activity.json data/signals.json
+          git diff --staged --quiet || git commit -m "Update Alphoptic Signals"
+          git pull --rebase --autostash origin main
+          git push
