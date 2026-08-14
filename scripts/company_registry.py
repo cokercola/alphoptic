@@ -36,6 +36,18 @@ SEC_TICKERS_PATH = "data/company_tickers_sec.json"
 # (wrong company matched with high confidence).
 CONFIDENCE_THRESHOLD = 90
 
+# Manual overrides for cases fuzzy matching can't bridge on its own --
+# mainly companies that renamed since Claude's training data was cut,
+# so it names the old company but the SEC registry only carries the
+# new name (e.g. 21Vianet Group -> VNET Group, Inc. in Oct 2021).
+# Keyed by normalize()'d old/informal name -> current ticker. Grow this
+# as normalize_companies.py's "did not resolve" report turns up a real
+# miss -- NOT for genuinely private/delisted companies, which should
+# stay dropped rather than get force-matched to something wrong.
+ALIASES = {
+    "21vianet group": "VNET",
+}
+
 # Stripped from both the query name and every SEC title before
 # matching, so "Twilio Inc." and "Twilio" and "TWILIO INC" all
 # normalize to the same string. Longest suffixes first so e.g.
@@ -117,6 +129,10 @@ class CompanyRegistry:
         query = normalize(company_name)
         if not query:
             return None
+
+        alias_ticker = ALIASES.get(query)
+        if alias_ticker and alias_ticker in self._by_ticker:
+            return (alias_ticker, self._by_ticker[alias_ticker])
 
         exact = self._by_normalized_title.get(query)
         if exact:
