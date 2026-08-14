@@ -35,15 +35,10 @@
     <div id="onboarding-card"></div>
     <div class="stat-row" id="stat-row"></div>
     <div class="trades-teaser-header">
-      <span class="section-label" style="margin-bottom:0;">Congress trades</span>
-      <a href="/trades/index.html">View all trades →</a>
-    </div>
-    <div id="trades-teaser" style="margin-bottom:20px;" data-trades-target></div>
-    <div class="trades-teaser-header">
-      <span class="section-label" style="margin-bottom:0;">Top signals today</span>
+      <span class="section-label" style="margin-bottom:0;">Alphoptic signals</span>
       <a href="/bills/index.html">View all bills →</a>
     </div>
-    <div id="signal-list"></div>
+    <div id="alphoptic-signals"></div>
     <div id="community-highlight"></div>
     <div id="stalled-highlight"></div>
   </main>
@@ -59,9 +54,43 @@
 <script src="/assets/app.js"></script>
 <script src="/assets/trades.js"></script>
 <script>
-loadTradesData('data/congress-trades.json', function (data) {
-  renderTeaser('trades-teaser', data, 3, '');
-});
+fetch('data/signals.json')
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById('alphoptic-signals');
+    if (!data.items || data.items.length === 0) {
+      container.innerHTML = '<p style="font-size:12px; color:var(--text-muted);">No signals cleared threshold today. Check back soon.</p>';
+      return;
+    }
+    container.innerHTML = data.items.map(function (item) {
+      const level = item.level.toLowerCase();
+      const arrow = level === 'low' ? '&darr;' : '&uarr;';
+      const tickers = item.tickers.map(function (t) {
+        return '<span class="signal-ticker-chip">' + t + '</span>';
+      }).join('');
+      return (
+        '<div class="signal-card level-' + level + '">' +
+          '<div class="signal-head">' +
+            '<span>' + item.industry + '</span>' +
+            '<span class="signal-level-badge level-' + level + '">' + arrow + ' ' + item.level + '</span>' +
+          '</div>' +
+          '<div class="signal-metric-grid">' +
+            '<div><div class="metric-value">' + item.congress_trades + '</div><div class="metric-label">congress trades</div></div>' +
+            '<div><div class="metric-value">' + item.new_bills + '</div><div class="metric-label">new bills</div></div>' +
+            '<div><div class="metric-value">' + item.committee_activity + '</div><div class="metric-label">committee activity</div></div>' +
+            '<div><div class="metric-value">' + item.upcoming_votes + '</div><div class="metric-label">upcoming votes</div></div>' +
+          '</div>' +
+          '<div class="signal-footer">' +
+            '<div class="signal-tickers">' + tickers + '</div>' +
+            '<a class="signal-why-link" href="/industries/index.html?industry=' + encodeURIComponent(item.industry) + '">Why Alphoptic flagged this &rarr;</a>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+  })
+  .catch(function () {
+    document.getElementById('alphoptic-signals').innerHTML = '<p style="font-size:12px; color:var(--text-muted);">Couldn\'t load signals. Check back soon.</p>';
+  });
 </script>
 <script src="/assets/donate.js"></script>
 <script src="/assets/header.js"></script>
