@@ -31,7 +31,7 @@ jobs:
         run: |
           git config user.name "alphoptic-bot"
           git config user.email "actions@github.com"
-          git add data/committee-activity.json data/signals.json
+          git add data/committee-activity.json data/signals.json data/signals-detail.json
           git diff --staged --quiet || git commit -m "Update Alphoptic Signals"
           git pull --rebase --autostash origin main
           git push
