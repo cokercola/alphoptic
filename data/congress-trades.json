@@ -1,179 +1,7 @@
 {
-  "updated_at": "2026-08-15T13:25:20.143841Z",
+  "updated_at": "2026-08-16T13:25:42.027464Z",
   "lookback_days": 30,
   "lawmakers": [
-    {
-      "name": "Gary Peters",
-      "party": null,
-      "chamber": "Senate",
-      "trades": [
-        {
-          "symbol": "O",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-23",
-          "filed_date": "2026-08-07",
-          "is_new": false,
-          "linked": true
-        }
-      ]
-    },
-    {
-      "name": "Mike Kelly",
-      "party": null,
-      "chamber": "House",
-      "trades": [
-        {
-          "symbol": "PEP",
-          "amount": 32500,
-          "direction": "sell",
-          "trade_date": "2026-07-17",
-          "filed_date": "2026-08-12",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "DIS",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-17",
-          "filed_date": "2026-08-12",
-          "is_new": true,
-          "linked": true
-        },
-        {
-          "symbol": "ABT",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-17",
-          "filed_date": "2026-08-12",
-          "is_new": true,
-          "linked": true
-        }
-      ]
-    },
-    {
-      "name": "Kevin Hern",
-      "party": null,
-      "chamber": "House",
-      "trades": [
-        {
-          "symbol": "OGN",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-08-05",
-          "filed_date": "2026-08-13",
-          "is_new": true,
-          "linked": true
-        }
-      ]
-    },
-    {
-      "name": "Charles J. \"Chuck\" Fleischmann",
-      "party": null,
-      "chamber": "House",
-      "trades": [
-        {
-          "symbol": "TLH",
-          "amount": 32500,
-          "direction": "sell",
-          "trade_date": "2026-07-28",
-          "filed_date": "2026-08-14",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "SPTI",
-          "amount": 32500,
-          "direction": "buy",
-          "trade_date": "2026-07-28",
-          "filed_date": "2026-08-14",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "REGL",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-28",
-          "filed_date": "2026-08-14",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "VPL",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-28",
-          "filed_date": "2026-08-14",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "IEUR",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-28",
-          "filed_date": "2026-08-14",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "XSHQ",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-28",
-          "filed_date": "2026-08-14",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "XAR",
-          "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-28",
-          "filed_date": "2026-08-14",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "SPYG",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-28",
-          "filed_date": "2026-08-14",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "SHLD",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-28",
-          "filed_date": "2026-08-14",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "GDX",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-28",
-          "filed_date": "2026-08-14",
-          "is_new": true,
-          "linked": false
-        },
-        {
-          "symbol": "GLDM",
-          "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-28",
-          "filed_date": "2026-08-14",
-          "is_new": true,
-          "linked": false
-        }
-      ]
-    },
     {
       "name": "John Fetterman",
       "party": null,
@@ -200,18 +28,50 @@
       ]
     },
     {
+      "name": "Gary Peters",
+      "party": null,
+      "chamber": "Senate",
+      "trades": [
+        {
+          "symbol": "O",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-07",
+          "is_new": false,
+          "linked": true
+        }
+      ]
+    },
+    {
+      "name": "Kevin Hern",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "OGN",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-08-05",
+          "filed_date": "2026-08-13",
+          "is_new": true,
+          "linked": true
+        }
+      ]
+    },
+    {
       "name": "Ro Khanna",
       "party": null,
       "chamber": "House",
       "trades": [
         {
-          "symbol": "UBER",
+          "symbol": "MODG",
           "amount": 8000,
-          "direction": "buy",
-          "trade_date": "2026-07-23",
+          "direction": "sell",
+          "trade_date": "2026-07-22",
           "filed_date": "2026-08-12",
           "is_new": true,
-          "linked": true
+          "linked": false
         },
         {
           "symbol": "CHWY",
@@ -223,22 +83,31 @@
           "linked": true
         },
         {
-          "symbol": "PINS",
+          "symbol": "ZBH",
           "amount": 8000,
           "direction": "sell",
+          "trade_date": "2026-07-23",
+          "filed_date": "2026-08-12",
+          "is_new": true,
+          "linked": true
+        },
+        {
+          "symbol": "GEHC",
+          "amount": 8000,
+          "direction": "buy",
           "trade_date": "2026-07-30",
           "filed_date": "2026-08-12",
           "is_new": true,
           "linked": true
         },
         {
-          "symbol": "MODG",
+          "symbol": "UBER",
           "amount": 8000,
-          "direction": "sell",
-          "trade_date": "2026-07-22",
+          "direction": "buy",
+          "trade_date": "2026-07-23",
           "filed_date": "2026-08-12",
           "is_new": true,
-          "linked": false
+          "linked": true
         },
         {
           "symbol": "ACI",
@@ -250,10 +119,10 @@
           "linked": true
         },
         {
-          "symbol": "ZBH",
+          "symbol": "PINS",
           "amount": 8000,
           "direction": "sell",
-          "trade_date": "2026-07-23",
+          "trade_date": "2026-07-30",
           "filed_date": "2026-08-12",
           "is_new": true,
           "linked": true
@@ -291,6 +160,112 @@
           "filed_date": "2026-08-04",
           "is_new": false,
           "linked": true
+        }
+      ]
+    },
+    {
+      "name": "Charles J. \"Chuck\" Fleischmann",
+      "party": null,
+      "chamber": "House",
+      "trades": [
+        {
+          "symbol": "SPTI",
+          "amount": 32500,
+          "direction": "buy",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-14",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "TLH",
+          "amount": 32500,
+          "direction": "sell",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-14",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "GDX",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-14",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "SPYG",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-14",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "IEUR",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-14",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "REGL",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-14",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "XAR",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-14",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "VPL",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-14",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "GLDM",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-14",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "SHLD",
+          "amount": 8000,
+          "direction": "sell",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-14",
+          "is_new": true,
+          "linked": false
+        },
+        {
+          "symbol": "XSHQ",
+          "amount": 8000,
+          "direction": "buy",
+          "trade_date": "2026-07-28",
+          "filed_date": "2026-08-14",
+          "is_new": true,
+          "linked": false
         }
       ]
     }

@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-15T13:25:20.144437Z",
+  "updated_at": "2026-08-16T13:25:42.028126Z",
   "lookback_days": 30,
   "trades": [
     {
@@ -71,17 +71,6 @@
     {
       "lawmaker": "Charles J. \"Chuck\" Fleischmann",
       "chamber": "House",
-      "symbol": "TLH",
-      "amount": 32500,
-      "direction": "sell",
-      "trade_date": "2026-07-28",
-      "filed_date": "2026-08-14",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "Charles J. \"Chuck\" Fleischmann",
-      "chamber": "House",
       "symbol": "SPTI",
       "amount": 32500,
       "direction": "buy",
@@ -93,9 +82,9 @@
     {
       "lawmaker": "Charles J. \"Chuck\" Fleischmann",
       "chamber": "House",
-      "symbol": "REGL",
-      "amount": 8000,
-      "direction": "buy",
+      "symbol": "TLH",
+      "amount": 32500,
+      "direction": "sell",
       "trade_date": "2026-07-28",
       "filed_date": "2026-08-14",
       "is_new": true,
@@ -104,9 +93,20 @@
     {
       "lawmaker": "Charles J. \"Chuck\" Fleischmann",
       "chamber": "House",
-      "symbol": "VPL",
+      "symbol": "GDX",
       "amount": 8000,
-      "direction": "buy",
+      "direction": "sell",
+      "trade_date": "2026-07-28",
+      "filed_date": "2026-08-14",
+      "is_new": true,
+      "linked": false
+    },
+    {
+      "lawmaker": "Charles J. \"Chuck\" Fleischmann",
+      "chamber": "House",
+      "symbol": "SPYG",
+      "amount": 8000,
+      "direction": "sell",
       "trade_date": "2026-07-28",
       "filed_date": "2026-08-14",
       "is_new": true,
@@ -126,7 +126,7 @@
     {
       "lawmaker": "Charles J. \"Chuck\" Fleischmann",
       "chamber": "House",
-      "symbol": "XSHQ",
+      "symbol": "REGL",
       "amount": 8000,
       "direction": "buy",
       "trade_date": "2026-07-28",
@@ -148,7 +148,18 @@
     {
       "lawmaker": "Charles J. \"Chuck\" Fleischmann",
       "chamber": "House",
-      "symbol": "SPYG",
+      "symbol": "VPL",
+      "amount": 8000,
+      "direction": "buy",
+      "trade_date": "2026-07-28",
+      "filed_date": "2026-08-14",
+      "is_new": true,
+      "linked": false
+    },
+    {
+      "lawmaker": "Charles J. \"Chuck\" Fleischmann",
+      "chamber": "House",
+      "symbol": "GLDM",
       "amount": 8000,
       "direction": "sell",
       "trade_date": "2026-07-28",
@@ -170,20 +181,9 @@
     {
       "lawmaker": "Charles J. \"Chuck\" Fleischmann",
       "chamber": "House",
-      "symbol": "GDX",
+      "symbol": "XSHQ",
       "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-28",
-      "filed_date": "2026-08-14",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "Charles J. \"Chuck\" Fleischmann",
-      "chamber": "House",
-      "symbol": "GLDM",
-      "amount": 8000,
-      "direction": "sell",
+      "direction": "buy",
       "trade_date": "2026-07-28",
       "filed_date": "2026-08-14",
       "is_new": true,
@@ -201,34 +201,45 @@
       "linked": true
     },
     {
-      "lawmaker": "Mike Kelly",
+      "lawmaker": "Ro Khanna",
       "chamber": "House",
-      "symbol": "PEP",
-      "amount": 32500,
+      "symbol": "MODG",
+      "amount": 8000,
       "direction": "sell",
-      "trade_date": "2026-07-17",
+      "trade_date": "2026-07-22",
+      "filed_date": "2026-08-12",
+      "is_new": true,
+      "linked": false
+    },
+    {
+      "lawmaker": "Ro Khanna",
+      "chamber": "House",
+      "symbol": "CHWY",
+      "amount": 8000,
+      "direction": "buy",
+      "trade_date": "2026-07-23",
       "filed_date": "2026-08-12",
       "is_new": true,
       "linked": true
     },
     {
-      "lawmaker": "Mike Kelly",
+      "lawmaker": "Ro Khanna",
       "chamber": "House",
-      "symbol": "DIS",
+      "symbol": "ZBH",
       "amount": 8000,
       "direction": "sell",
-      "trade_date": "2026-07-17",
+      "trade_date": "2026-07-23",
       "filed_date": "2026-08-12",
       "is_new": true,
       "linked": true
     },
     {
-      "lawmaker": "Mike Kelly",
+      "lawmaker": "Ro Khanna",
       "chamber": "House",
-      "symbol": "ABT",
+      "symbol": "GEHC",
       "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-17",
+      "direction": "buy",
+      "trade_date": "2026-07-30",
       "filed_date": "2026-08-12",
       "is_new": true,
       "linked": true
@@ -247,9 +258,9 @@
     {
       "lawmaker": "Ro Khanna",
       "chamber": "House",
-      "symbol": "CHWY",
+      "symbol": "ACI",
       "amount": 8000,
-      "direction": "buy",
+      "direction": "sell",
       "trade_date": "2026-07-23",
       "filed_date": "2026-08-12",
       "is_new": true,
@@ -262,39 +273,6 @@
       "amount": 8000,
       "direction": "sell",
       "trade_date": "2026-07-30",
-      "filed_date": "2026-08-12",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "Ro Khanna",
-      "chamber": "House",
-      "symbol": "MODG",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-22",
-      "filed_date": "2026-08-12",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "Ro Khanna",
-      "chamber": "House",
-      "symbol": "ACI",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-23",
-      "filed_date": "2026-08-12",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "Ro Khanna",
-      "chamber": "House",
-      "symbol": "ZBH",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-23",
       "filed_date": "2026-08-12",
       "is_new": true,
       "linked": true
