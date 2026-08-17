@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-16T13:25:42.028126Z",
+  "updated_at": "2026-08-17T13:34:20.845460Z",
   "lookback_days": 30,
   "trades": [
     {
@@ -10,7 +10,7 @@
       "direction": "sell",
       "trade_date": "2026-07-24",
       "filed_date": "2026-08-10",
-      "is_new": true,
+      "is_new": false,
       "linked": true
     },
     {
@@ -21,7 +21,7 @@
       "direction": "sell",
       "trade_date": "2026-07-24",
       "filed_date": "2026-08-10",
-      "is_new": true,
+      "is_new": false,
       "linked": true
     },
     {
@@ -71,17 +71,6 @@
     {
       "lawmaker": "Charles J. \"Chuck\" Fleischmann",
       "chamber": "House",
-      "symbol": "SPTI",
-      "amount": 32500,
-      "direction": "buy",
-      "trade_date": "2026-07-28",
-      "filed_date": "2026-08-14",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "Charles J. \"Chuck\" Fleischmann",
-      "chamber": "House",
       "symbol": "TLH",
       "amount": 32500,
       "direction": "sell",
@@ -93,7 +82,18 @@
     {
       "lawmaker": "Charles J. \"Chuck\" Fleischmann",
       "chamber": "House",
-      "symbol": "GDX",
+      "symbol": "SPTI",
+      "amount": 32500,
+      "direction": "buy",
+      "trade_date": "2026-07-28",
+      "filed_date": "2026-08-14",
+      "is_new": true,
+      "linked": false
+    },
+    {
+      "lawmaker": "Charles J. \"Chuck\" Fleischmann",
+      "chamber": "House",
+      "symbol": "SHLD",
       "amount": 8000,
       "direction": "sell",
       "trade_date": "2026-07-28",
@@ -137,6 +137,17 @@
     {
       "lawmaker": "Charles J. \"Chuck\" Fleischmann",
       "chamber": "House",
+      "symbol": "XSHQ",
+      "amount": 8000,
+      "direction": "buy",
+      "trade_date": "2026-07-28",
+      "filed_date": "2026-08-14",
+      "is_new": true,
+      "linked": false
+    },
+    {
+      "lawmaker": "Charles J. \"Chuck\" Fleischmann",
+      "chamber": "House",
       "symbol": "XAR",
       "amount": 8000,
       "direction": "buy",
@@ -148,9 +159,9 @@
     {
       "lawmaker": "Charles J. \"Chuck\" Fleischmann",
       "chamber": "House",
-      "symbol": "VPL",
+      "symbol": "GDX",
       "amount": 8000,
-      "direction": "buy",
+      "direction": "sell",
       "trade_date": "2026-07-28",
       "filed_date": "2026-08-14",
       "is_new": true,
@@ -170,18 +181,7 @@
     {
       "lawmaker": "Charles J. \"Chuck\" Fleischmann",
       "chamber": "House",
-      "symbol": "SHLD",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-28",
-      "filed_date": "2026-08-14",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "Charles J. \"Chuck\" Fleischmann",
-      "chamber": "House",
-      "symbol": "XSHQ",
+      "symbol": "VPL",
       "amount": 8000,
       "direction": "buy",
       "trade_date": "2026-07-28",
@@ -203,28 +203,6 @@
     {
       "lawmaker": "Ro Khanna",
       "chamber": "House",
-      "symbol": "MODG",
-      "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-22",
-      "filed_date": "2026-08-12",
-      "is_new": true,
-      "linked": false
-    },
-    {
-      "lawmaker": "Ro Khanna",
-      "chamber": "House",
-      "symbol": "CHWY",
-      "amount": 8000,
-      "direction": "buy",
-      "trade_date": "2026-07-23",
-      "filed_date": "2026-08-12",
-      "is_new": true,
-      "linked": true
-    },
-    {
-      "lawmaker": "Ro Khanna",
-      "chamber": "House",
       "symbol": "ZBH",
       "amount": 8000,
       "direction": "sell",
@@ -236,9 +214,9 @@
     {
       "lawmaker": "Ro Khanna",
       "chamber": "House",
-      "symbol": "GEHC",
+      "symbol": "PINS",
       "amount": 8000,
-      "direction": "buy",
+      "direction": "sell",
       "trade_date": "2026-07-30",
       "filed_date": "2026-08-12",
       "is_new": true,
@@ -247,13 +225,13 @@
     {
       "lawmaker": "Ro Khanna",
       "chamber": "House",
-      "symbol": "UBER",
+      "symbol": "MODG",
       "amount": 8000,
-      "direction": "buy",
-      "trade_date": "2026-07-23",
+      "direction": "sell",
+      "trade_date": "2026-07-22",
       "filed_date": "2026-08-12",
       "is_new": true,
-      "linked": true
+      "linked": false
     },
     {
       "lawmaker": "Ro Khanna",
@@ -269,10 +247,10 @@
     {
       "lawmaker": "Ro Khanna",
       "chamber": "House",
-      "symbol": "PINS",
+      "symbol": "UBER",
       "amount": 8000,
-      "direction": "sell",
-      "trade_date": "2026-07-30",
+      "direction": "buy",
+      "trade_date": "2026-07-23",
       "filed_date": "2026-08-12",
       "is_new": true,
       "linked": true
