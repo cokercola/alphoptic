@@ -19,15 +19,16 @@ async function loadDashboard() {
     if (!tickers[c.ticker]) tickers[c.ticker] = { ...c, industry: s.industry };
   }));
   const watchlist = document.getElementById('watchlist');
+  const signFor = (effect) => effect === 'negative' ? '-' : effect === 'positive' ? '+' : '±';
   watchlist.innerHTML = Object.values(tickers).slice(0, 6).map(c => `
     <div class="watch-row">
       <div>
         <div class="watch-ticker">${c.ticker}</div>
         <div class="watch-note">${c.industry || ''}</div>
       </div>
-      <span class="exposure-pill ${c.effect || 'mixed'}">${c.exposure > 0 ? '+' : ''}${c.exposure} exposure</span>
+      <span class="exposure-pill ${c.effect || 'mixed'}">${signFor(c.effect)}${Math.abs(Number(c.exposure) || 0)} exposure</span>
     </div>
-  `).join('') + '<div class="watchlist-footnote">Exposure is how much a bill could move this company, not a price prediction.</div>';
+  `).join('') + '<div class="watchlist-footnote">Exposure scores how much a tracked bill could affect this company if passed — green means the bill would likely help it, red means it would likely hurt it, amber means the effect could cut either way. It\'s a legislative-impact estimate, not a stock price prediction.</div>';
   if (hasTooltips) initInfoTooltips();
 }
 loadDashboard().catch(err => {
