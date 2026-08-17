@@ -44,11 +44,20 @@ import datetime
 from collections import Counter, defaultdict
 
 BILLS_INDEX_PATH = "data/bills-index.json"
+BILLS_FULL_PATH = "data/bills.json"
 COMPANIES_PATH = "data/companies.json"
 TRADES_PATH = "data/congress-trades.json"
 COMMITTEE_ACTIVITY_PATH = "data/committee-activity.json"
 SIGNALS_PATH = "data/signals.json"
 SIGNALS_DETAIL_PATH = "data/signals-detail.json"
+
+# "Other / Cross-Sector" is a catch-all for committee meetings that
+# fetch_committee_activity.py couldn't map to a real industry (see
+# COMMITTEE_INDUSTRY_MAP there) - it's a data-quality bucket, not an
+# actual industry, so it shouldn't show up as a legislative signal a
+# user could act on. Still tracked in committee-activity.json's
+# unmapped_meetings count for internal visibility; just excluded here.
+EXCLUDED_INDUSTRIES = {"Other / Cross-Sector"}
 
 LOOKBACK_DAYS = 3
 
@@ -96,6 +105,8 @@ def main():
 
     with open(BILLS_INDEX_PATH) as f:
         bills_index = json.load(f)
+    with open(BILLS_FULL_PATH) as f:
+        bills_full = json.load(f)
     with open(COMPANIES_PATH) as f:
         companies_data = json.load(f)
     with open(TRADES_PATH) as f:
@@ -110,6 +121,17 @@ def main():
 
     companies = companies_data.get("companies", [])
     ticker_to_industry = build_ticker_to_industry(companies)
+
+    # bill_id -> its companies (ticker/name/effect/exposure), from the
+    # full bills.json signals list. bills-index.json (used above for
+    # the lightweight per-industry rollup) doesn't carry this, so each
+    # evidence bill can show the specific companies actually tied to
+    # it, rather than every company loosely tagged under the industry.
+    companies_by_bill_id = {
+        s.get("bill_id"): s.get("companies", [])
+        for s in bills_full.get("signals", [])
+        if s.get("bill_id")
+    }
 
     bills_evidence = defaultdict(list)
     calendar_evidence = defaultdict(list)
@@ -126,6 +148,8 @@ def main():
             "last_action": b.get("last_action") or b.get("status"),
             "last_action_date": last_action_date,
             "stage_label": b.get("stage_label"),
+            "sponsor": b.get("sponsor"),
+            "companies": companies_by_bill_id.get(b.get("bill_id"), [])[:MAX_TICKERS_PER_SIGNAL],
         }
         bills_evidence[industry].append(entry)
         if b.get("on_calendar"):
@@ -161,6 +185,8 @@ def main():
 
     detail_items = []
     for industry in all_industries:
+        if industry in EXCLUDED_INDUSTRIES:
+            continue
         trades = trades_evidence.get(industry, [])
         new_bills = bills_evidence.get(industry, [])
         committee_meetings = committee_meetings_by_industry.get(industry, [])
