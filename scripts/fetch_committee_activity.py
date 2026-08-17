@@ -93,6 +93,16 @@ COMMITTEE_INDUSTRY_MAP = {
     "budget": "Government & Public Administration",
     "housing": "Real Estate & Housing",
     "intelligence": "Defense & Aerospace",
+    # Added by cross-referencing the full 119th Congress committee
+    # roster (20 House standing + 2 select, 16 Senate standing + 4
+    # select/special) against this map, rather than waiting for each
+    # gap to show up individually in the workflow log:
+    "ethics": "Government & Public Administration",
+    "house administration": "Government & Public Administration",
+    "indian affairs": "Government & Public Administration",
+    "committee on aging": "Social Services & Welfare",
+    "strategic competition": "International Affairs & Trade",
+    "chinese communist party": "International Affairs & Trade",
 }
 
 
@@ -138,7 +148,7 @@ def fetch_meetings_for_chamber(chamber, since_iso):
 
 def fetch_meeting_detail(meeting_url):
     """One request per meeting to the detail endpoint. Returns
-    (committee_name, related_bills, real_date).
+    (committee_name, related_bills, real_date, real_status).
 
     real_date is the actual meeting date from the detail response.
     This matters because the LIST endpoint's date field is frequently
@@ -153,25 +163,30 @@ def fetch_meeting_detail(meeting_url):
     endpoint's date field is what Congress.gov's own event pages
     display, so it's authoritative.
 
+    real_status is meetingStatus ("Scheduled", "Canceled", "Postponed",
+    "Rescheduled"). Same gap as committee name and date: the list
+    endpoint doesn't reliably include it either, so a canceled upcoming
+    meeting could otherwise slip through as if it were still on.
+
     related_bills is a list of bill_id strings like "HR1842" - our own
     format, matching what fetch_bills.py uses, so build_signals.py can
     cross-reference them against tracked bills directly by string
     equality.
 
     The list endpoint's committee-meeting entries often omit the
-    committees sub-object entirely, and never include relatedItems or
-    a reliable date - all three only show up in the detail response.
-    This is the one place that pays for that with an extra request per
-    meeting; capped in main() so a busy week doesn't run away with API
-    calls."""
+    committees sub-object, meetingStatus, and a reliable date entirely,
+    and never include relatedItems - all four only show up reliably in
+    the detail response. This is the one place that pays for that with
+    an extra request per meeting; capped in main() so a busy week
+    doesn't run away with API calls."""
     if not meeting_url:
-        return None, [], None
+        return None, [], None, None
     try:
         resp = requests.get(meeting_url, params={"api_key": CONGRESS_API_KEY, "format": "json"}, timeout=15)
         resp.raise_for_status()
         detail = resp.json().get("committeeMeeting", {})
     except requests.RequestException:
-        return None, [], None
+        return None, [], None, None
 
     committees = detail.get("committees", [])
     committee_name = committees[0].get("name") if committees else None
@@ -184,8 +199,9 @@ def fetch_meeting_detail(meeting_url):
             related_bills.append(f"{bill_type}{bill_number}")
 
     real_date = detail.get("date")
+    real_status = detail.get("meetingStatus")
 
-    return committee_name, related_bills, real_date
+    return committee_name, related_bills, real_date, real_status
 
 
 def main():
@@ -235,10 +251,12 @@ def main():
         related_bills = []
         real_date = None
         if detail_lookups < MAX_DETAIL_LOOKUPS:
-            detail_name, related_bills, real_date = fetch_meeting_detail(m.get("url"))
+            detail_name, related_bills, real_date, real_status = fetch_meeting_detail(m.get("url"))
             detail_lookups += 1
             if not committee_name and detail_name:
                 committee_name = detail_name
+            if not meeting_status and real_status:
+                meeting_status = real_status
 
         # Prefer the verified detail-endpoint date. Only fall back to
         # the list endpoint's own (non-updateDate) date field if detail
