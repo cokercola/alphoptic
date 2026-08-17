@@ -30,7 +30,14 @@
 <script>
 function fmtDate(d) {
   if (!d) return '—';
-  return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  // Bill dates arrive as bare "YYYY-MM-DD"; committee meeting dates
+  // arrive as full ISO timestamps already ("...T22:26:43Z"). Only
+  // append a time when one isn't already present, or a meeting's
+  // timestamp gets a second "T00:00:00" tacked on and fails to parse.
+  const iso = d.includes('T') ? d : d + 'T00:00:00';
+  const date = new Date(iso);
+  if (isNaN(date)) return '—';
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 function fmtAmount(a) {
   if (!a) return '';
@@ -78,15 +85,9 @@ async function init() {
   const arrow = level === 'low' ? '&darr;' : '&uarr;';
   const ev = item.evidence || {};
 
-  const tradesRows = (ev.trades || []).map(t => `
-    <div class="signal-card level-${level}" style="border-left-width:2px;">
-      <div class="signal-head" style="font-size:13px;">
-        <span>${t.lawmaker || 'Unknown lawmaker'}${t.chamber ? ' — ' + t.chamber : ''}</span>
-        <span class="prob ${t.direction === 'buy' ? 'positive' : t.direction === 'sell' ? 'negative' : 'mixed'}">${(t.direction || '').toUpperCase()} ${t.ticker || ''}</span>
-      </div>
-      <div class="signal-sub">${fmtAmount(t.amount)} · disclosed ${fmtDate(t.filed_date)}</div>
-    </div>
-  `).join('');
+  const companiesChips = (companies) => (companies || []).map(c =>
+    `<span class="signal-ticker-chip" style="margin-left:4px;">${c.ticker}</span>`
+  ).join('');
 
   const billsRows = (ev.new_bills || []).map(b => `
     <a class="signal-card level-${level}" style="border-left-width:2px;" href="/bills/detail.html?id=${b.bill_id}">
@@ -94,6 +95,7 @@ async function init() {
         <span>${b.bill_id} — ${b.title}</span>
       </div>
       <div class="signal-sub">${b.stage_label || ''} · ${b.last_action || ''} · ${fmtDate(b.last_action_date)}</div>
+      <div class="signal-sub">${b.sponsor ? 'Sponsor: ' + b.sponsor : ''}${companiesChips(b.companies)}</div>
     </a>
   `).join('');
 
@@ -112,6 +114,7 @@ async function init() {
         <span>${b.bill_id} — ${b.title}</span>
       </div>
       <div class="signal-sub">${b.last_action || ''} · ${fmtDate(b.last_action_date)}</div>
+      <div class="signal-sub">${b.sponsor ? 'Sponsor: ' + b.sponsor : ''}${companiesChips(b.companies)}</div>
     </a>
   `).join('');
 
@@ -121,7 +124,7 @@ async function init() {
       <span class="signal-level-badge level-${level}" style="font-size:13px;">${arrow} ${item.level}</span>
     </div>
     <p style="color:var(--text-muted); font-size:13px; margin-top:4px;">
-      Alphoptic flagged ${item.industry} based on ${item.congress_trades} disclosed trade${item.congress_trades === 1 ? '' : 's'},
+      Alphoptic flagged ${item.industry} based on
       ${item.new_bills} bill${item.new_bills === 1 ? '' : 's'} with recent action,
       ${item.committee_activity} committee meeting${item.committee_activity === 1 ? '' : 's'},
       and ${item.upcoming_votes} bill${item.upcoming_votes === 1 ? '' : 's'} newly queued for a floor vote —
@@ -130,13 +133,11 @@ async function init() {
     </p>
 
     <div class="signal-metric-grid" style="margin:18px 0; max-width:420px;">
-      <div><div class="metric-value">${item.congress_trades}</div><div class="metric-label">congress trades</div></div>
       <div><div class="metric-value">${item.new_bills}</div><div class="metric-label">new bills</div></div>
       <div><div class="metric-value">${item.committee_activity}</div><div class="metric-label">committee activity</div></div>
       <div><div class="metric-value">${item.upcoming_votes}</div><div class="metric-label">upcoming votes</div></div>
     </div>
 
-    ${renderEvidenceSection('Congressional trades', 'No disclosed trades in tickers tied to this industry in the last ' + item.lookback_days + ' days.', tradesRows, item.congress_trades)}
     ${renderEvidenceSection('New &amp; updated bills', 'No bills in this industry had action in the last ' + item.lookback_days + ' days.', billsRows, item.new_bills)}
     ${renderEvidenceSection('Committee activity', 'No committee meetings mapped to this industry in the last ' + item.lookback_days + ' days.', meetingsRows, item.committee_activity)}
     ${renderEvidenceSection('Queued for a floor vote', 'No bills in this industry were newly placed on a calendar in the last ' + item.lookback_days + ' days.', calendarRows, item.upcoming_votes)}
