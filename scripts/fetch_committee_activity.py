@@ -138,24 +138,40 @@ def fetch_meetings_for_chamber(chamber, since_iso):
 
 def fetch_meeting_detail(meeting_url):
     """One request per meeting to the detail endpoint. Returns
-    (committee_name, related_bills) where related_bills is a list of
-    bill_id strings like "HR1842" - our own format, matching what
-    fetch_bills.py uses, so build_signals.py can cross-reference them
-    against tracked bills directly by string equality.
+    (committee_name, related_bills, real_date).
+
+    real_date is the actual meeting date from the detail response.
+    This matters because the LIST endpoint's date field is frequently
+    empty, and the code used to fall back to updateDate - when
+    Congress.gov last touched the record (e.g. posting a witness
+    statement or hearing video weeks or months after the fact), not
+    when the meeting happened. That silently misclassified old
+    meetings as "recent committee activity" any time their listing
+    got edited, and made the same meeting able to look "new" more
+    than once if it got edited more than once - very likely the cause
+    of an apparent duplicate meeting seen in testing. The detail
+    endpoint's date field is what Congress.gov's own event pages
+    display, so it's authoritative.
+
+    related_bills is a list of bill_id strings like "HR1842" - our own
+    format, matching what fetch_bills.py uses, so build_signals.py can
+    cross-reference them against tracked bills directly by string
+    equality.
 
     The list endpoint's committee-meeting entries often omit the
-    committees sub-object entirely, and never include relatedItems -
-    both only show up in the detail response. This is the one place
-    that pays for that with an extra request per meeting; capped in
-    main() so a busy week doesn't run away with API calls."""
+    committees sub-object entirely, and never include relatedItems or
+    a reliable date - all three only show up in the detail response.
+    This is the one place that pays for that with an extra request per
+    meeting; capped in main() so a busy week doesn't run away with API
+    calls."""
     if not meeting_url:
-        return None, []
+        return None, [], None
     try:
         resp = requests.get(meeting_url, params={"api_key": CONGRESS_API_KEY, "format": "json"}, timeout=15)
         resp.raise_for_status()
         detail = resp.json().get("committeeMeeting", {})
     except requests.RequestException:
-        return None, []
+        return None, [], None
 
     committees = detail.get("committees", [])
     committee_name = committees[0].get("name") if committees else None
@@ -167,7 +183,9 @@ def fetch_meeting_detail(meeting_url):
         if bill_type and bill_number:
             related_bills.append(f"{bill_type}{bill_number}")
 
-    return committee_name, related_bills
+    real_date = detail.get("date")
+
+    return committee_name, related_bills, real_date
 
 
 def main():
@@ -181,22 +199,54 @@ def main():
         except requests.HTTPError as e:
             print(f"WARNING: committee-meeting fetch failed for {chamber} ({e}); skipping this chamber this run.")
 
+    # Dedup by the meeting's own detail URL, which is unique per
+    # meeting/event id. Without this, the same meeting can appear
+    # more than once in all_meetings (e.g. Congress.gov's list
+    # pagination isn't guaranteed stable, or a meeting shows up under
+    # slightly different sort positions across paged requests), and
+    # each copy would separately count toward "committee activity" -
+    # inflating a signal's evidence with what's really one meeting.
+    seen_urls = set()
+    deduped_meetings = []
+    for m in all_meetings:
+        url = m.get("url")
+        if url and url in seen_urls:
+            continue
+        if url:
+            seen_urls.add(url)
+        deduped_meetings.append(m)
+
     industry_counts = {industry: 0 for industry in INDUSTRY_TAXONOMY}
     meetings_by_industry = {industry: [] for industry in INDUSTRY_TAXONOMY}
     unmapped_count = 0
+    stale_date_dropped = 0
     detail_lookups = 0
     MAX_DETAIL_LOOKUPS = 80  # keep a busy week's worth of meetings from running away with API calls
 
-    for m in all_meetings:
+    for m in deduped_meetings:
         committee_name = (m.get("committees") or [{}])[0].get("name", "")
         related_bills = []
+        real_date = None
         if detail_lookups < MAX_DETAIL_LOOKUPS:
-            detail_name, related_bills = fetch_meeting_detail(m.get("url"))
+            detail_name, related_bills, real_date = fetch_meeting_detail(m.get("url"))
             detail_lookups += 1
             if not committee_name and detail_name:
                 committee_name = detail_name
+
+        # Prefer the verified detail-endpoint date. Only fall back to
+        # the list endpoint's own (non-updateDate) date field if detail
+        # wasn't fetched for this one (past the cap). Deliberately does
+        # NOT fall back to updateDate - that's when the record was
+        # last edited, not when the meeting happened, and using it as
+        # a stand-in silently misclassifies old meetings as recent
+        # whenever their listing gets touched (a witness statement or
+        # video posted well after the fact, for example).
+        meeting_date = real_date or m.get("date")
+        if not meeting_date or meeting_date < cutoff:
+            stale_date_dropped += 1
+            continue
+
         industry = committee_to_industry(committee_name)
-        meeting_date = m.get("date") or m.get("updateDate")
         entry = {
             "committee": committee_name or "Unknown committee",
             "chamber": m.get("chamber"),
@@ -215,7 +265,7 @@ def main():
     output = {
         "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
         "lookback_days": LOOKBACK_DAYS,
-        "total_meetings": len(all_meetings),
+        "total_meetings": sum(len(v) for v in meetings_by_industry.values()),
         "unmapped_meetings": unmapped_count,
         "industry_counts": industry_counts,
         "meetings_by_industry": meetings_by_industry,
@@ -224,7 +274,10 @@ def main():
     with open(OUTPUT_PATH, "w") as f:
         json.dump(output, f, separators=(",", ":"))
 
-    print(f"Wrote {OUTPUT_PATH}: {len(all_meetings)} meetings in the last {LOOKBACK_DAYS} days, "
+    print(f"Wrote {OUTPUT_PATH}: {sum(len(v) for v in meetings_by_industry.values())} meetings confirmed "
+          f"within the last {LOOKBACK_DAYS} days (of {len(all_meetings)} fetched, "
+          f"{len(all_meetings) - len(deduped_meetings)} deduped, "
+          f"{stale_date_dropped} dropped for an unverifiable or stale date), "
           f"{unmapped_count} from committees not in COMMITTEE_INDUSTRY_MAP, "
           f"{detail_lookups} detail lookups performed"
           f"{' (capped)' if detail_lookups >= MAX_DETAIL_LOOKUPS else ''}.")
