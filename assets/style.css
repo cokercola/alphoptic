@@ -1,6 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap');
+
 :root {
   --navy: #0B1F3A;
   --panel: #132A4D;
+  --panel-raised: #1A3A66;
   --border: #274264;
   --blue: #5A9BFF;
   --orange: #E8622C;
@@ -9,6 +12,7 @@
   --amber: #E8B23D;
   --text: #E7ECF3;
   --text-muted: #8CA3C4;
+  --text-dim: #5F7699;
 }
 
 * { box-sizing: border-box; }
@@ -99,19 +103,19 @@ body {
 .sidebar a:hover { color: var(--text); }
 
 .stat-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-bottom: 18px;
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
 }
 .stat-card {
-  background: var(--panel);
-  border-radius: 6px;
-  padding: 10px;
-  text-align: center;
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  text-align: left;
 }
-.stat-card .label { font-size: 11px; color: var(--text-muted); }
-.stat-card .value { font-size: 18px; font-weight: bold; margin-top: 4px; }
+.stat-card .label { font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 4px; }
+.stat-card .value { font-family: 'Fraunces', serif; font-weight: 600; font-size: 28px; line-height: 1; }
 
 .section-label {
   font-size: 12px;
@@ -1011,7 +1015,7 @@ table.data-table a { color: var(--blue); text-decoration: none; }
 
 .signal-metric-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   margin: 10px 0;
 }
@@ -1044,4 +1048,103 @@ table.data-table a { color: var(--blue); text-decoration: none; }
   font-size: 11px;
   color: var(--blue);
   text-decoration: none;
+}
+
+/* ============================================
+   Dashboard hero + simplified signal cards
+   Namespaced with "dash-" so nothing here can
+   affect signals/industry-detail.html, which
+   still uses the older .signal-card family above.
+   ============================================ */
+.hero-section {
+  max-width: 720px;
+  margin-bottom: 26px;
+}
+.hero-section h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 1.35;
+  margin: 0 0 6px;
+}
+.hero-section h1 .accent { color: var(--orange); }
+.hero-section p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.dash-signal-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+}
+.dash-signal-card .sentence {
+  font-size: 14.5px;
+  margin: 0 0 10px;
+  line-height: 1.45;
+}
+.dash-signal-card .sentence .dir-up { color: var(--green); font-weight: 600; }
+.dash-signal-card .sentence .dir-down { color: var(--red); font-weight: 600; }
+.dash-signal-card .chip-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 0 0 12px;
+}
+.dash-signal-card .chip {
+  font-size: 11.5px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: var(--panel-raised);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.dash-signal-card .card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.dash-signal-card .tickers { display: flex; gap: 6px; }
+.dash-signal-card .ticker-chip {
+  font-weight: 600;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  background: var(--panel-raised);
+  color: var(--text);
+}
+.dash-signal-card .why-link {
+  font-size: 12.5px;
+  color: var(--orange);
+  text-decoration: none;
+}
+
+/* Simplified watchlist rows on the dashboard aside */
+.watch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.watch-row:last-child { border-bottom: none; }
+.watch-ticker { font-weight: 600; font-size: 13px; }
+.watch-note { font-size: 11.5px; color: var(--text-dim); margin-top: 1px; }
+.exposure-pill {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.exposure-pill.positive { background: rgba(76,181,107,0.15); color: var(--green); }
+.exposure-pill.negative { background: rgba(224,82,82,0.15); color: var(--red); }
+.exposure-pill.mixed { background: rgba(232,178,61,0.15); color: var(--amber); }
+.watchlist-footnote {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 12px;
+  line-height: 1.5;
 }
