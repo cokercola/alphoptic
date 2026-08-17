@@ -13,7 +13,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trades — Alphoptic</title>
 <link rel="stylesheet" href="/assets/style.css">
-<link rel="stylesheet" href="/assets/trades.css">
 <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 </head>
@@ -23,21 +22,20 @@
   <nav class="sidebar" id="sidebar"></nav>
   <main>
     <div class="breadcrumb"><a href="/index.html">Dashboard</a> / Trades</div>
-    <div class="info-banner">This is a small, evolving set of tracked lawmakers. Expect this list to grow.</div>
-    <div class="section-label" id="section-title">Congress trades</div>
-    <div id="trades-full" data-trades-target></div>
+    <div class="section-label">Congress trades</div>
+    <div class="empty-note">
+      Congressional trade tracking is paused while we replace the underlying data
+      provider with a free source. The tracking and reporting logic is still in
+      place behind the scenes — this page will come back once that's wired up.
+    </div>
   </main>
 </div>
 <script src="/assets/site.js"></script>
 <script src="/assets/donate.js"></script>
-<script src="/assets/trades.js"></script>
 <script src="/assets/header.js"></script>
 <script>
 renderSidebar('trades');
-loadTradesData('/data/congress-trades.json', function (data) {
-  document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
-  renderFullTrades('trades-full', data, '/');
-});
+document.getElementById('updated-at').textContent = '';
 </script>
 </body>
 </html>
