@@ -99,12 +99,48 @@ async function init() {
     </a>
   `).join('');
 
+  const BILL_TYPE_SLUG = {
+    HR: 'house-bill', S: 'senate-bill', HRES: 'house-resolution', SRES: 'senate-resolution',
+    HJRES: 'house-joint-resolution', SJRES: 'senate-joint-resolution',
+    HCONRES: 'house-concurrent-resolution', SCONRES: 'senate-concurrent-resolution',
+  };
+  function congressGovUrl(billId, congress) {
+    const match = billId.match(/^([A-Z]+)(\d+)$/);
+    if (!match) return null;
+    const slug = BILL_TYPE_SLUG[match[1]];
+    if (!slug) return null;
+    return `https://www.congress.gov/bill/${congress || 119}th-congress/${slug}/${match[2]}`;
+  }
+  function relatedBillsHTML(relatedBills) {
+    if (!relatedBills || !relatedBills.length) return '';
+    const rows = relatedBills.map(rb => {
+      if (rb.tracked) {
+        return `
+          <a class="signal-card level-${level}" style="border-left-width:2px; margin-top:6px;" href="/bills/detail.html?id=${rb.bill_id}">
+            <div class="signal-head" style="font-size:12.5px;"><span>${rb.bill_id} — ${rb.title || ''}</span></div>
+            <div class="signal-sub">${rb.sponsor ? 'Sponsor: ' + rb.sponsor : ''}${companiesChips(rb.companies)}</div>
+          </a>
+        `;
+      }
+      const url = congressGovUrl(rb.bill_id);
+      return `
+        <div class="signal-card level-${level}" style="border-left-width:2px; margin-top:6px;">
+          <div class="signal-sub">${url ? `<a href="${url}" target="_blank" rel="noopener" style="color:var(--blue);">${rb.bill_id} on Congress.gov ↗</a>` : rb.bill_id} — not one of the bills Alphoptic currently tracks</div>
+        </div>
+      `;
+    }).join('');
+    return `<div style="margin-top:6px;">${rows}</div>`;
+  }
+
   const meetingsRows = (ev.committee_meetings || []).map(m => `
     <div class="signal-card level-${level}" style="border-left-width:2px;">
       <div class="signal-head" style="font-size:13px;">
         <span>${m.committee}${m.chamber ? ' — ' + m.chamber : ''}</span>
       </div>
       <div class="signal-sub">${m.title || 'Committee meeting'} · ${fmtDate(m.date)}</div>
+      ${m.related_bills && m.related_bills.length
+        ? relatedBillsHTML(m.related_bills)
+        : '<div class="signal-sub" style="margin-top:4px; font-style:italic;">Congress.gov didn\'t list specific legislation for this meeting (common for hearings without a markup).</div>'}
     </div>
   `).join('');
 
