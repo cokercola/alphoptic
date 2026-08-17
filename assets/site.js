@@ -11,7 +11,6 @@ function renderSidebar(activePage) {
     { href: '/industries/index.html', label: 'Industries', key: 'industries' },
     { href: '/companies/index.html', label: 'Companies', key: 'companies' },
     { href: '/signals/index.html', label: 'Signals', key: 'signals' },
-    { href: '/trades/index.html', label: 'Trades', key: 'trades' },
     { href: '/watchlist/index.html', label: 'Watchlist', key: 'watchlist' },
     { href: '/community/index.html', label: 'Community', key: 'community' },
     { href: '/lawmakers/index.html', label: 'Lawmakers', key: 'lawmakers' },
