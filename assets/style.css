@@ -1081,13 +1081,34 @@ table.data-table a { color: var(--blue); text-decoration: none; }
   padding: 16px 18px;
   margin-bottom: 12px;
 }
+.dash-signal-card .tier-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.dash-signal-card .tier-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+.dash-signal-card .tier-badge.low { background: rgba(76,181,107,0.15); color: var(--green); }
+.dash-signal-card .tier-badge.medium { background: rgba(232,178,61,0.15); color: var(--amber); }
+.dash-signal-card .tier-badge.high { background: rgba(224,82,82,0.15); color: var(--red); }
+.dash-signal-card .freshness {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-left: auto;
+}
 .dash-signal-card .sentence {
   font-size: 14.5px;
   margin: 0 0 10px;
   line-height: 1.45;
 }
-.dash-signal-card .sentence .dir-up { color: var(--green); font-weight: 600; }
-.dash-signal-card .sentence .dir-down { color: var(--red); font-weight: 600; }
+.dash-signal-card .sentence .subject-text { color: var(--text-muted); }
 .dash-signal-card .chip-row {
   display: flex;
   gap: 6px;
@@ -1104,22 +1125,30 @@ table.data-table a { color: var(--blue); text-decoration: none; }
 }
 .dash-signal-card .card-footer {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 12px;
 }
-.dash-signal-card .tickers { display: flex; gap: 6px; }
+.dash-signal-card .tickers-block { display: flex; align-items: center; flex-wrap: wrap; }
+.dash-signal-card .tickers { display: flex; gap: 6px; flex-wrap: wrap; }
 .dash-signal-card .ticker-chip {
   font-weight: 600;
   font-size: 11px;
   padding: 3px 8px;
   border-radius: 5px;
-  background: var(--panel-raised);
-  color: var(--text);
+}
+.dash-signal-card .ticker-chip.positive { background: rgba(76,181,107,0.16); color: var(--green); }
+.dash-signal-card .ticker-chip.negative { background: rgba(224,82,82,0.16); color: var(--red); }
+.dash-signal-card .ticker-chip.mixed { background: rgba(232,178,61,0.16); color: var(--amber); }
+.dash-signal-card .no-companies-note {
+  font-size: 11.5px;
+  color: var(--text-dim);
 }
 .dash-signal-card .why-link {
   font-size: 12.5px;
   color: var(--orange);
   text-decoration: none;
+  white-space: nowrap;
 }
 
 /* Simplified watchlist rows on the dashboard aside */
