@@ -126,6 +126,25 @@ def fetch_meetings_for_chamber(chamber, since_iso):
     return meetings
 
 
+def fetch_committee_name(meeting_url):
+    """The list endpoint's committee-meeting entries often omit the
+    committees sub-object entirely. When that happens, fetch the
+    meeting's own detail URL (returned in each list entry) to get the
+    real committee name, rather than falling back straight to
+    'Unknown committee'. One extra request per affected meeting only -
+    most meetings already have a name from the list response and skip
+    this entirely."""
+    if not meeting_url:
+        return None
+    try:
+        resp = requests.get(meeting_url, params={"api_key": CONGRESS_API_KEY, "format": "json"}, timeout=15)
+        resp.raise_for_status()
+        committees = resp.json().get("committeeMeeting", {}).get("committees", [])
+        return committees[0].get("name") if committees else None
+    except requests.RequestException:
+        return None
+
+
 def main():
     today = datetime.datetime.now(datetime.timezone.utc).date()
     cutoff = (today - datetime.timedelta(days=LOOKBACK_DAYS)).isoformat()
@@ -140,9 +159,13 @@ def main():
     industry_counts = {industry: 0 for industry in INDUSTRY_TAXONOMY}
     meetings_by_industry = {industry: [] for industry in INDUSTRY_TAXONOMY}
     unmapped_count = 0
+    detail_lookups = 0
 
     for m in all_meetings:
         committee_name = (m.get("committees") or [{}])[0].get("name", "")
+        if not committee_name and detail_lookups < 50:  # cap detail calls per run
+            committee_name = fetch_committee_name(m.get("url")) or ""
+            detail_lookups += 1
         industry = committee_to_industry(committee_name)
         meeting_date = m.get("date") or m.get("updateDate")
         entry = {
