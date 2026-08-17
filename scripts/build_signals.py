@@ -344,6 +344,25 @@ def main():
         ]),
     }
 
+    # Upcoming scheduled meetings, resolved the same way as past ones -
+    # real bill titles/sponsors/companies where the related bill is
+    # tracked, a bare bill number otherwise. Meetings whose committee
+    # didn't map to a real industry are excluded here too, same as
+    # Other/Cross-Sector everywhere else - "unknown which industry"
+    # isn't useful "what's coming up" information.
+    MAX_UPCOMING_ON_HOMEPAGE = 6
+    upcoming = [
+        {
+            "date": m["date"],
+            "industry": m["industry"],
+            "committee": m["committee"],
+            "chamber": m.get("chamber"),
+            "related_bills": resolve_related_bills(m.get("related_bills")),
+        }
+        for m in committee_data.get("upcoming_meetings", [])
+        if m.get("industry") and m["industry"] not in EXCLUDED_INDUSTRIES
+    ][:MAX_UPCOMING_ON_HOMEPAGE]
+
     with open(SIGNALS_PATH, "w") as f:
         json.dump({
             "updated_at": now_iso,
@@ -351,12 +370,14 @@ def main():
             "lookback_days": LOOKBACK_DAYS,
             "total_cleared": len(detail_items),
             "totals": totals,
+            "upcoming": upcoming,
             "items": summary_items,
         }, f, separators=(",", ":"))
 
     print(f"Wrote {SIGNALS_DETAIL_PATH}: {len(detail_items)} industries cleared a signal threshold "
           f"(lookback: {LOOKBACK_DAYS} days).")
-    print(f"Wrote {SIGNALS_PATH}: top {len(summary_items)} kept for the homepage "
+    print(f"Wrote {SIGNALS_PATH}: top {len(summary_items)} kept for the homepage, "
+          f"{len(upcoming)} upcoming meetings included "
           f"(total_cleared={len(detail_items)}, totals={totals}).")
 
 
