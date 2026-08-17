@@ -108,15 +108,50 @@ function companiesTooltip() {
   );
 }
 
+function recessNote() {
+  // Generic and computed, not a hardcoded date - only checks whether
+  // the current month is a period Congress traditionally recesses
+  // for, so this can't go stale like a pinned "back by Sept X" claim
+  // would. Deliberately conservative: only fires for August, the one
+  // recess period true almost every year regardless of session
+  // schedule quirks.
+  const month = new Date().getMonth(); // 0-indexed
+  if (month !== 7) return ''; // 7 = August
+  return (
+    '<div class="recess-note">' +
+      '<span class="recess-dot"></span>' +
+      '<span>Congress is traditionally on recess for much of August, and legislative activity typically slows during this period.</span>' +
+    '</div>'
+  );
+}
+
+function emptySignalsHTML(data) {
+  const t = data.totals || {};
+  return (
+    '<div class="empty-signal-block">' +
+      '<p class="empty-headline">No industries cleared threshold in the last ' + data.lookback_days + ' days.</p>' +
+      '<p class="empty-rule">A signal needs at least one new bill action, committee meeting, or floor-vote change in an industry within a ' + data.lookback_days + '-day window.</p>' +
+      '<div class="empty-stat-strip">' +
+        '<div class="estat"><div class="enum">' + (t.new_bills || 0) + '</div><div class="elbl">New bill actions</div></div>' +
+        '<div class="estat"><div class="enum">' + (t.committee_meetings || 0) + '</div><div class="elbl">Committee meetings</div></div>' +
+        '<div class="estat"><div class="enum">' + (t.calendar_bills || 0) + '</div><div class="elbl">Floor-vote changes</div></div>' +
+        '<div class="estat"><div class="enum">' + (t.industries_tracked || 0) + '</div><div class="elbl">Industries checked</div></div>' +
+      '</div>' +
+      recessNote() +
+      '<div class="empty-footnote">This isn\'t a data problem — every tracked industry genuinely had zero qualifying activity this week.</div>' +
+    '</div>'
+  );
+}
+
 fetch('data/signals.json')
   .then(res => res.json())
   .then(data => {
     const container = document.getElementById('alphoptic-signals');
     if (!data.items || data.items.length === 0) {
-      container.innerHTML = '<p style="font-size:12px; color:var(--text-muted);">No signals cleared threshold today. Check back soon.</p>';
+      container.innerHTML = emptySignalsHTML(data);
       return;
     }
-    container.innerHTML = data.items.map(function (item) {
+    let html = data.items.map(function (item) {
       const level = item.level.toLowerCase();
       const fresh = fmtFreshDate(item.most_recent_date);
       const companies = (item.companies || []).slice(0, 4);
@@ -153,6 +188,12 @@ fetch('data/signals.json')
         '</div>'
       );
     }).join('');
+
+    if (data.total_cleared > data.items.length) {
+      html += '<div class="see-more-row"><a class="see-more-link" href="/signals/index.html">See all ' + data.total_cleared + ' signals &rarr;</a></div>';
+    }
+
+    container.innerHTML = html;
     initInfoTooltips();
   })
   .catch(function () {
