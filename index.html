@@ -23,7 +23,7 @@
 <meta name="twitter:description" content="Track bills in Congress, measure industry impact, and identify legislative signals before policy becomes law.">
 <meta name="twitter:image" content="https://alphoptic.com/assets/social-card.png">
 <link rel="stylesheet" href="/assets/style.css">
-<link rel="stylesheet" href="/assets/trades.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 </head>
@@ -32,10 +32,14 @@
 <div class="layout">
   <nav class="sidebar" id="sidebar"></nav>
   <main class="feed">
+    <div class="hero-section">
+      <h1>Congress moves slowly, until it doesn't. <span class="accent">Alphoptic watches for the moment it speeds up.</span></h1>
+      <p>We track active bills, read what committees and the calendar are doing, and flag industries getting unusual legislative attention — in plain language, with the evidence shown.</p>
+    </div>
     <div id="onboarding-card"></div>
     <div class="stat-row" id="stat-row"></div>
     <div class="trades-teaser-header">
-      <span class="section-label" style="margin-bottom:0;">Alphoptic signals</span>
+      <span class="section-label" style="margin-bottom:0;">What's getting unusual attention</span>
       <a href="/bills/index.html">View all bills →</a>
     </div>
     <div id="alphoptic-signals"></div>
@@ -52,8 +56,22 @@
 </div>
 <script src="/assets/site.js"></script>
 <script src="/assets/app.js"></script>
-<script src="/assets/trades.js"></script>
 <script>
+function levelSentence(item) {
+  const parts = [];
+  if (item.new_bills > 0) parts.push(item.new_bills + ' new bill' + (item.new_bills === 1 ? '' : 's'));
+  if (item.committee_activity > 0) parts.push(item.committee_activity + ' committee meeting' + (item.committee_activity === 1 ? '' : 's'));
+  if (item.upcoming_votes > 0) parts.push(item.upcoming_votes + ' bill' + (item.upcoming_votes === 1 ? '' : 's') + ' queued for a floor vote');
+
+  if (item.level.toLowerCase() === 'high') {
+    return 'is seeing a burst of legislative activity — more than usual right now.';
+  }
+  if (item.level.toLowerCase() === 'medium') {
+    return 'has picked up more legislative attention than usual.';
+  }
+  return parts.length ? 'has some new legislative activity worth a look.' : 'cleared today\'s signal threshold on light activity.';
+}
+
 fetch('data/signals.json')
   .then(res => res.json())
   .then(data => {
@@ -64,25 +82,24 @@ fetch('data/signals.json')
     }
     container.innerHTML = data.items.map(function (item) {
       const level = item.level.toLowerCase();
+      const dirClass = level === 'low' ? 'dir-down' : 'dir-up';
       const arrow = level === 'low' ? '&darr;' : '&uarr;';
-      const tickers = item.tickers.map(function (t) {
-        return '<span class="signal-ticker-chip">' + t + '</span>';
+      const tickers = item.tickers.slice(0, 4).map(function (t) {
+        return '<span class="ticker-chip">' + t + '</span>';
       }).join('');
+
+      const chips = [];
+      if (item.new_bills > 0) chips.push('<span class="chip">' + item.new_bills + ' new bill' + (item.new_bills === 1 ? '' : 's') + '</span>');
+      if (item.committee_activity > 0) chips.push('<span class="chip">' + item.committee_activity + ' committee meeting' + (item.committee_activity === 1 ? '' : 's') + '</span>');
+      if (item.upcoming_votes > 0) chips.push('<span class="chip">' + item.upcoming_votes + ' queued for a floor vote</span>');
+
       return (
-        '<div class="signal-card level-' + level + '">' +
-          '<div class="signal-head">' +
-            '<span>' + item.industry + '</span>' +
-            '<span class="signal-level-badge level-' + level + '">' + arrow + ' ' + item.level + '</span>' +
-          '</div>' +
-          '<div class="signal-metric-grid">' +
-            '<div><div class="metric-value">' + item.congress_trades + '</div><div class="metric-label">congress trades</div></div>' +
-            '<div><div class="metric-value">' + item.new_bills + '</div><div class="metric-label">new bills</div></div>' +
-            '<div><div class="metric-value">' + item.committee_activity + '</div><div class="metric-label">committee activity</div></div>' +
-            '<div><div class="metric-value">' + item.upcoming_votes + '</div><div class="metric-label">upcoming votes</div></div>' +
-          '</div>' +
-          '<div class="signal-footer">' +
-            '<div class="signal-tickers">' + tickers + '</div>' +
-            '<a class="signal-why-link" href="/signals/industry-detail.html?industry=' + encodeURIComponent(item.industry) + '">Why Alphoptic flagged this &rarr;</a>' +
+        '<div class="dash-signal-card">' +
+          '<p class="sentence"><span class="' + dirClass + '">' + arrow + '</span> <b>' + item.industry + '</b> ' + levelSentence(item) + '</p>' +
+          (chips.length ? '<div class="chip-row">' + chips.join('') + '</div>' : '') +
+          '<div class="card-footer">' +
+            '<div class="tickers">' + tickers + '</div>' +
+            '<a class="why-link" href="/signals/industry-detail.html?industry=' + encodeURIComponent(item.industry) + '">Why we flagged this &rarr;</a>' +
           '</div>' +
         '</div>'
       );
