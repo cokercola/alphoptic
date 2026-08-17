@@ -1,9 +1,9 @@
 name: Update paper trading
 
+# Schedule paused: this strategy trades off congress-trades data, which is
+# on hold while we replace the FMP data source. Re-add the schedule once
+# that's back. Manual runs via workflow_dispatch still work.
 on:
-  schedule:
-    - cron: "30 13 * * 1-5"
-
   workflow_dispatch: {}
 
 permissions:
