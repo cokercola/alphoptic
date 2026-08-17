@@ -321,12 +321,43 @@ def main():
         {k: v for k, v in item.items() if k != "evidence"}
         for item in detail_items[:MAX_SIGNALS_ON_HOMEPAGE]
     ]
+
+    # Real totals across every tracked industry (not just ones that
+    # cleared threshold), excluding the catch-all bucket - these back
+    # the homepage's empty state ("0 new bill actions, 0 committee
+    # meetings... across all N tracked industries") with the same
+    # verifiable-evidence standard as everything else on the site,
+    # instead of a vague "check back soon."
+    totals = {
+        "new_bills": sum(len(v) for k, v in bills_evidence.items() if k not in EXCLUDED_INDUSTRIES),
+        "committee_meetings": sum(len(v) for k, v in committee_meetings_by_industry.items() if k not in EXCLUDED_INDUSTRIES),
+        "calendar_bills": sum(len(v) for k, v in calendar_evidence.items() if k not in EXCLUDED_INDUSTRIES),
+        # committee_data's industry_counts already has every tracked
+        # industry as a key (fetch_committee_activity.py initializes
+        # it that way, even industries with 0 meetings this run) - a
+        # free, already-loaded source for this count that avoids
+        # importing fetch_bills.py just for its INDUSTRY_TAXONOMY
+        # constant, which would also pull in that script's top-level
+        # CONGRESS_API_KEY read (not set in this step of the workflow).
+        "industries_tracked": len([
+            i for i in committee_data.get("industry_counts", {}) if i not in EXCLUDED_INDUSTRIES
+        ]),
+    }
+
     with open(SIGNALS_PATH, "w") as f:
-        json.dump({"updated_at": now_iso, "date": today.isoformat(), "items": summary_items}, f, separators=(",", ":"))
+        json.dump({
+            "updated_at": now_iso,
+            "date": today.isoformat(),
+            "lookback_days": LOOKBACK_DAYS,
+            "total_cleared": len(detail_items),
+            "totals": totals,
+            "items": summary_items,
+        }, f, separators=(",", ":"))
 
     print(f"Wrote {SIGNALS_DETAIL_PATH}: {len(detail_items)} industries cleared a signal threshold "
           f"(lookback: {LOOKBACK_DAYS} days).")
-    print(f"Wrote {SIGNALS_PATH}: top {len(summary_items)} kept for the homepage.")
+    print(f"Wrote {SIGNALS_PATH}: top {len(summary_items)} kept for the homepage "
+          f"(total_cleared={len(detail_items)}, totals={totals}).")
 
 
 if __name__ == "__main__":
