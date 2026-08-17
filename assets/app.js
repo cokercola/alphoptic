@@ -15,17 +15,19 @@ async function loadDashboard() {
   renderCommunityHighlight('community-highlight', data, 3);
 
   const tickers = {};
-  data.signals.forEach(s => (Array.isArray(s.companies) ? s.companies : []).forEach(c => { tickers[c.ticker] = c; }));
+  data.signals.forEach(s => (Array.isArray(s.companies) ? s.companies : []).forEach(c => {
+    if (!tickers[c.ticker]) tickers[c.ticker] = { ...c, industry: s.industry };
+  }));
   const watchlist = document.getElementById('watchlist');
-  const exposureNote = hasTooltips
-    ? `<div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Exposure score, not price change${infoIcon(TOOLTIP_TEXT.exposure)}</div>`
-    : `<div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Exposure score, not price change</div>`;
-  watchlist.innerHTML = exposureNote + Object.values(tickers).slice(0, 6).map(c => `
-    <div class="ticker-row">
-      <span>${c.ticker}</span>
-      <span class="change ${c.effect || 'mixed'}">${c.exposure}</span>
+  watchlist.innerHTML = Object.values(tickers).slice(0, 6).map(c => `
+    <div class="watch-row">
+      <div>
+        <div class="watch-ticker">${c.ticker}</div>
+        <div class="watch-note">${c.industry || ''}</div>
+      </div>
+      <span class="exposure-pill ${c.effect || 'mixed'}">${c.exposure > 0 ? '+' : ''}${c.exposure} exposure</span>
     </div>
-  `).join('');
+  `).join('') + '<div class="watchlist-footnote">Exposure is how much a bill could move this company, not a price prediction.</div>';
   if (hasTooltips) initInfoTooltips();
 }
 loadDashboard().catch(err => {
