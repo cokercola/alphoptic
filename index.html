@@ -130,13 +130,14 @@ function upcomingRowHTML(m, compact) {
   const billsHTML = bills.length
     ? bills.map(function (rb) { return '<span class="chip">' + rb.bill_id + '</span>'; }).join('')
     : '<span class="chip" style="color:var(--text-dim);">No bills listed yet</span>';
+  const label = m.industry || m.committee;
 
   return (
     '<div class="upcoming-row' + (compact ? ' compact' : '') + '">' +
       '<div class="upcoming-date">' + fresh + '</div>' +
       '<div class="upcoming-body">' +
-        '<div class="upcoming-industry">' + m.industry + '</div>' +
-        '<div class="upcoming-committee">' + m.committee + '</div>' +
+        '<div class="upcoming-industry">' + label + '</div>' +
+        (m.industry ? '<div class="upcoming-committee">' + m.committee + '</div>' : '') +
         '<div class="upcoming-bills">' + billsHTML + '</div>' +
       '</div>' +
     '</div>'
