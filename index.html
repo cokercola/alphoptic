@@ -60,19 +60,52 @@
 <script src="/assets/site.js"></script>
 <script src="/assets/app.js"></script>
 <script>
-function levelSentence(item) {
-  const parts = [];
-  if (item.new_bills > 0) parts.push(item.new_bills + ' new bill' + (item.new_bills === 1 ? '' : 's'));
-  if (item.committee_activity > 0) parts.push(item.committee_activity + ' committee meeting' + (item.committee_activity === 1 ? '' : 's'));
-  if (item.upcoming_votes > 0) parts.push(item.upcoming_votes + ' bill' + (item.upcoming_votes === 1 ? '' : 's') + ' queued for a floor vote');
+function fallbackSentence(item) {
+  const level = item.level.toLowerCase();
+  if (level === 'high') return item.industry + ' is seeing a burst of legislative activity — more than usual right now.';
+  if (level === 'medium') return item.industry + ' has picked up more legislative attention than usual.';
+  return item.industry + ' cleared today\'s signal threshold on light activity.';
+}
 
-  if (item.level.toLowerCase() === 'high') {
-    return 'is seeing a burst of legislative activity — more than usual right now.';
-  }
-  if (item.level.toLowerCase() === 'medium') {
-    return 'has picked up more legislative attention than usual.';
-  }
-  return parts.length ? 'has some new legislative activity worth a look.' : 'cleared today\'s signal threshold on light activity.';
+function fmtFreshDate(d) {
+  if (!d) return '';
+  const date = new Date(d + 'T00:00:00');
+  if (isNaN(date)) return '';
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function tierTooltip() {
+  return (
+    '<span class="info-icon" onclick="event.stopPropagation(); this.querySelector(\'.tooltip-popover\').classList.toggle(\'open\')">i' +
+      '<span class="tooltip-popover">' +
+        '<div class="tooltip-label">Signal level</div>' +
+        '<div class="tooltip-bullet"><span class="tooltip-dot" style="background:var(--blue)"></span>' +
+          '<span>Based on combined bill, committee, and floor-vote activity in the last 3 days.</span></div>' +
+        '<div class="tooltip-legend">' +
+          '<span class="legend-item"><span class="legend-swatch" style="background:var(--green)"></span>Low</span>' +
+          '<span class="legend-item"><span class="legend-swatch" style="background:var(--amber)"></span>Medium</span>' +
+          '<span class="legend-item"><span class="legend-swatch" style="background:var(--red)"></span>High</span>' +
+        '</div>' +
+      '</span>' +
+    '</span>'
+  );
+}
+
+function companiesTooltip() {
+  return (
+    '<span class="info-icon" onclick="event.stopPropagation(); this.querySelector(\'.tooltip-popover\').classList.toggle(\'open\')">i' +
+      '<span class="tooltip-popover">' +
+        '<div class="tooltip-label">Why these companies</div>' +
+        '<div class="tooltip-bullet"><span class="tooltip-dot" style="background:var(--blue)"></span>' +
+          '<span>Companies named in the bills behind this signal, not the whole industry.</span></div>' +
+        '<div class="tooltip-legend">' +
+          '<span class="legend-item"><span class="legend-swatch" style="background:var(--green)"></span>Bill likely helps</span>' +
+          '<span class="legend-item"><span class="legend-swatch" style="background:var(--red)"></span>Bill likely hurts</span>' +
+          '<span class="legend-item"><span class="legend-swatch" style="background:var(--amber)"></span>Could cut either way</span>' +
+        '</div>' +
+      '</span>' +
+    '</span>'
+  );
 }
 
 fetch('data/signals.json')
@@ -85,10 +118,10 @@ fetch('data/signals.json')
     }
     container.innerHTML = data.items.map(function (item) {
       const level = item.level.toLowerCase();
-      const dirClass = level === 'low' ? 'dir-down' : 'dir-up';
-      const arrow = level === 'low' ? '&darr;' : '&uarr;';
-      const tickers = item.tickers.slice(0, 4).map(function (t) {
-        return '<span class="ticker-chip">' + t + '</span>';
+      const fresh = fmtFreshDate(item.most_recent_date);
+      const companies = (item.companies || []).slice(0, 4);
+      const companiesHTML = companies.map(function (c) {
+        return '<span class="ticker-chip ' + (c.effect || 'mixed') + '">' + c.ticker + '</span>';
       }).join('');
 
       const chips = [];
@@ -96,17 +129,31 @@ fetch('data/signals.json')
       if (item.committee_activity > 0) chips.push('<span class="chip">' + item.committee_activity + ' committee meeting' + (item.committee_activity === 1 ? '' : 's') + '</span>');
       if (item.upcoming_votes > 0) chips.push('<span class="chip">' + item.upcoming_votes + ' queued for a floor vote</span>');
 
+      const sentence = item.subject
+        ? '<b>' + item.industry + '</b> — <span class="subject-text">' + item.subject + '</span>'
+        : fallbackSentence(item);
+
       return (
         '<div class="dash-signal-card">' +
-          '<p class="sentence"><span class="' + dirClass + '">' + arrow + '</span> <b>' + item.industry + '</b> ' + levelSentence(item) + '</p>' +
+          '<div class="tier-row">' +
+            '<span class="tier-badge ' + level + '">' + item.level + '</span>' +
+            tierTooltip() +
+            (fresh ? '<span class="freshness">Most recent: ' + fresh + '</span>' : '') +
+          '</div>' +
+          '<p class="sentence">' + sentence + '</p>' +
           (chips.length ? '<div class="chip-row">' + chips.join('') + '</div>' : '') +
           '<div class="card-footer">' +
-            '<div class="tickers">' + tickers + '</div>' +
+            '<div class="tickers-block">' +
+              (companiesHTML
+                ? '<div class="tickers">' + companiesHTML + '</div>' + companiesTooltip()
+                : '<span class="no-companies-note">No specific companies tied to this evidence</span>') +
+            '</div>' +
             '<a class="why-link" href="/signals/industry-detail.html?industry=' + encodeURIComponent(item.industry) + '">Why we flagged this &rarr;</a>' +
           '</div>' +
         '</div>'
       );
     }).join('');
+    initInfoTooltips();
   })
   .catch(function () {
     document.getElementById('alphoptic-signals').innerHTML = '<p style="font-size:12px; color:var(--text-muted);">Couldn\'t load signals. Check back soon.</p>';
