@@ -1,7 +1,8 @@
 name: Update congress trades
+# Schedule paused: trades feature is hidden from the site while we look for
+# a free replacement for the FMP data source. Re-add the schedule trigger
+# once that's wired up. Manual runs via workflow_dispatch still work.
 on:
-  schedule:
-    - cron: "0 13 * * *"
   workflow_dispatch: {}
 permissions:
   contents: write
