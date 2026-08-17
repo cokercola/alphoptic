@@ -49,12 +49,11 @@
     <div id="stalled-highlight"></div>
   </main>
   <aside class="ticker-panel">
-    <div class="section-label">Watchlist</div>
+    <div class="section-label">Upcoming</div>
+    <div id="upcoming-sidebar"></div>
+    <div class="section-label" style="margin-top:16px;">Watchlist</div>
     <div class="watchlist-intro">Companies most exposed to today's tracked bill activity — positive or negative.</div>
     <div id="watchlist"></div>
-    <div class="section-label" style="margin-top:16px;">Upcoming</div>
-    <div class="upcoming-item">Mon — Senate hearing, S.881</div>
-    <div class="upcoming-item">Wed — House floor vote, H.R.1842</div>
   </aside>
 </div>
 <script src="/assets/site.js"></script>
@@ -125,8 +124,32 @@ function recessNote() {
   );
 }
 
+function upcomingRowHTML(m, compact) {
+  const fresh = fmtFreshDate(m.date);
+  const bills = m.related_bills || [];
+  const billsHTML = bills.length
+    ? bills.map(function (rb) { return '<span class="chip">' + rb.bill_id + '</span>'; }).join('')
+    : '<span class="chip" style="color:var(--text-dim);">No bills listed yet</span>';
+
+  return (
+    '<div class="upcoming-row' + (compact ? ' compact' : '') + '">' +
+      '<div class="upcoming-date">' + fresh + '</div>' +
+      '<div class="upcoming-body">' +
+        '<div class="upcoming-industry">' + m.industry + '</div>' +
+        '<div class="upcoming-committee">' + m.committee + '</div>' +
+        '<div class="upcoming-bills">' + billsHTML + '</div>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
 function emptySignalsHTML(data) {
   const t = data.totals || {};
+  const upcoming = data.upcoming || [];
+  const upcomingSection = upcoming.length
+    ? '<p class="empty-headline" style="margin-top:16px;">Next scheduled committee activity</p>' +
+      upcoming.slice(0, 4).map(function (m) { return upcomingRowHTML(m, false); }).join('')
+    : recessNote();
   return (
     '<div class="empty-signal-block">' +
       '<p class="empty-headline">No industries cleared threshold in the last ' + data.lookback_days + ' days.</p>' +
@@ -137,7 +160,7 @@ function emptySignalsHTML(data) {
         '<div class="estat"><div class="enum">' + (t.calendar_bills || 0) + '</div><div class="elbl">Floor-vote changes</div></div>' +
         '<div class="estat"><div class="enum">' + (t.industries_tracked || 0) + '</div><div class="elbl">Industries checked</div></div>' +
       '</div>' +
-      recessNote() +
+      upcomingSection +
       '<div class="empty-footnote">This isn\'t a data problem — every tracked industry genuinely had zero qualifying activity this week.</div>' +
     '</div>'
   );
@@ -146,6 +169,12 @@ function emptySignalsHTML(data) {
 fetch('data/signals.json')
   .then(res => res.json())
   .then(data => {
+    const upcomingSidebar = document.getElementById('upcoming-sidebar');
+    const upcoming = data.upcoming || [];
+    upcomingSidebar.innerHTML = upcoming.length
+      ? upcoming.slice(0, 2).map(function (m) { return upcomingRowHTML(m, true); }).join('')
+      : '<div style="font-size:11.5px; color:var(--text-dim);">No committee meetings currently scheduled.</div>';
+
     const container = document.getElementById('alphoptic-signals');
     if (!data.items || data.items.length === 0) {
       container.innerHTML = emptySignalsHTML(data);
@@ -198,6 +227,8 @@ fetch('data/signals.json')
   })
   .catch(function () {
     document.getElementById('alphoptic-signals').innerHTML = '<p style="font-size:12px; color:var(--text-muted);">Couldn\'t load signals. Check back soon.</p>';
+    const upcomingSidebar = document.getElementById('upcoming-sidebar');
+    if (upcomingSidebar) upcomingSidebar.innerHTML = '<div style="font-size:11.5px; color:var(--text-dim);">Couldn\'t load.</div>';
   });
 </script>
 <script src="/assets/donate.js"></script>
