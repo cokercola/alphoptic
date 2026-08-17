@@ -133,6 +133,30 @@ def main():
         if s.get("bill_id")
     }
 
+    # bill_id -> {title, sponsor}, so a committee meeting's related_bills
+    # (just bill numbers from Congress.gov's relatedItems) can be resolved
+    # into something a reader can actually recognize. Only covers bills
+    # Alphoptic tracks - a meeting can reference a bill outside that set,
+    # in which case it's shown as a bare bill number with no extra detail.
+    tracked_bill_lookup = {
+        b.get("bill_id"): {"title": b.get("title"), "sponsor": b.get("sponsor")}
+        for b in bills_index.get("bills", [])
+        if b.get("bill_id")
+    }
+
+    def resolve_related_bills(bill_ids):
+        resolved = []
+        for bid in (bill_ids or [])[:MAX_TICKERS_PER_SIGNAL]:
+            tracked = tracked_bill_lookup.get(bid)
+            resolved.append({
+                "bill_id": bid,
+                "title": tracked["title"] if tracked else None,
+                "sponsor": tracked["sponsor"] if tracked else None,
+                "companies": companies_by_bill_id.get(bid, [])[:MAX_TICKERS_PER_SIGNAL] if tracked else [],
+                "tracked": tracked is not None,
+            })
+        return resolved
+
     bills_evidence = defaultdict(list)
     calendar_evidence = defaultdict(list)
     trades_evidence = defaultdict(list)
@@ -177,7 +201,13 @@ def main():
         if c.get("ticker") and c.get("industry"):
             tickers_by_industry[c["industry"]].add(c["ticker"])
 
-    committee_meetings_by_industry = committee_data.get("meetings_by_industry", {})
+    committee_meetings_by_industry = {
+        industry: [
+            {**meeting, "related_bills": resolve_related_bills(meeting.get("related_bills"))}
+            for meeting in meetings
+        ]
+        for industry, meetings in committee_data.get("meetings_by_industry", {}).items()
+    }
     committee_counts = Counter(committee_data.get("industry_counts", {}))
 
     all_industries = set(bills_evidence) | set(trades_evidence) | \
