@@ -10,7 +10,7 @@ Congress.gov has a real committee-meeting endpoint
 fetch_bills.py for how that one's handled instead).
 
 Committee meetings aren't reliably linked to a specific tracked bill
-in the API response, so this maps by COMMITTEE NAME -> industry using
+in the LIST response, so this maps by COMMITTEE NAME -> industry using
 a small static lookup below, not by cross-referencing bill_id. That
 lookup is necessarily incomplete (~200 committees and subcommittees
 exist across both chambers) -- unmapped committees fall into "Other /
@@ -18,10 +18,20 @@ Cross-Sector" rather than being silently dropped, and the printed
 summary reports how many meetings that affects so gaps are visible in
 the workflow log.
 
+The DETAIL response for a meeting (fetched separately, one call per
+meeting) is richer: it can include relatedItems.bills, the actual
+legislation on the agenda for markup/business meetings (hearings
+without markup often have none - that's a real gap in what Congress
+publishes, not a bug here). This script fetches that detail for every
+meeting and records any related bill numbers, so build_signals.py can
+cross-reference them against tracked bills for real titles, sponsors,
+and company evidence on the "why we flagged this" page - instead of
+that page only ever saying "there was a meeting."
+
 Writes both aggregate counts AND the actual meeting list per industry
-(committee name, chamber, date) -- signals/detail.html shows the real
-meetings, not just a number, so "why we flagged this" is backed by
-something a reader can actually verify.
+(committee name, chamber, date, related bill numbers) -- signals/
+detail.html shows the real meetings, not just a number, so "why we
+flagged this" is backed by something a reader can actually verify.
 
 LOOKBACK_DAYS must match scripts/build_signals.py's constant of the
 same name -- both need to agree on what "recent" means, or the
@@ -126,23 +136,38 @@ def fetch_meetings_for_chamber(chamber, since_iso):
     return meetings
 
 
-def fetch_committee_name(meeting_url):
-    """The list endpoint's committee-meeting entries often omit the
-    committees sub-object entirely. When that happens, fetch the
-    meeting's own detail URL (returned in each list entry) to get the
-    real committee name, rather than falling back straight to
-    'Unknown committee'. One extra request per affected meeting only -
-    most meetings already have a name from the list response and skip
-    this entirely."""
+def fetch_meeting_detail(meeting_url):
+    """One request per meeting to the detail endpoint. Returns
+    (committee_name, related_bills) where related_bills is a list of
+    bill_id strings like "HR1842" - our own format, matching what
+    fetch_bills.py uses, so build_signals.py can cross-reference them
+    against tracked bills directly by string equality.
+
+    The list endpoint's committee-meeting entries often omit the
+    committees sub-object entirely, and never include relatedItems -
+    both only show up in the detail response. This is the one place
+    that pays for that with an extra request per meeting; capped in
+    main() so a busy week doesn't run away with API calls."""
     if not meeting_url:
-        return None
+        return None, []
     try:
         resp = requests.get(meeting_url, params={"api_key": CONGRESS_API_KEY, "format": "json"}, timeout=15)
         resp.raise_for_status()
-        committees = resp.json().get("committeeMeeting", {}).get("committees", [])
-        return committees[0].get("name") if committees else None
+        detail = resp.json().get("committeeMeeting", {})
     except requests.RequestException:
-        return None
+        return None, []
+
+    committees = detail.get("committees", [])
+    committee_name = committees[0].get("name") if committees else None
+
+    related_bills = []
+    for b in (detail.get("relatedItems", {}) or {}).get("bills", []) or []:
+        bill_type = (b.get("type") or "").upper()
+        bill_number = b.get("number")
+        if bill_type and bill_number:
+            related_bills.append(f"{bill_type}{bill_number}")
+
+    return committee_name, related_bills
 
 
 def main():
@@ -160,12 +185,16 @@ def main():
     meetings_by_industry = {industry: [] for industry in INDUSTRY_TAXONOMY}
     unmapped_count = 0
     detail_lookups = 0
+    MAX_DETAIL_LOOKUPS = 80  # keep a busy week's worth of meetings from running away with API calls
 
     for m in all_meetings:
         committee_name = (m.get("committees") or [{}])[0].get("name", "")
-        if not committee_name and detail_lookups < 50:  # cap detail calls per run
-            committee_name = fetch_committee_name(m.get("url")) or ""
+        related_bills = []
+        if detail_lookups < MAX_DETAIL_LOOKUPS:
+            detail_name, related_bills = fetch_meeting_detail(m.get("url"))
             detail_lookups += 1
+            if not committee_name and detail_name:
+                committee_name = detail_name
         industry = committee_to_industry(committee_name)
         meeting_date = m.get("date") or m.get("updateDate")
         entry = {
@@ -173,6 +202,7 @@ def main():
             "chamber": m.get("chamber"),
             "date": meeting_date,
             "title": m.get("title"),
+            "related_bills": related_bills,
         }
         if industry:
             industry_counts[industry] += 1
@@ -195,7 +225,9 @@ def main():
         json.dump(output, f, separators=(",", ":"))
 
     print(f"Wrote {OUTPUT_PATH}: {len(all_meetings)} meetings in the last {LOOKBACK_DAYS} days, "
-          f"{unmapped_count} from committees not in COMMITTEE_INDUSTRY_MAP.")
+          f"{unmapped_count} from committees not in COMMITTEE_INDUSTRY_MAP, "
+          f"{detail_lookups} detail lookups performed"
+          f"{' (capped)' if detail_lookups >= MAX_DETAIL_LOOKUPS else ''}.")
 
 
 if __name__ == "__main__":
