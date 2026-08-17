@@ -346,22 +346,25 @@ def main():
 
     # Upcoming scheduled meetings, resolved the same way as past ones -
     # real bill titles/sponsors/companies where the related bill is
-    # tracked, a bare bill number otherwise. Meetings whose committee
-    # didn't map to a real industry are excluded here too, same as
-    # Other/Cross-Sector everywhere else - "unknown which industry"
-    # isn't useful "what's coming up" information.
+    # tracked, a bare bill number otherwise. Unlike signal cards
+    # (which assert "this industry has activity" and would be
+    # misleading without real evidence), a scheduled meeting is just
+    # true regardless of whether its committee maps to one of our
+    # industries - so unmapped ones still show, just without a
+    # fabricated category (industry stays null; the frontend omits
+    # that line rather than showing a fake label).
     MAX_UPCOMING_ON_HOMEPAGE = 6
     upcoming = [
         {
             "date": m["date"],
-            "industry": m["industry"],
+            "industry": m["industry"] if m.get("industry") not in EXCLUDED_INDUSTRIES else None,
             "committee": m["committee"],
             "chamber": m.get("chamber"),
             "related_bills": resolve_related_bills(m.get("related_bills")),
         }
         for m in committee_data.get("upcoming_meetings", [])
-        if m.get("industry") and m["industry"] not in EXCLUDED_INDUSTRIES
     ][:MAX_UPCOMING_ON_HOMEPAGE]
+
 
     with open(SIGNALS_PATH, "w") as f:
         json.dump({
