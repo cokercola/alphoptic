@@ -190,7 +190,11 @@ def fetch_meeting_detail(meeting_url):
 
 def main():
     today = datetime.datetime.now(datetime.timezone.utc).date()
+    today_iso = today.isoformat()
     cutoff = (today - datetime.timedelta(days=LOOKBACK_DAYS)).isoformat()
+    MAX_UPCOMING_DAYS_AHEAD = 21
+    MAX_UPCOMING_MEETINGS = 20
+    upcoming_cutoff = (today + datetime.timedelta(days=MAX_UPCOMING_DAYS_AHEAD)).isoformat()
 
     all_meetings = []
     for chamber in ("house", "senate"):
@@ -218,13 +222,16 @@ def main():
 
     industry_counts = {industry: 0 for industry in INDUSTRY_TAXONOMY}
     meetings_by_industry = {industry: [] for industry in INDUSTRY_TAXONOMY}
+    upcoming_meetings = []
     unmapped_count = 0
     stale_date_dropped = 0
+    canceled_dropped = 0
     detail_lookups = 0
     MAX_DETAIL_LOOKUPS = 80  # keep a busy week's worth of meetings from running away with API calls
 
     for m in deduped_meetings:
         committee_name = (m.get("committees") or [{}])[0].get("name", "")
+        meeting_status = m.get("meetingStatus")
         related_bills = []
         real_date = None
         if detail_lookups < MAX_DETAIL_LOOKUPS:
@@ -242,11 +249,40 @@ def main():
         # whenever their listing gets touched (a witness statement or
         # video posted well after the fact, for example).
         meeting_date = real_date or m.get("date")
-        if not meeting_date or meeting_date < cutoff:
+        if not meeting_date:
             stale_date_dropped += 1
             continue
 
         industry = committee_to_industry(committee_name)
+
+        # A meeting dated in the future is upcoming, not "activity in
+        # the last N days" - counting it there would misrepresent
+        # something that hasn't happened yet as already-observed
+        # activity (the mirror image of the updateDate bug above: that
+        # one let stale meetings look recent, this one would let
+        # future meetings look like they already occurred). Keep it in
+        # a separate pool instead.
+        if meeting_date > today_iso:
+            if meeting_status == "Canceled":
+                canceled_dropped += 1
+                continue
+            if meeting_date > upcoming_cutoff or len(upcoming_meetings) >= MAX_UPCOMING_MEETINGS:
+                continue
+            upcoming_meetings.append({
+                "committee": committee_name or "Unknown committee",
+                "chamber": m.get("chamber"),
+                "date": meeting_date,
+                "title": m.get("title"),
+                "status": meeting_status,
+                "industry": industry,  # None means unmapped - filtered out downstream, same as Other/Cross-Sector
+                "related_bills": related_bills,
+            })
+            continue
+
+        if meeting_date < cutoff:
+            stale_date_dropped += 1
+            continue
+
         entry = {
             "committee": committee_name or "Unknown committee",
             "chamber": m.get("chamber"),
@@ -262,6 +298,8 @@ def main():
             meetings_by_industry["Other / Cross-Sector"].append(entry)
             unmapped_count += 1
 
+    upcoming_meetings.sort(key=lambda m: m["date"])
+
     output = {
         "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
         "lookback_days": LOOKBACK_DAYS,
@@ -269,6 +307,7 @@ def main():
         "unmapped_meetings": unmapped_count,
         "industry_counts": industry_counts,
         "meetings_by_industry": meetings_by_industry,
+        "upcoming_meetings": upcoming_meetings,
     }
     os.makedirs("data", exist_ok=True)
     with open(OUTPUT_PATH, "w") as f:
@@ -277,7 +316,9 @@ def main():
     print(f"Wrote {OUTPUT_PATH}: {sum(len(v) for v in meetings_by_industry.values())} meetings confirmed "
           f"within the last {LOOKBACK_DAYS} days (of {len(all_meetings)} fetched, "
           f"{len(all_meetings) - len(deduped_meetings)} deduped, "
-          f"{stale_date_dropped} dropped for an unverifiable or stale date), "
+          f"{stale_date_dropped} dropped for an unverifiable or stale date, "
+          f"{canceled_dropped} canceled upcoming meetings dropped), "
+          f"{len(upcoming_meetings)} upcoming meetings within {MAX_UPCOMING_DAYS_AHEAD} days, "
           f"{unmapped_count} from committees not in COMMITTEE_INDUSTRY_MAP, "
           f"{detail_lookups} detail lookups performed"
           f"{' (capped)' if detail_lookups >= MAX_DETAIL_LOOKUPS else ''}.")
