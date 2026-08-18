@@ -103,19 +103,38 @@ body {
 .sidebar a:hover { color: var(--text); }
 
 .stat-row {
-  display: flex;
-  gap: 32px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
   margin-bottom: 26px;
 }
-.stat-card {
-  background: none;
-  border-radius: 0;
-  padding: 0;
-  text-align: left;
+@media (max-width: 720px) {
+  .stat-row { grid-template-columns: repeat(2, 1fr); }
 }
-.stat-card .label { font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 4px; }
-.stat-card .value { font-family: 'Fraunces', serif; font-weight: 600; font-size: 28px; line-height: 1; }
+.stat-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  text-align: left;
+  text-decoration: none;
+  display: block;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.stat-card:hover {
+  border-color: var(--blue);
+  background: var(--panel-raised);
+}
+.stat-card .label { font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.4px; }
+.stat-card .value-row { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; }
+.stat-card .value { font-family: 'Fraunces', serif; font-weight: 600; font-size: 28px; line-height: 1; color: var(--text); }
+.stat-card .caption { font-size: 11.5px; color: var(--text-dim); margin-top: 2px; }
+.stat-delta { font-size: 13px; font-weight: 600; }
+.stat-delta.up { color: var(--green); }
+.stat-delta.down { color: var(--amber); }
+.stat-delta.flat { color: var(--text-dim); }
+.empty-rule .month-bridge-link { color: var(--blue); text-decoration: none; }
+.empty-rule .month-bridge-link:hover { text-decoration: underline; }
 
 .section-label {
   font-size: 12px;
