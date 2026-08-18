@@ -165,6 +165,25 @@ function exposureInfoIcon() {
   return `<span class="info-icon">i<span class="tooltip-popover tooltip-popover-wide">${html}</span></span>`;
 }
 
+// Explains the 26-vs-25 gap between the dashboard's "Industries
+// tracked" stat (every taxonomy category with at least one tracked
+// bill, from bills.json) and the signals panel's "Industries checked"
+// (that same taxonomy minus the "Other / Cross-Sector" catch-all,
+// since a catch-all bucket isn't a real industry a signal could point
+// a reader toward). Two real, correct numbers that look like they
+// should match and don't -- this exists so a reader who notices that
+// gets the real reason instead of assuming something's broken.
+function industriesTaxonomyInfoIcon() {
+  const html = `
+    <div class="tooltip-label">Why 26 here and 25 below</div>
+    <div class="tooltip-bullet">
+      <span class="tooltip-dot" style="background:var(--blue)"></span>
+      <span>Alphoptic classifies bills into 26 industry categories, including a catch-all "Other / Cross-Sector" bucket for bills that don't fit elsewhere. That catch-all is excluded from signal checks below, since it's not a real industry a signal could point you toward — leaving 25 checked.</span>
+    </div>
+  `;
+  return `<span class="info-icon">i<span class="tooltip-popover tooltip-popover-wide tooltip-popover-left">${html}</span></span>`;
+}
+
 // Renders the full Community page: every category from
 // summary.community_categories gets its own card, INCLUDING categories
 // with zero bills right now (deliberate - see EMPTY_CATEGORY_TEXT).
