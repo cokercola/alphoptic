@@ -52,6 +52,7 @@ async function loadDashboard() {
       value: stats.industries_affected,
       delta: wow.industries_affected,
       caption: 'this week',
+      tooltip: typeof industriesTaxonomyInfoIcon === 'function' ? industriesTaxonomyInfoIcon() : '',
     })}
   `;
   const hasTooltips = typeof infoIcon === 'function' && typeof TOOLTIP_TEXT !== 'undefined';
@@ -76,13 +77,16 @@ async function loadDashboard() {
   if (hasTooltips) initInfoTooltips();
 }
 
-function statCardHTML({ href, label, value, valueColor, delta, caption }) {
+function statCardHTML({ href, label, value, valueColor, delta, caption, tooltip }) {
   const deltaHTML = (delta === null || delta === undefined)
     ? ''
     : `<span class="stat-delta ${delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat'}">${delta > 0 ? '+' : delta < 0 ? '' : '±'}${delta}</span>`;
   return `
     <a class="stat-card" href="${href}">
-      <div class="label">${label}</div>
+      <div class="label-row">
+        <span class="label">${label}</span>
+        ${tooltip || ''}
+      </div>
       <div class="value-row">
         <span class="value"${valueColor ? ` style="color:${valueColor}"` : ''}>${value}</span>
         ${deltaHTML}
