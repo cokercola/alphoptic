@@ -151,6 +151,22 @@ function upcomingRowHTML(m, compact) {
   );
 }
 
+function monthBridgeHTML(data) {
+  // Connects this panel's 3-day zero to the "Industries flagged" stat
+  // card up top, which reads a wider 30-day window from the same
+  // signals.json. Without this, a first-time visitor sees two
+  // unrelated-looking zeros/numbers stacked in the first screenful and
+  // reasonably assumes the site is dead. Omits itself gracefully if
+  // signals.json hasn't been regenerated with the newer fields yet, or
+  // if the monthly figure is also zero (nothing to bridge to).
+  if (data.industries_flagged_month == null || data.industries_flagged_month === 0) return '';
+  const n = data.industries_flagged_month;
+  const windowDays = data.history_window_days || 30;
+  return ' Zooming out, ' + n + ' industr' + (n === 1 ? 'y has' : 'ies have') +
+    ' crossed that bar in the past ' + windowDays + ' days — ' +
+    '<a class="month-bridge-link" href="/signals/index.html">see this month\'s signals &rarr;</a>';
+}
+
 function emptySignalsHTML(data) {
   const t = data.totals || {};
   const upcoming = data.upcoming || [];
@@ -161,7 +177,7 @@ function emptySignalsHTML(data) {
   return (
     '<div class="empty-signal-block">' +
       '<p class="empty-headline">No industries cleared threshold in the last ' + data.lookback_days + ' days.</p>' +
-      '<p class="empty-rule">A signal needs at least one new bill action, committee meeting, or floor-vote change in an industry within a ' + data.lookback_days + '-day window.</p>' +
+      '<p class="empty-rule">A signal needs at least one new bill action, committee meeting, or floor-vote change in an industry within a ' + data.lookback_days + '-day window.' + monthBridgeHTML(data) + '</p>' +
       '<div class="empty-stat-strip">' +
         '<div class="estat"><div class="enum">' + (t.new_bills || 0) + '</div><div class="elbl">New bill actions</div></div>' +
         '<div class="estat"><div class="enum">' + (t.committee_meetings || 0) + '</div><div class="elbl">Committee meetings</div></div>' +
