@@ -68,7 +68,14 @@ function fallbackSentence(item) {
 
 function fmtFreshDate(d) {
   if (!d) return '';
-  const date = new Date(d + 'T00:00:00');
+  // most_recent_date (bills) arrives as bare "YYYY-MM-DD"; upcoming
+  // meeting dates arrive as full ISO timestamps already
+  // ("...T14:00:00Z"). Only append a time when one isn't already
+  // present, or a meeting's timestamp gets a second "T00:00:00"
+  // tacked on and fails to parse - same bug already fixed once in
+  // signals/industry-detail.html's fmtDate, missed here originally.
+  const iso = d.includes('T') ? d : d + 'T00:00:00';
+  const date = new Date(iso);
   if (isNaN(date)) return '';
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
