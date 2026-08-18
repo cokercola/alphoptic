@@ -51,6 +51,8 @@ from company_registry import resolve_company
 CONGRESS_API_KEY = os.environ["CONGRESS_API_KEY"]
 CONGRESS_BASE = "https://api.congress.gov/v3"
 BILLS_JSON_PATH = "data/bills.json"
+STATS_HISTORY_JSON_PATH = "data/stats-history.json"
+STATS_HISTORY_RETENTION_DAYS = 14  # only need last week + a little slack for the dashboard's week-over-week delta
 
 # Bump this any time the CLASSIFY_PROMPT changes in a way that should
 # force every bill to be re-classified (new field, reworded guidance,
@@ -602,6 +604,42 @@ def write_bills_lookup(signals):
     print(f"Wrote {BILLS_LOOKUP_JSON_PATH} ({len(lookup)} bills).")
 
 
+def update_stats_history(summary):
+    """Appends today's headline stats to a small rolling log so the
+    dashboard can show week-over-week deltas (e.g. "+38 this week" on
+    Bills tracked). Overwrites any existing entry for today, since this
+    script can be re-run same-day. Returns the stat values from exactly
+    7 days ago, or None per stat if that far back isn't in the log yet
+    (e.g. the first week after this was added)."""
+    today_str = datetime.datetime.utcnow().date().isoformat()
+    try:
+        with open(STATS_HISTORY_JSON_PATH) as f:
+            history = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        history = []
+
+    history = [h for h in history if h.get("date") != today_str]
+    history.append({
+        "date": today_str,
+        "bills_tracked": summary["bills_tracked"],
+        "high_impact": summary["high_impact"],
+        "industries_affected": summary["industries_affected"],
+    })
+
+    cutoff = (datetime.datetime.utcnow().date()
+              - datetime.timedelta(days=STATS_HISTORY_RETENTION_DAYS)).isoformat()
+    history = [h for h in history if h.get("date", "") >= cutoff]
+    history.sort(key=lambda h: h["date"])
+
+    os.makedirs("data", exist_ok=True)
+    with open(STATS_HISTORY_JSON_PATH, "w") as f:
+        json.dump(history, f, separators=(",", ":"))
+
+    week_ago_str = (datetime.datetime.utcnow().date() - datetime.timedelta(days=7)).isoformat()
+    week_ago_entry = next((h for h in history if h["date"] == week_ago_str), None)
+    return week_ago_entry
+
+
 def write_slim_data_files(signals, summary=None):
     updated_at = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
 
@@ -798,13 +836,34 @@ def main():
         if cat in community_counts:
             community_counts[cat] += 1
 
+    summary_core = {
+        "bills_tracked": len(signals),
+        "high_impact": sum(1 for s in signals if s["impact_score"] >= 70),
+        "industries_affected": len({s["industry"] for s in signals}),
+    }
+    # week_ago is None until stats-history.json has 7+ days of entries
+    # (i.e. the first week after this was added) -- deltas fall back to
+    # None in that case, and the frontend should render no delta pill
+    # rather than a misleading "+N" against a day that doesn't exist yet.
+    week_ago = update_stats_history(summary_core)
+    week_over_week_deltas = {
+        "bills_tracked": (summary_core["bills_tracked"] - week_ago["bills_tracked"]) if week_ago else None,
+        "high_impact": (summary_core["high_impact"] - week_ago["high_impact"]) if week_ago else None,
+        "industries_affected": (summary_core["industries_affected"] - week_ago["industries_affected"]) if week_ago else None,
+    }
+
     output = {
         "updated_at": datetime.datetime.utcnow().isoformat() + "Z",
         "summary": {
-            "bills_tracked": len(signals),
-            "high_impact": sum(1 for s in signals if s["impact_score"] >= 70),
+            **summary_core,
+            # kept for backward compatibility -- classified bills this
+            # run, an internal pipeline metric, NOT the same thing as
+            # industry-level legislative signals in signals.json. The
+            # dashboard's "Industries flagged" stat now reads from
+            # signals.json instead; this key is left here in case
+            # anything else still depends on it.
             "new_signals_today": classified,
-            "industries_affected": len({s["industry"] for s in signals}),
+            "week_over_week": week_over_week_deltas,
             "total_bills_this_congress": total_bills_this_congress,
             "stage_breakdown": [
                 {
