@@ -50,6 +50,7 @@ TRADES_PATH = "data/congress-trades.json"
 COMMITTEE_ACTIVITY_PATH = "data/committee-activity.json"
 SIGNALS_PATH = "data/signals.json"
 SIGNALS_DETAIL_PATH = "data/signals-detail.json"
+SIGNALS_HISTORY_PATH = "data/signals-history.json"
 
 # "Other / Cross-Sector" is a catch-all for committee meetings that
 # fetch_committee_activity.py couldn't map to a real industry (see
@@ -74,6 +75,16 @@ EXCLUDED_INDUSTRIES = {"Other / Cross-Sector"}
 TRADES_DATA_PAUSED = True
 
 LOOKBACK_DAYS = 3
+
+# Separate from LOOKBACK_DAYS (which controls the actual 3-day signal
+# scoring above). This only controls how far back signals-history.json
+# is read to answer "how many distinct industries have been flagged in
+# the last month" for the dashboard stat card -- a wider-lens
+# complement to the 3-day panel, not a change to scoring itself.
+# Kept at 2x so a month-over-month delta can be computed (days 0-30 vs
+# days 31-60) without a second history file.
+HISTORY_WINDOW_DAYS = 30
+HISTORY_RETENTION_DAYS = HISTORY_WINDOW_DAYS * 2
 
 # How many of an industry's combined activity points map to each
 # signal level. Combined score = new_bills + committee + votes, plus
@@ -112,6 +123,52 @@ def build_ticker_to_industry(companies):
         if c.get("ticker") and c.get("industry"):
             counts[c["ticker"]][c["industry"]] += 1
     return {ticker: industry_counts.most_common(1)[0][0] for ticker, industry_counts in counts.items()}
+
+
+def load_signals_history():
+    try:
+        with open(SIGNALS_HISTORY_PATH) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+    except json.JSONDecodeError:
+        print(f"WARNING: {SIGNALS_HISTORY_PATH} is corrupt -- starting a fresh history.")
+        return []
+
+
+def update_signals_history(today, industries_today):
+    """Appends today's set of flagged industries to the rolling history
+    log, replacing any existing entry for today (this script runs twice
+    daily, and a same-day re-run should overwrite, not duplicate).
+    Trims anything older than HISTORY_RETENTION_DAYS so the file can't
+    grow unbounded. Returns the updated history list."""
+    history = load_signals_history()
+    today_str = today.isoformat()
+    history = [h for h in history if h.get("date") != today_str]
+    history.append({"date": today_str, "industries": sorted(industries_today)})
+
+    retention_cutoff = (today - datetime.timedelta(days=HISTORY_RETENTION_DAYS)).isoformat()
+    history = [h for h in history if h.get("date", "") >= retention_cutoff]
+    history.sort(key=lambda h: h["date"])
+
+    with open(SIGNALS_HISTORY_PATH, "w") as f:
+        json.dump(history, f, separators=(",", ":"))
+    return history
+
+
+def distinct_industries_in_window(history, today, window_start_days_ago, window_end_days_ago):
+    """Distinct industries with at least one flagged day in the window
+    (today - window_start_days_ago) through (today - window_end_days_ago),
+    inclusive. Used to build both the current 30-day count and the prior
+    30-day count for a month-over-month delta."""
+    window_end = (today - datetime.timedelta(days=window_end_days_ago)).isoformat()
+    window_start = (today - datetime.timedelta(days=window_start_days_ago)).isoformat()
+    seen = set()
+    for entry in history:
+        d = entry.get("date", "")
+        if window_start <= d <= window_end:
+            seen.update(entry.get("industries", []))
+    return seen
 
 
 def main():
@@ -313,6 +370,19 @@ def main():
 
     now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
 
+    # Monthly rollup for the dashboard's "Industries flagged" stat card.
+    # Deliberately counts distinct industries, not flagged-days -- a
+    # signal is an industry-level flag, not a bill-level event, so
+    # "3 industries flagged this month" is the honest read; counting
+    # repeat flags would make this look like a bill-activity count,
+    # which is what the Bills page is for.
+    industries_today = {item["industry"] for item in detail_items}
+    history = update_signals_history(today, industries_today)
+    industries_flagged_month = len(distinct_industries_in_window(
+        history, today, window_start_days_ago=HISTORY_WINDOW_DAYS, window_end_days_ago=0))
+    industries_flagged_prev_month = len(distinct_industries_in_window(
+        history, today, window_start_days_ago=HISTORY_RETENTION_DAYS, window_end_days_ago=HISTORY_WINDOW_DAYS + 1))
+
     with open(SIGNALS_DETAIL_PATH, "w") as f:
         json.dump({"updated_at": now_iso, "date": today.isoformat(),
                     "lookback_days": LOOKBACK_DAYS, "items": detail_items}, f, separators=(",", ":"))
@@ -373,6 +443,9 @@ def main():
             "lookback_days": LOOKBACK_DAYS,
             "total_cleared": len(detail_items),
             "totals": totals,
+            "history_window_days": HISTORY_WINDOW_DAYS,
+            "industries_flagged_month": industries_flagged_month,
+            "industries_flagged_month_delta": industries_flagged_month - industries_flagged_prev_month,
             "upcoming": upcoming,
             "items": summary_items,
         }, f, separators=(",", ":"))
@@ -381,7 +454,10 @@ def main():
           f"(lookback: {LOOKBACK_DAYS} days).")
     print(f"Wrote {SIGNALS_PATH}: top {len(summary_items)} kept for the homepage, "
           f"{len(upcoming)} upcoming meetings included "
-          f"(total_cleared={len(detail_items)}, totals={totals}).")
+          f"(total_cleared={len(detail_items)}, totals={totals}, "
+          f"industries_flagged_month={industries_flagged_month}).")
+    print(f"Wrote {SIGNALS_HISTORY_PATH}: {len(history)} days retained "
+          f"(window: {HISTORY_RETENTION_DAYS} days).")
 
 
 if __name__ == "__main__":
