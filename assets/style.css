@@ -1,1273 +1,281 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap');
-
-:root {
-  --navy: #0B1F3A;
-  --panel: #132A4D;
-  --panel-raised: #1A3A66;
-  --border: #274264;
-  --blue: #5A9BFF;
-  --orange: #E8622C;
-  --green: #4CB56B;
-  --red: #E05252;
-  --amber: #E8B23D;
-  --text: #E7ECF3;
-  --text-muted: #8CA3C4;
-  --text-dim: #5F7699;
+async function fetchSiteData() {
+  const res = await fetch('/data/bills.json');
+  if (!res.ok) throw new Error('Failed to load /data/bills.json');
+  return res.json();
+}
+function renderSidebar(activePage) {
+  const items = [
+    { href: '/index.html', label: 'Dashboard', key: 'dashboard' },
+    { href: '/bills/index.html', label: 'Bills', key: 'bills' },
+    { href: '/bills/index.html?stalled=1', label: 'Stalled', key: 'stalled' },
+    { href: '/industries/index.html', label: 'Industries', key: 'industries' },
+    { href: '/companies/index.html', label: 'Companies', key: 'companies' },
+    { href: '/signals/index.html', label: 'Signals', key: 'signals' },
+    { href: '/watchlist/index.html', label: 'Watchlist', key: 'watchlist' },
+    { href: '/community/index.html', label: 'Community', key: 'community' },
+    { href: '/lawmakers/index.html', label: 'Lawmakers', key: 'lawmakers' },
+  ];
+  const nav = document.getElementById('sidebar');
+  nav.innerHTML = items.map(i =>
+    `<a href="${i.href}" class="${i.key === activePage ? 'active' : ''}">${i.label}</a>`
+  ).join('');
+}
+function directionPill(direction) {
+  const d = direction || 'unknown';
+  return `<span class="pill ${d}">${d.toUpperCase()}</span>`;
+}
+function infoIcon(text) {
+  return `<span class="info-icon">i<span class="tooltip-popover">${text}</span></span>`;
 }
 
-* { box-sizing: border-box; }
+// Dedicated icon for signal cards: a colored, bulleted breakdown of
+// direction + passage probability, instead of one run-on paragraph.
+// The direction bullet's dot/label color matches the card's own
+// direction color (green/red/amber) so it stays visually consistent
+// with the rest of the UI.
+const DIRECTION_COLOR_VAR = {
+  positive: 'var(--green)',
+  negative: 'var(--red)',
+  mixed: 'var(--amber)',
+};
 
-body {
-  margin: 0;
-  background: var(--navy);
-  color: var(--text);
-  font-family: -apple-system, "Segoe UI", Arial, sans-serif;
-  font-size: 14px;
-}
-
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  border-bottom: 2px solid var(--orange);
-  gap: 20px;
-  background: linear-gradient(90deg, #EDEFF2 0%, #0B1F3A 10%, #0B1F3A 100%);
-}
-.explainer-strip {
-  background: var(--navy);
-  padding: 10px 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.explainer-strip p {
-  margin: 0;
-  font-size: 12.5px;
-  color: var(--text-muted);
-  line-height: 1.5;
+function signalInfoIcon(direction, probability) {
+  const color = DIRECTION_COLOR_VAR[direction] || 'var(--amber)';
+  const label = direction.charAt(0).toUpperCase() + direction.slice(1);
+  const html = `
+    <div class="tooltip-label">What this means</div>
+    <div class="tooltip-bullet">
+      <span class="tooltip-dot" style="background:${color}"></span>
+      <span><strong style="color:${color}">${label}</strong> — ${TOOLTIP_TEXT.direction}</span>
+    </div>
+    <div class="tooltip-bullet">
+      <span class="tooltip-dot" style="background:var(--blue)"></span>
+      <span><strong style="color:var(--blue)">${probability}% passage probability</strong> — ${TOOLTIP_TEXT.probability}</span>
+    </div>
+  `;
+  return `<span class="info-icon">i<span class="tooltip-popover tooltip-popover-wide">${html}</span></span>`;
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: bold;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
+// Stage colors for the Bills page breakdown bar/tabs. Deliberately
+// distinct from the direction colors (green/red/amber) and from the
+// exposure blue-intensity scale, to avoid a fourth color language
+// clashing with the other three already in use across the site.
+const STAGE_COLOR = {
+  introduced: 'var(--border)',
+  committee: 'rgba(90,155,255,0.5)',
+  passed_one_chamber: 'var(--blue)',
+  passed_both: 'var(--blue)',
+  became_law: 'var(--green)',
+  failed_vetoed: 'var(--red)',
+};
+
+function stagePill(stage, label) {
+  const color = STAGE_COLOR[stage] || 'var(--border)';
+  const bg = stage === 'introduced' ? 'rgba(39,66,100,0.6)'
+    : stage === 'became_law' ? 'rgba(76,181,107,0.15)'
+    : stage === 'failed_vetoed' ? 'rgba(224,82,82,0.15)'
+    : 'rgba(90,155,255,0.15)';
+  return `<span class="stage-pill" style="color:${color};background:${bg};">${label}</span>`;
 }
 
-.logo-mark {
-  height: 34px;
-  width: auto;
-  display: block;
-}
+function renderStageBreakdown(containerId, summary, onFilterChange) {
+  const el = document.getElementById(containerId);
+  if (!el || !summary || !Array.isArray(summary.stage_breakdown)) return;
 
-.brand-alph { color: var(--navy); }
-.brand-optic { color: var(--blue); }
+  const bar = summary.stage_breakdown.map(s => {
+    const total = summary.bills_tracked || 1;
+    const pct = Math.max((s.count / total) * 100, s.count > 0 ? 2 : 0);
+    return `<div style="background:${STAGE_COLOR[s.stage]};width:${pct}%;"></div>`;
+  }).join('');
 
-.search {
-  flex: 1;
-  max-width: 420px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 8px 12px;
-  color: var(--text);
-  font-size: 13px;
-}
+  const legend = summary.stage_breakdown.map(s => {
+    const sub = s.full_coverage
+      ? 'full coverage'
+      : (summary.total_bills_this_congress
+          ? `of ~${summary.total_bills_this_congress.toLocaleString()} total this Congress`
+          : 'sampled');
+    return `
+      <div class="stage-legend-row">
+        <div class="stage-legend-label">
+          <span class="stage-dot" style="background:${STAGE_COLOR[s.stage]}"></span>
+          ${s.label}
+        </div>
+        <div class="stage-legend-count">
+          <div class="stage-legend-num">${s.count} tracked</div>
+          <div class="stage-legend-sub">${sub}</div>
+        </div>
+      </div>`;
+  }).join('');
 
-.updated {
-  font-size: 12px;
-  color: var(--text-muted);
-  white-space: nowrap;
-}
+  const tabs = ['<button class="stage-tab active" data-stage="all">All (' + summary.bills_tracked + ')</button>']
+    .concat(summary.stage_breakdown
+      .filter(s => s.count > 0)
+      .map(s => `<button class="stage-tab" data-stage="${s.stage}">${s.label} (${s.count})</button>`))
+    .join('');
 
-.layout {
-  display: grid;
-  grid-template-columns: 160px 1fr 240px;
-  gap: 20px;
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+  el.innerHTML = `
+    <div class="stage-bar">${bar}</div>
+    <div class="stage-legend">${legend}</div>
+    <div class="stage-tabs">${tabs}</div>
+  `;
 
-.sidebar { display: flex; flex-direction: column; gap: 2px; }
-.sidebar a {
-  padding: 8px 10px;
-  border-radius: 5px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 13px;
-}
-.sidebar a.active { background: rgba(90,155,255,0.13); color: var(--blue); font-weight: bold; }
-.sidebar a:hover { color: var(--text); }
-
-.stat-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 26px;
-}
-@media (max-width: 720px) {
-  .stat-row { grid-template-columns: repeat(2, 1fr); }
-}
-.stat-card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 14px 16px;
-  text-align: left;
-  text-decoration: none;
-  display: block;
-  transition: border-color 0.15s ease, background 0.15s ease;
-}
-.stat-card:hover {
-  border-color: var(--blue);
-  background: var(--panel-raised);
-}
-.stat-card .label { font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.4px; }
-.stat-card .value-row { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; }
-.stat-card .value { font-family: 'Fraunces', serif; font-weight: 600; font-size: 28px; line-height: 1; color: var(--text); }
-.stat-card .caption { font-size: 11.5px; color: var(--text-dim); margin-top: 2px; }
-.stat-delta { font-size: 13px; font-weight: 600; }
-.stat-delta.up { color: var(--green); }
-.stat-delta.down { color: var(--amber); }
-.stat-delta.flat { color: var(--text-dim); }
-.empty-rule .month-bridge-link { color: var(--blue); text-decoration: none; }
-.empty-rule .month-bridge-link:hover { text-decoration: underline; }
-
-.section-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-}
-
-.signal-card {
-  background: var(--panel);
-  border-radius: 0 6px 6px 0;
-  border-left: 3px solid var(--border);
-  padding: 12px 14px;
-  margin-bottom: 8px;
-  text-decoration: none;
-  color: inherit;
-  display: block;
-}
-.signal-card.positive { border-left-color: var(--green); }
-.signal-card.negative { border-left-color: var(--red); }
-.signal-card.mixed { border-left-color: var(--amber); }
-
-.signal-head {
-  display: flex;
-  justify-content: space-between;
-  font-weight: bold;
-  font-size: 13px;
-}
-.signal-head .prob.positive { color: var(--green); }
-.signal-head .prob.negative { color: var(--red); }
-.signal-head .prob.mixed { color: var(--amber); }
-
-.signal-sub {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-}
-
-.ticker-panel {
-  background: var(--panel);
-  border-radius: 6px;
-  padding: 12px;
-  height: fit-content;
-  font-size: 13px;
-}
-
-.ticker-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--border);
-}
-.ticker-row .change.positive { color: var(--green); }
-.ticker-row .change.negative { color: var(--red); }
-.ticker-row .change.mixed { color: var(--amber); }
-
-.upcoming-item {
-  font-size: 12px;
-  color: var(--text-muted);
-  padding: 4px 0;
-}
-
-@media (max-width: 900px) {
-  .layout, .layout.two-col { grid-template-columns: 1fr; }
-  .sidebar { flex-direction: row; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
-  .sidebar a { padding: 8px 12px; white-space: nowrap; }
-}
-
-@media (max-width: 640px) {
-  .topbar {
-    flex-wrap: wrap;
-    padding: 10px 14px;
-    gap: 8px;
-    background: linear-gradient(90deg, #EDEFF2 0%, #0B1F3A 50%, #0B1F3A 100%);
-  }
-  .search {
-    order: 3;
-    flex-basis: 100%;
-    max-width: 100%;
-    font-size: 16px;
-  }
-  .updated {
-    display: none;
-  }
-  .layout {
-    padding: 14px;
-    gap: 14px;
-  }
-  .explainer-strip {
-    padding: 8px 14px;
-  }
-  .stat-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .info-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .detail-header h1 {
-    font-size: 18px;
+  if (typeof onFilterChange === 'function') {
+    el.querySelectorAll('.stage-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        el.querySelectorAll('.stage-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        onFilterChange(btn.dataset.stage);
+      });
+    });
   }
 }
+const TOOLTIP_TEXT = {
+  probability: "a rough estimate based on the bill's current stage and cosponsor count. Not a calibrated prediction.",
+  direction: "Claude's read of the bill's summary text, judging who it likely helps or hurts. A qualitative AI assessment, not a market signal.",
+  exposure: "how directly this company's business is affected by the bill, as assessed by Claude. Not a stock price or performance change."
+};
 
-@media (min-width: 901px) {
-  .layout.two-col { grid-template-columns: 160px 1fr; }
-}
-
-.breadcrumb {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: 14px;
-}
-.breadcrumb a { color: var(--blue); text-decoration: none; }
-
-.detail-header {
-  margin-bottom: 16px;
-}
-.detail-header h1 {
-  font-size: 20px;
-  margin: 0 0 6px;
-}
-.detail-header .meta {
-  font-size: 12px;
-  color: var(--text-muted);
+// Single-hue intensity scale for exposure score, deliberately NOT using
+// green/red/amber (those are reserved for bill direction elsewhere on
+// the site) since a company can have high exposure to a positive OR
+// negative bill - reusing direction colors here would be misleading.
+function exposureColor(score) {
+  if (score >= 67) return 'var(--blue)';
+  if (score >= 34) return 'rgba(90,155,255,0.55)';
+  return 'var(--border)';
 }
 
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin: 16px 0;
-}
-.info-grid .item { background: var(--panel); border-radius: 6px; padding: 10px; }
-.info-grid .item .label { font-size: 11px; color: var(--text-muted); }
-.info-grid .item .value { font-size: 15px; font-weight: bold; margin-top: 3px; }
-
-table.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-table.data-table th {
-  text-align: left;
-  color: var(--text-muted);
-  font-weight: normal;
-  font-size: 11px;
-  text-transform: uppercase;
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--border);
-}
-table.data-table td {
-  padding: 10px;
-  border-bottom: 1px solid var(--border);
-}
-table.data-table tr:last-child td { border-bottom: none; }
-table.data-table a { color: var(--blue); text-decoration: none; }
-
-.industry-group {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 10px;
-  overflow: hidden;
-}
-.industry-group-header {
-  cursor: pointer;
-  list-style: none;
-  padding: 12px 14px;
-  font-weight: bold;
-  font-size: 14px;
-  background: var(--panel);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.industry-group-header::-webkit-details-marker { display: none; }
-.industry-group-header::before {
-  content: "▸";
-  color: var(--text-muted);
-  transition: transform 0.15s ease;
-}
-.industry-group[open] > .industry-group-header::before {
-  transform: rotate(90deg);
-}
-.industry-group-count {
-  font-weight: normal;
-  color: var(--text-muted);
-  font-size: 12px;
-}
-.industry-group table.data-table {
-  border-top: 1px solid var(--border);
+function exposureSquare(score) {
+  return `<span class="exposure-square" style="background:${exposureColor(score)}"></span>`;
 }
 
-.pill {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: bold;
-}
-.pill.positive { background: rgba(76,181,107,0.15); color: var(--green); }
-.pill.negative { background: rgba(224,82,82,0.15); color: var(--red); }
-.pill.mixed { background: rgba(232,178,61,0.15); color: var(--amber); }
-
-.industry-card {
-  background: var(--panel);
-  border-radius: 6px;
-  padding: 14px;
-  margin-bottom: 10px;
-}
-.industry-card h3 { margin: 0 0 6px; font-size: 15px; }
-.industry-card .meta { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
-
-.empty-note {
-  color: var(--text-muted);
-  font-size: 13px;
-  padding: 20px;
-  background: var(--panel);
-  border-radius: 6px;
+function exposureInfoIcon() {
+  const html = `
+    <div class="tooltip-label">What this means</div>
+    <div class="tooltip-bullet">
+      <span class="tooltip-dot" style="background:var(--blue)"></span>
+      <span><strong style="color:var(--blue)">Exposure score (0–100)</strong> — ${TOOLTIP_TEXT.exposure}</span>
+    </div>
+    <div class="tooltip-legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--border)"></span>0–33 low</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:rgba(90,155,255,0.55)"></span>34–66 medium</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--blue)"></span>67–100 high</span>
+    </div>
+  `;
+  return `<span class="info-icon">i<span class="tooltip-popover tooltip-popover-wide">${html}</span></span>`;
 }
 
-.info-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.15);
-  color: var(--text-muted);
-  font-size: 10px;
-  font-weight: bold;
-  font-style: normal;
-  cursor: pointer;
-  margin-left: 6px;
-  position: relative;
-  vertical-align: middle;
-}
-.info-icon:hover { background: rgba(255,255,255,0.28); color: var(--text); }
-.info-banner {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 10px 12px;
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: 14px;
-  line-height: 1.5;
+// Explains the 26-vs-25 gap between the dashboard's "Industries
+// tracked" stat (every taxonomy category with at least one tracked
+// bill, from bills.json) and the signals panel's "Industries checked"
+// (that same taxonomy minus the "Other / Cross-Sector" catch-all,
+// since a catch-all bucket isn't a real industry a signal could point
+// a reader toward). Two real, correct numbers that look like they
+// should match and don't -- this exists so a reader who notices that
+// gets the real reason instead of assuming something's broken.
+function industriesTaxonomyInfoIcon() {
+  const html = `
+    <div class="tooltip-label">Why 26 here and 25 below</div>
+    <div class="tooltip-bullet">
+      <span class="tooltip-dot" style="background:var(--blue)"></span>
+      <span>Alphoptic classifies bills into 26 industry categories, including a catch-all "Other / Cross-Sector" bucket for bills that don't fit elsewhere. That catch-all is excluded from signal checks below, since it's not a real industry a signal could point you toward — leaving 25 checked.</span>
+    </div>
+  `;
+  return `<span class="info-icon">i<span class="tooltip-popover tooltip-popover-wide tooltip-popover-left">${html}</span></span>`;
 }
 
-.tooltip-popover {
-  display: none;
-  position: absolute;
-  bottom: 130%;
-  right: -8px;
-  background: var(--navy);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 10px 12px;
-  font-size: 11px;
-  font-weight: normal;
-  color: var(--text);
-  width: 220px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-  z-index: 50;
-  text-align: left;
-  line-height: 1.4;
-  cursor: default;
+// Renders the full Community page: every category from
+// summary.community_categories gets its own card, INCLUDING categories
+// with zero bills right now (deliberate - see EMPTY_CATEGORY_TEXT).
+const EMPTY_CATEGORY_TEXT = "No bills currently tracked in this category — coverage is still growing, check back soon.";
+
+function renderCommunityPage(containerId, data) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const categories = [...((data.summary && data.summary.community_categories) || [])]
+    .sort((a, b) => a.label.localeCompare(b.label));
+  const byCategory = {};
+  data.bills.forEach(s => {
+    if (s.community_category === 'none') return;
+    (byCategory[s.community_category] = byCategory[s.community_category] || []).push(s);
+  });
+
+  const CAP = 10;
+  el.innerHTML = categories.map(cat => {
+    const bills = byCategory[cat.category] || [];
+    const shown = bills.slice(0, CAP);
+    const remaining = bills.length - shown.length;
+    const body = shown.length
+      ? shown.map(s => `
+          <div class="community-bill-row">
+            <div><a href="/bills/detail.html?id=${s.bill_id}">${s.bill_id}</a> — ${s.title}</div>
+            <div class="community-bill-meta">${s.status || 'No status available'}</div>
+          </div>
+        `).join('')
+      : `<div class="community-empty">${EMPTY_CATEGORY_TEXT}</div>`;
+    const viewAll = remaining > 0
+      ? `<div style="padding-top:8px;"><a href="/bills/index.html?category=${cat.category}" style="color:var(--blue); text-decoration:none; font-size:13px;">View all ${bills.length} →</a></div>`
+      : '';
+
+    return `
+      <div class="industry-card">
+        <div class="community-card-head">
+          <h3>${cat.label}</h3>
+          <span class="community-count">${cat.count} bill${cat.count === 1 ? '' : 's'}</span>
+        </div>
+        ${body}
+        ${viewAll}
+      </div>
+    `;
+  }).join('');
 }
-.tooltip-popover.open { display: block; }
-/* Widen popover for the two-bullet signal breakdown */
-.tooltip-popover-wide {
-  width: 260px;
-}
-.tooltip-label {
-  font-size: 10px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 10px;
-}
-.tooltip-bullet {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
-  align-items: flex-start;
-}
-.tooltip-bullet:last-child {
-  margin-bottom: 0;
-}
-.tooltip-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  margin-top: 5px;
-}
-.tooltip-legend {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  padding-left: 18px;
-  margin-top: 2px;
-}
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 10px;
-  color: var(--text-muted);
-}
-.legend-swatch {
-  width: 9px;
-  height: 9px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-.exposure-square {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  display: inline-block;
-  margin-right: 6px;
-}
-.ticker-row .change {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--text-muted);
-}
-.exposure-num {
-  width: 20px;
-  text-align: right;
-  display: inline-block;
-}
-/* ============================================
-   Donate button + popover (merged from donate.css)
-   ============================================ */
-.donate-wrap {
-  position: relative;
-}
-.donate-btn {
-  background: var(--orange);
-  color: #fff;
-  border: none;
-  border-radius: 20px;
-  padding: 8px 16px 8px 12px;
-  font-size: 13px;
-  font-weight: bold;
-  cursor: pointer;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.donate-btn svg {
-  flex-shrink: 0;
-}
-.donate-btn:hover {
-  filter: brightness(1.08);
-}
-.donate-popover {
-  display: none;
-  position: absolute;
-  top: 130%;
-  right: 0;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px;
-  width: 200px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  z-index: 50;
-}
-.donate-popover.open {
-  display: block;
-}
-.donate-popover-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
-}
-.donate-popover-text {
-  font-size: 11px;
-  color: var(--text-muted);
-  line-height: 1.4;
-  margin-bottom: 10px;
-}
-.donate-amounts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-  gap: 6px;
-  margin-bottom: 8px;
-}
-.donate-amount-btn {
-  display: block;
-  text-align: center;
-  background: var(--navy);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 8px 0;
-  font-size: 13px;
-  font-weight: bold;
-  color: var(--text);
-  text-decoration: none;
-}
-.donate-amount-btn:hover {
-  border-color: var(--orange);
-  color: var(--orange);
-}
-.donate-custom-btn {
-  display: block;
-  text-align: center;
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 8px 0;
-  font-size: 12px;
-  color: var(--text-secondary, var(--text-muted));
-  text-decoration: none;
-}
-.donate-custom-btn:hover {
-  border-color: var(--orange);
-  color: var(--orange);
-}
-.donate-label-short {
-  display: none;
-}
-@media (max-width: 480px) {
-  .donate-label-full {
-    display: none;
+
+// Renders the small "Community impact" highlight box on the dashboard:
+// up to `limit` bills with a non-"none" category. Since we're not
+// tracking a real "date introduced" yet, this just takes the first
+// `limit` qualifying bills in signals order (roughly recency-ordered,
+// since auto-discovered bills are pulled sorted by updateDate desc).
+function renderCommunityHighlight(containerId, data, limit) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const qualifying = data.signals.filter(s => s.community_category && s.community_category !== 'none');
+  if (!qualifying.length) {
+    el.innerHTML = '';
+    return;
   }
-  .donate-label-short {
-    display: inline;
-  }
-  .donate-popover {
-    width: 180px;
-    max-width: calc(100vw - 28px);
-  }
-}
-/* ============================================
-   Site footer
-   ============================================ */
-.site-footer {
-  border-top: 1px solid var(--border);
-  padding: 32px 20px;
-  text-align: center;
-  margin-top: 32px;
-}
-.footer-brand .brand-alph {
-  color: var(--text);
-}
-.footer-brand {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-weight: bold;
-  margin-bottom: 14px;
-}
-.footer-logo-mark {
-  height: 20px;
-  width: auto;
-}
-.footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-bottom: 16px;
-}
-.footer-links a {
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 13px;
-}
-.footer-links a:hover {
-  color: var(--blue);
-}
-.footer-disclaimer {
-  font-size: 11px;
-  color: var(--text-muted);
-  max-width: 560px;
-  margin: 0 auto 10px;
-  line-height: 1.5;
-}
-.footer-copyright {
-  font-size: 11px;
-  color: var(--text-muted);
-  opacity: 0.7;
-}
-/* ============================================
-   Bill stage breakdown (bar, legend, filter tabs, pill)
-   ============================================ */
-.stage-bar {
-  display: flex;
-  height: 10px;
-  border-radius: 5px;
-  overflow: hidden;
-  margin-bottom: 14px;
-  background: var(--panel);
-}
-.stage-legend {
-  margin-bottom: 16px;
-}
-.stage-legend-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
-}
-.stage-legend-row:last-child { border-bottom: none; }
-.stage-legend-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text);
-}
-.stage-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-.stage-legend-count { text-align: right; }
-.stage-legend-num { color: var(--text); font-size: 13px; font-weight: 600; }
-.stage-legend-sub { color: var(--text-muted); font-size: 10px; }
-.stage-tabs {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-.stage-tab {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  font-size: 11px;
-  padding: 6px 12px;
-  border-radius: 14px;
-  cursor: pointer;
-  font-family: inherit;
-}
-.stage-tab:hover { color: var(--text); }
-.stage-tab.active {
-  background: var(--blue);
-  border-color: var(--blue);
-  color: var(--navy);
-  font-weight: 600;
-}
-.stage-pill {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 10px;
-  font-weight: 600;
-}
-/* ============================================
-   Dashboard onboarding card
-   ============================================ */
-.onboarding-card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 20px 22px;
-  position: relative;
-  margin-bottom: 16px;
-}
-.onboarding-close {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.08);
-  color: var(--text-muted);
-  font-size: 12px;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-}
-.onboarding-close:hover {
-  background: rgba(255,255,255,0.16);
-  color: var(--text);
-}
-.onboarding-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 12px;
-  padding-right: 24px;
-}
-.onboarding-bullet {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
-  align-items: flex-start;
-}
-.onboarding-bullet:last-of-type {
-  margin-bottom: 16px;
-}
-.onboarding-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--blue);
-  flex-shrink: 0;
-  margin-top: 6px;
-}
-.onboarding-bullet span:last-child {
-  font-size: 13px;
-  color: var(--text);
-  line-height: 1.55;
-}
-.info-icon-inline {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.15);
-  color: var(--text-muted);
-  font-size: 9px;
-  margin: 0 2px;
-  vertical-align: middle;
-}
-.onboarding-link {
-  font-size: 12px;
-}
-.onboarding-link a {
-  color: var(--blue);
-  text-decoration: none;
-}
-.onboarding-link a:hover {
-  text-decoration: underline;
-}
-/* ============================================
-   Community impact (page + dashboard highlight)
-   ============================================ */
-.community-card-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 8px;
-}
-.community-count {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-.community-bill-row {
-  font-size: 13px;
-  padding: 8px 0;
-  border-top: 1px solid var(--border);
-}
-.community-bill-row a {
-  color: var(--blue);
-  text-decoration: none;
-}
-.community-bill-meta {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-.community-empty {
-  font-size: 12px;
-  color: var(--text-muted);
-  padding: 8px 0;
-  line-height: 1.5;
-}
-.community-highlight {
-  background: rgba(232,98,44,0.06);
-  border: 1px solid var(--orange);
-  border-radius: 8px;
-  padding: 14px 16px;
-  margin-top: 16px;
-}
-.community-highlight-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.community-highlight-head span {
-  color: var(--orange);
-  font-weight: 600;
-}
-.community-highlight-head a {
-  color: var(--blue);
-  text-decoration: none;
-  text-transform: none;
-  letter-spacing: normal;
-}
-.community-highlight-row {
-  background: var(--panel);
-  border-radius: 6px;
-  padding: 10px 12px;
-  margin-bottom: 6px;
-  font-size: 13px;
-}
-.community-highlight-row:last-child { margin-bottom: 0; }
-.community-highlight-title {
-  color: var(--text);
-  font-weight: 600;
-}
-.community-highlight-meta {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 3px;
-}
-.community-highlight-cat {
-  color: var(--blue);
-  font-weight: 600;
+  const shown = qualifying.slice(0, limit || 3);
+
+  el.innerHTML = `
+    <div class="community-highlight">
+      <div class="community-highlight-head">
+        <span>Community impact</span>
+        <a href="/community/index.html">View all →</a>
+      </div>
+      ${shown.map(s => `
+        <div class="community-highlight-row">
+          <div class="community-highlight-title"><a href="/bills/detail.html?id=${s.bill_id}" style="color:inherit; text-decoration:none;">${s.bill_id} — ${s.title}</a></div>
+          <div class="community-highlight-meta"><span class="community-highlight-cat">${s.community_category_label}</span> · ${s.status || 'No status available'}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
 }
 
-/* ============================================
-   Stalled bills (dashboard teaser + bills page)
-   ============================================ */
-.stalled-highlight {
-  background: rgba(232,178,61,0.06);
-  border: 1px solid var(--amber);
-  border-radius: 8px;
-  padding: 14px 16px;
-  margin-top: 16px;
+function initInfoTooltips() {
+  document.querySelectorAll('.info-icon').forEach(icon => {
+    if (icon.dataset.wired) return;
+    icon.dataset.wired = '1';
+    icon.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const popover = icon.querySelector('.tooltip-popover');
+      document.querySelectorAll('.tooltip-popover.open').forEach(p => {
+        if (p !== popover) p.classList.remove('open');
+      });
+      popover.classList.toggle('open');
+    });
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.tooltip-popover.open').forEach(p => p.classList.remove('open'));
+  });
 }
-.stalled-highlight-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.stalled-highlight-head span {
-  color: var(--amber);
-  font-weight: 600;
-}
-.stalled-highlight-head a {
-  color: var(--blue);
-  text-decoration: none;
-  text-transform: none;
-  letter-spacing: normal;
-}
-.stalled-highlight-row {
-  background: var(--panel);
-  border-radius: 6px;
-  padding: 10px 12px;
-  margin-bottom: 6px;
-  font-size: 13px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-}
-.stalled-highlight-row:last-child { margin-bottom: 0; }
-.stalled-highlight-title {
-  color: var(--text);
-  font-weight: 600;
-}
-.stalled-highlight-meta {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 3px;
-}
-.stalled-days-badge {
-  background: rgba(232,178,61,0.15);
-  color: var(--amber);
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 9px;
-  border-radius: 10px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-/* Cosponsor name chips on the bill detail page */
-.cosponsor-chip {
-  display: inline-block;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  font-size: 11px;
-  padding: 3px 9px;
-  border-radius: 10px;
-}
-
-/* Bills index pagination */
-.pagination-btn {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 13px;
-  padding: 6px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.pagination-btn:hover:not(:disabled) {
-  border-color: var(--blue);
-  color: var(--blue);
-}
-.pagination-btn:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-/* Lawmakers directory page */
-.state-select {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 13px;
-  padding: 8px 10px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-  width: 220px;
-  max-width: 100%;
-}
-.lawmakers-grid {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 16px;
-}
-@media (max-width: 720px) {
-  .lawmakers-grid { grid-template-columns: 1fr; }
-}
-.lawmaker-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: 70vh;
-  overflow-y: auto;
-}
-.lawmaker-list-item {
-  background: var(--panel);
-  border-left: 3px solid var(--border);
-  border-radius: 0 6px 6px 0;
-  padding: 10px 12px;
-  cursor: pointer;
-  font-size: 13px;
-}
-.lawmaker-list-item:hover { border-left-color: var(--blue); }
-.lawmaker-list-item.active { border-left-color: var(--blue); }
-.lawmaker-list-item .lawmaker-list-meta {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-.lawmaker-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 18px;
-}
-.lawmaker-stat-card {
-  background: var(--panel);
-  border-radius: 6px;
-  padding: 10px;
-}
-.lawmaker-stat-card .lawmaker-stat-label {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-.lawmaker-stat-card .lawmaker-stat-value {
-  font-size: 15px;
-  font-weight: bold;
-  margin-top: 3px;
-}
-.lawmaker-section-heading {
-  font-size: 12px;
-  color: var(--text-muted);
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-}
-.signal-card.level-high { border-left-color: var(--red); }
-.signal-card.level-medium { border-left-color: var(--amber); }
-.signal-card.level-low { border-left-color: var(--green); }
-
-.signal-level-badge {
-  font-size: 11px;
-  font-weight: bold;
-  padding: 2px 8px;
-  border-radius: 20px;
-}
-.signal-level-badge.level-high { background: rgba(224,82,82,0.18); color: var(--red); }
-.signal-level-badge.level-medium { background: rgba(232,178,61,0.18); color: var(--amber); }
-.signal-level-badge.level-low { background: rgba(76,181,107,0.18); color: var(--green); }
-
-.signal-metric-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin: 10px 0;
-}
-.signal-metric-grid .metric-value {
-  font-size: 15px;
-  font-weight: bold;
-}
-.signal-metric-grid .metric-label {
-  font-size: 10px;
-  color: var(--text-muted);
-}
-
-.signal-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.signal-tickers {
-  display: flex;
-  gap: 6px;
-}
-.signal-ticker-chip {
-  font-size: 11px;
-  background: rgba(90,155,255,0.16);
-  color: var(--blue);
-  padding: 2px 8px;
-  border-radius: 20px;
-}
-.signal-why-link {
-  font-size: 11px;
-  color: var(--blue);
-  text-decoration: none;
-}
-
-/* ============================================
-   Dashboard hero + simplified signal cards
-   Namespaced with "dash-" so nothing here can
-   affect signals/industry-detail.html, which
-   still uses the older .signal-card family above.
-   ============================================ */
-.hero-section {
-  max-width: 720px;
-  margin-bottom: 26px;
-}
-.hero-section h1 {
-  font-family: 'Fraunces', serif;
-  font-weight: 600;
-  font-size: 21px;
-  line-height: 1.35;
-  margin: 0 0 6px;
-}
-.hero-section h1 .accent { color: var(--orange); }
-.hero-section p {
-  margin: 0;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.dash-signal-card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px 18px;
-  margin-bottom: 12px;
-}
-.dash-signal-card .tier-row {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 8px;
-}
-.dash-signal-card .tier-badge {
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.4px;
-  padding: 2px 8px;
-  border-radius: 20px;
-  text-transform: uppercase;
-}
-.dash-signal-card .tier-badge.low { background: rgba(76,181,107,0.15); color: var(--green); }
-.dash-signal-card .tier-badge.medium { background: rgba(232,178,61,0.15); color: var(--amber); }
-.dash-signal-card .tier-badge.high { background: rgba(224,82,82,0.15); color: var(--red); }
-.dash-signal-card .freshness {
-  font-size: 11px;
-  color: var(--text-dim);
-  margin-left: auto;
-}
-.dash-signal-card .sentence {
-  font-size: 14.5px;
-  margin: 0 0 10px;
-  line-height: 1.45;
-}
-.dash-signal-card .sentence .subject-text { color: var(--text-muted); }
-.dash-signal-card .chip-row {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin: 0 0 12px;
-}
-.dash-signal-card .chip {
-  font-size: 11.5px;
-  padding: 3px 9px;
-  border-radius: 20px;
-  background: var(--panel-raised);
-  color: var(--text-muted);
-  border: 1px solid var(--border);
-}
-.dash-signal-card .card-footer {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-.dash-signal-card .tickers-block { display: flex; align-items: center; flex-wrap: wrap; }
-.dash-signal-card .tickers { display: flex; gap: 6px; flex-wrap: wrap; }
-.dash-signal-card .ticker-chip {
-  font-weight: 600;
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 5px;
-}
-.dash-signal-card .ticker-chip.positive { background: rgba(76,181,107,0.16); color: var(--green); }
-.dash-signal-card .ticker-chip.negative { background: rgba(224,82,82,0.16); color: var(--red); }
-.dash-signal-card .ticker-chip.mixed { background: rgba(232,178,61,0.16); color: var(--amber); }
-.dash-signal-card .no-companies-note {
-  font-size: 11.5px;
-  color: var(--text-dim);
-}
-.dash-signal-card .why-link {
-  font-size: 12.5px;
-  color: var(--orange);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-/* Simplified watchlist rows on the dashboard aside */
-.watch-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-}
-.watch-row:last-child { border-bottom: none; }
-.watch-ticker { font-weight: 600; font-size: 13px; }
-.watch-note { font-size: 11.5px; color: var(--text-dim); margin-top: 1px; }
-.exposure-pill {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 20px;
-  white-space: nowrap;
-}
-.exposure-pill.positive { background: rgba(76,181,107,0.15); color: var(--green); }
-.exposure-pill.negative { background: rgba(224,82,82,0.15); color: var(--red); }
-.exposure-pill.mixed { background: rgba(232,178,61,0.15); color: var(--amber); }
-.watchlist-footnote {
-  font-size: 11px;
-  color: var(--text-dim);
-  margin-top: 12px;
-  line-height: 1.5;
-}
-
-.section-head-row {
-  margin-bottom: 8px;
-}
-.browse-all-row {
-  text-align: right;
-  margin: 4px 0 20px;
-}
-.browse-all-link {
-  font-size: 12.5px;
-  color: var(--text-dim);
-  text-decoration: none;
-}
-.browse-all-link:hover { color: var(--blue); }
-
-.watchlist-intro {
-  font-size: 11.5px;
-  color: var(--text-dim);
-  margin-bottom: 8px;
-  line-height: 1.45;
-}
-
-.empty-signal-block {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px 22px;
-  margin-bottom: 12px;
-}
-.empty-signal-block .empty-headline { font-size: 15px; font-weight: 600; margin: 0 0 6px; }
-.empty-signal-block .empty-rule { font-size: 13px; color: var(--text-muted); line-height: 1.55; margin: 0 0 14px; }
-.empty-stat-strip {
-  display: flex;
-  gap: 28px;
-  flex-wrap: wrap;
-  margin: 0 0 14px;
-  padding: 12px 14px;
-  background: var(--panel-raised);
-  border-radius: 8px;
-}
-.empty-stat-strip .estat .enum { font-family: 'Fraunces', serif; font-weight: 600; font-size: 20px; line-height: 1; }
-.empty-stat-strip .estat .elbl { font-size: 10.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 3px; }
-.recess-note {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  font-size: 12.5px;
-  color: var(--text-muted);
-  background: rgba(90,155,255,0.08);
-  border: 1px solid rgba(90,155,255,0.25);
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin-bottom: 10px;
-}
-.recess-note .recess-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); margin-top: 5px; flex-shrink: 0; }
-.empty-footnote { font-size: 11.5px; color: var(--text-dim); }
-
-.see-more-row { text-align: center; margin: 4px 0 12px; }
-.see-more-link { font-size: 12.5px; color: var(--blue); text-decoration: none; }
-.see-more-link:hover { text-decoration: underline; }
-
-/* Shared upcoming-meeting row, used at two densities: compact in the
-   sidebar (date + industry only), full in the empty-state block
-   (adds committee name and bill chips). Same markup/classes in both
-   places so they can't visually drift apart over time. */
-.upcoming-row { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
-.upcoming-row:last-child { border-bottom: none; }
-.upcoming-date { font-family: 'Fraunces', serif; font-weight: 600; font-size: 13px; color: var(--blue); width: 40px; flex-shrink: 0; }
-.upcoming-body { flex: 1; min-width: 0; }
-.upcoming-industry { font-size: 12.5px; font-weight: 600; }
-.upcoming-committee { font-size: 11.5px; color: var(--text-muted); margin-top: 1px; }
-.upcoming-bills { display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
-.upcoming-bills .chip { font-size: 10.5px; padding: 2px 7px; border-radius: 20px; background: var(--panel-raised); color: var(--text-dim); }
-.upcoming-row.compact .upcoming-committee,
-.upcoming-row.compact .upcoming-bills { display: none; }
