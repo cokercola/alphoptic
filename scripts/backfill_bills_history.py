@@ -74,6 +74,7 @@ from fetch_bills import (
     CURRENT_CONGRESS,
     CLASSIFICATION_SCHEMA_VERSION,
     CLASSIFY_PROMPT,
+    IMPACT_FACTOR_MAX,
     INDUSTRY_TAXONOMY,
     write_slim_data_files,
     write_bill_chunks,
@@ -87,12 +88,14 @@ from fetch_bills import (
     fetch_bill,
     fetch_bill_cosponsors,
     fetch_bill_summary,
+    fetch_bill_cbo_estimate,
     fetch_total_bill_count,
     bill_stage,
     is_on_calendar,
     STAGE_LABELS,
     passage_probability,
     derive_community_category,
+    compute_impact_score_and_relevance,
     load_previous_signals,
 )
 
@@ -101,7 +104,7 @@ LISTING_PAGE_SIZE = 250          # Congress.gov's max page size for the bill lis
 BATCH_CHUNK_SIZE = 5000          # requests per Batch API submission -- conservative,
                                   # comfortably under any documented cap
 MODEL = "claude-sonnet-4-6"
-MAX_TOKENS = 600
+MAX_TOKENS = 700  # was 600 - matches fetch_bills.py's classify(), new schema needs more room
 
 # Rough per-request cost estimate for --debug mode. Based on the actual
 # CLASSIFY_PROMPT structure (title + status + summary in, short JSON
@@ -213,7 +216,14 @@ def cmd_submit(args):
             status_date = b.get("latestAction", {}).get("actionDate", "")
 
             cached = previous.get(bill_id)
-            if cached and cached.get("status") == status and cached.get("schema_version") == CLASSIFICATION_SCHEMA_VERSION:
+            # Same WATCH exception as fetch_bills.py's main loop: a bill
+            # with no summary yet can sit at an unchanged status for
+            # months while a real summary eventually gets published, so
+            # WATCH bills are never skipped here even when nothing else
+            # about them changed.
+            if (cached and cached.get("status") == status
+                    and cached.get("schema_version") == CLASSIFICATION_SCHEMA_VERSION
+                    and cached.get("market_relevance") != "WATCH"):
                 total_skipped_cached += 1
                 continue
 
@@ -248,6 +258,13 @@ def cmd_submit(args):
                       f"classifying without an official summary.", file=sys.stderr)
                 summary_text = None
 
+            try:
+                cbo_context = fetch_with_retry(fetch_bill_cbo_estimate, CURRENT_CONGRESS, bill_type, number)
+            except requests.exceptions.RequestException as e:
+                print(f"WARNING: CBO estimate fetch failed for {bill_id} after retries ({e}); "
+                      f"continuing without it.", file=sys.stderr)
+                cbo_context = ""
+
             custom_id = bill_id
             pending_requests.append({
                 "custom_id": custom_id,
@@ -258,6 +275,7 @@ def cmd_submit(args):
                         "role": "user",
                         "content": CLASSIFY_PROMPT.format(
                             title=title, status=status, summary=summary_text or "No summary available.",
+                            cbo_context=cbo_context,
                             industry_list=", ".join(f'"{i}"' for i in INDUSTRY_TAXONOMY),
                         ),
                     }],
@@ -277,6 +295,11 @@ def cmd_submit(args):
                 "cosponsor_names": cosponsor_names,
                 "cosponsor_ids": cosponsor_ids,
                 "policy_area": policy_area,
+                # Needed at merge time (build_signal_from_result) to
+                # compute market_relevance - a WATCH bill is defined by
+                # having no summary, not by its score, so this has to
+                # survive from submit time through to poll time.
+                "has_summary": bool(summary_text),
             }
             total_queued += 1
 
@@ -366,6 +389,15 @@ def build_signal_from_result(meta, classification, schema_version):
     on_calendar = is_on_calendar(meta["status"])
     community_category = derive_community_category(meta.get("policy_area", ""), meta.get("title"))
     bill_like = {"cosponsors": {"count": meta.get("cosponsors", 0)}}
+
+    # has_summary came from submit time (recorded alongside this bill's
+    # pending request) - meta.get() rather than direct indexing since
+    # reconstruct_meta_from_bill_id() is a separate, older code path
+    # that also needs to supply it (see below).
+    has_summary = meta.get("has_summary", False)
+    impact_score, market_relevance = compute_impact_score_and_relevance(
+        classification.get("impact_breakdown", {}), has_summary)
+
     return {
         "bill_id": meta["bill_id"],
         "congress": meta["congress"],
@@ -386,6 +418,9 @@ def build_signal_from_result(meta, classification, schema_version):
         "community_category_label": COMMUNITY_CATEGORY_LABELS.get(community_category, "None"),
         "schema_version": schema_version,
         **classification,
+        "impact_score": impact_score,
+        "has_summary": has_summary,
+        "market_relevance": market_relevance,
     }
 
 
@@ -414,6 +449,18 @@ def reconstruct_meta_from_bill_id(bill_id):
         cosponsors = []
     cosponsor_names = [c["name"] for c in cosponsors]
     cosponsor_ids = [c.get("bioguide_id") for c in cosponsors]
+
+    # The original submit-time meta (with its own has_summary flag) is
+    # gone in this fallback path - re-fetch fresh rather than assume.
+    # On a fetch failure, default to False (WATCH) rather than True:
+    # since this determines whether the bill counts toward "High
+    # Impact," the safer wrong answer is under-confident, not
+    # over-confident.
+    try:
+        summary_text = fetch_with_retry(fetch_bill_summary, CURRENT_CONGRESS, bill_type, number)
+    except requests.exceptions.RequestException:
+        summary_text = None
+
     return {
         "bill_id": bill_id,
         "congress": CURRENT_CONGRESS,
@@ -426,27 +473,33 @@ def reconstruct_meta_from_bill_id(bill_id):
         "cosponsor_names": cosponsor_names,
         "cosponsor_ids": cosponsor_ids,
         "policy_area": detail.get("policyArea", {}).get("name", ""),
+        "has_summary": bool(summary_text),
     }
 
 
-# The same six fields fetch_bills.py always writes on a successful
+# The same fields fetch_bills.py always writes on a successful
 # classification (see its FALLBACK_CLASSIFICATION). A record missing
 # any of these was the root cause of the KeyError that once crashed
 # fetch_bills.py's daily run -- this backfill script was stamping
 # schema_version as valid on classifications that hadn't actually been
-# confirmed complete.
-REQUIRED_CLASSIFICATION_FIELDS = ("industry", "direction", "impact_score", "confidence", "summary", "companies")
+# confirmed complete. impact_score/market_relevance are deliberately
+# NOT here - those are computed deterministically in
+# build_signal_from_result(), never asked of Claude directly.
+REQUIRED_CLASSIFICATION_FIELDS = (
+    "industry", "secondary_industries", "direction", "confidence",
+    "summary", "impact_breakdown", "impact_rationale", "companies",
+)
 
 
 def sanitize_classification(classification):
-    """Claude's CLASSIFY_PROMPT schema specifies impact_score/confidence
-    as integers and exposure as integers, but nothing enforces that on
-    the way out -- at real scale (thousands of calls) some fraction
-    come back as strings instead (e.g. "70" instead of 70), which
-    crashes any later int comparison/sum on that field. Coerce here,
-    once, right after parsing, so a bad type from one bill can never
-    take down the whole summary rebuild after a merge has already
-    succeeded.
+    """Claude's CLASSIFY_PROMPT schema specifies confidence, every
+    impact_breakdown factor, and exposure as integers, but nothing
+    enforces that on the way out -- at real scale (thousands of calls)
+    some fraction come back as strings instead (e.g. "70" instead of
+    70), which crashes any later int comparison/sum on that field.
+    Coerce here, once, right after parsing, so a bad type from one bill
+    can never take down the whole summary rebuild after a merge has
+    already succeeded.
 
     Also validates that all REQUIRED_CLASSIFICATION_FIELDS are present.
     Claude's response is occasionally syntactically valid JSON that
@@ -457,12 +510,25 @@ def sanitize_classification(classification):
     missing = [f for f in REQUIRED_CLASSIFICATION_FIELDS if f not in classification]
     if missing:
         raise ValueError(f"classification missing required field(s): {missing}")
-    for field in ("impact_score", "confidence"):
-        if field in classification:
+    if "confidence" in classification:
+        try:
+            classification["confidence"] = int(classification["confidence"])
+        except (TypeError, ValueError):
+            classification["confidence"] = 0
+    breakdown = classification.get("impact_breakdown")
+    if isinstance(breakdown, dict):
+        for factor in IMPACT_FACTOR_MAX:
             try:
-                classification[field] = int(classification[field])
+                breakdown[factor] = int(breakdown.get(factor, 0))
             except (TypeError, ValueError):
-                classification[field] = 0
+                breakdown[factor] = 0
+    else:
+        # Missing/malformed breakdown - treat as fully absent so
+        # compute_impact_score_and_relevance() sees all-zero factors
+        # rather than crashing on a non-dict.
+        classification["impact_breakdown"] = {k: 0 for k in IMPACT_FACTOR_MAX}
+    if not isinstance(classification.get("secondary_industries"), list):
+        classification["secondary_industries"] = []
     if isinstance(classification.get("companies"), list):
         for c in classification["companies"]:
             if isinstance(c, dict) and "exposure" in c:
@@ -592,7 +658,11 @@ def rebuild_and_save_bills_json(signals, new_signals_count):
         "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
         "summary": {
             "bills_tracked": len(signals),
-            "high_impact": sum(1 for s in signals if safe_int(s.get("impact_score")) >= 70),
+            # Matches fetch_bills.py: counts market_relevance == "HIGH",
+            # not a raw score threshold - a bill only counts here if
+            # it's ALSO backed by a real published summary.
+            "high_impact": sum(1 for s in signals if s.get("market_relevance") == "HIGH"),
+            "watch_list": sum(1 for s in signals if s.get("market_relevance") == "WATCH"),
             "new_signals_today": new_signals_count,
             "industries_affected": len({s.get("industry") for s in signals if s.get("industry")}),
             "total_bills_this_congress": total_bills_this_congress,
