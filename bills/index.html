@@ -31,9 +31,11 @@
     </div>
     <div id="stage-breakdown"></div>
     <div class="section-label" id="bills-list-heading">All tracked bills</div>
+    <div id="impact-tabs" style="display:none; gap:4px; border-bottom:1px solid var(--border); margin-bottom:14px;"></div>
+    <div id="watch-banner" style="display:none;"></div>
     <table class="data-table" id="bills-table">
-      <thead>
-        <tr><th>Bill</th><th>Industry</th><th>Direction</th><th>Passage odds</th><th>Impact</th><th>Stage</th></tr>
+      <thead id="bills-table-head">
+        <tr id="bills-table-head-row"><th>Bill</th><th>Industry</th><th>Direction</th><th>Passage odds</th><th>Impact</th><th>Stage</th></tr>
       </thead>
       <tbody id="bills-body"></tbody>
     </table>
@@ -48,8 +50,17 @@ let allSignals = [];
 let currentStageFilter = 'all';
 let currentCategoryFilter = null;
 let currentIndustryFilter = null;
+let currentImpactFilter = null; // 'high' means we're on the Impact Bills page at all (dashboard card / ?impact=high)
+let currentImpactSubTab = 'high'; // 'high' or 'watch' - which of the two tabs is showing, only relevant when currentImpactFilter === 'high'
 let currentPage = 1;
 const PAGE_SIZE = 25;
+
+// Display text only now - the actual filter is market_relevance === 'HIGH',
+// computed server-side in fetch_bills.py (compute_impact_score_and_relevance).
+// That function requires BOTH score >= this threshold AND a real published
+// Congress.gov summary - a bill scoring 70+ on no summary is WATCH, not HIGH.
+// Keeping this constant here only so the UI text can state the number.
+const HIGH_IMPACT_THRESHOLD = 70;
 
 const STALLED_THRESHOLD_DAYS = 180;
 // Only "still in progress" stages can be stalled -- a became_law or
@@ -80,41 +91,118 @@ function isStalled(signal) {
   return days !== null && days >= STALLED_THRESHOLD_DAYS;
 }
 
+function fmtDate(dateStr) {
+  if (!dateStr) return '—';
+  return new Date(dateStr).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function setImpactSubTab(tab) {
+  currentImpactSubTab = tab;
+  renderBillsTable(currentStageFilter);
+}
+
 function renderBillsTable(stageFilter, resetPage = true) {
   currentStageFilter = stageFilter;
   if (resetPage) currentPage = 1;
   const body = document.getElementById('bills-body');
   const stalledOnly = document.getElementById('stalled-toggle').checked;
 
-  let filtered = stageFilter === 'all'
+  let baseFiltered = stageFilter === 'all'
     ? allSignals
     : allSignals.filter(s => s.stage === stageFilter);
 
   if (stalledOnly) {
-    filtered = filtered.filter(isStalled);
+    baseFiltered = baseFiltered.filter(isStalled);
   }
   if (currentCategoryFilter) {
-    filtered = filtered.filter(s => s.community_category === currentCategoryFilter);
+    baseFiltered = baseFiltered.filter(s => s.community_category === currentCategoryFilter);
   }
   if (currentIndustryFilter) {
-    filtered = filtered.filter(s => normalizeIndustryLabel(s.industry) === currentIndustryFilter);
+    baseFiltered = baseFiltered.filter(s => normalizeIndustryLabel(s.industry) === currentIndustryFilter);
   }
+
+  const onImpactPage = currentImpactFilter === 'high';
+  const tabsEl = document.getElementById('impact-tabs');
+  const bannerEl = document.getElementById('watch-banner');
+  const headRow = document.getElementById('bills-table-head-row');
+  let filtered, columnMode;
+
+  if (onImpactPage) {
+    // Counts reflect whatever OTHER filters are active (stage/category/
+    // industry/stalled), so the tab counts always match what you'd
+    // actually see if you clicked them - not the unfiltered totals.
+    const highCount = baseFiltered.filter(s => s.market_relevance === 'HIGH').length;
+    const watchCount = baseFiltered.filter(s => s.market_relevance === 'WATCH').length;
+
+    tabsEl.style.display = 'flex';
+    tabsEl.innerHTML = `
+      <div onclick="setImpactSubTab('high')" style="padding:8px 14px; font-size:12.5px; font-weight:600; cursor:pointer;
+        color:${currentImpactSubTab === 'high' ? 'var(--text)' : 'var(--text-muted)'};
+        border-bottom:2px solid ${currentImpactSubTab === 'high' ? 'var(--orange)' : 'transparent'};">
+        High Impact <span style="font-weight:normal; color:var(--text-muted);">${highCount}</span>
+      </div>
+      <div onclick="setImpactSubTab('watch')" style="padding:8px 14px; font-size:12.5px; cursor:pointer; display:flex; align-items:center; gap:6px;
+        color:${currentImpactSubTab === 'watch' ? 'var(--text)' : 'var(--text-muted)'};
+        border-bottom:2px solid ${currentImpactSubTab === 'watch' ? 'var(--orange)' : 'transparent'};
+        font-weight:${currentImpactSubTab === 'watch' ? '600' : 'normal'};">
+        Watch List <span style="font-weight:normal; color:var(--text-muted);">${watchCount}</span>
+      </div>
+    `;
+
+    if (currentImpactSubTab === 'watch') {
+      bannerEl.style.display = 'block';
+      bannerEl.innerHTML = `<div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:12px 14px; margin-bottom:14px; font-size:12.5px; color:var(--text-muted); line-height:1.5;">
+        These bills don't have a published Congress.gov summary yet, so we can't confidently score their real impact —
+        showing a number here would look precise without actually being backed by anything. They're rechecked every
+        pipeline run and will move to High Impact automatically once real information becomes available, which can
+        take anywhere from a few days to a few months depending on the bill.
+      </div>`;
+      columnMode = 'watch';
+      filtered = baseFiltered.filter(s => s.market_relevance === 'WATCH');
+      // Most recently active first - closer to committee action is
+      // closer to potentially getting a real summary published.
+      filtered = [...filtered].sort((a, b) => new Date(b.last_action_date || 0) - new Date(a.last_action_date || 0));
+    } else {
+      bannerEl.style.display = 'none';
+      columnMode = 'default';
+      filtered = baseFiltered.filter(s => s.market_relevance === 'HIGH');
+      filtered = [...filtered].sort((a, b) => b.impact_score - a.impact_score);
+    }
+  } else {
+    tabsEl.style.display = 'none';
+    bannerEl.style.display = 'none';
+    columnMode = 'default';
+    filtered = baseFiltered;
+  }
+
+  headRow.innerHTML = columnMode === 'watch'
+    ? '<th>Bill</th><th>Industry</th><th>Stage</th><th>Last action</th>'
+    : '<th>Bill</th><th>Industry</th><th>Direction</th><th>Passage odds</th><th>Impact</th><th>Stage</th>';
+  const colCount = columnMode === 'watch' ? 4 : 6;
 
   // Build the contextual heading + clear-filter link
   const headingEl = document.getElementById('bills-list-heading');
   let headingParts = [];
-  if (stalledOnly) headingParts.push(`Stalled bills (no action in ${STALLED_THRESHOLD_DAYS}+ days)`);
-  if (currentCategoryFilter) headingParts.push(`Community: ${currentCategoryFilter.replace(/_/g, ' ')}`);
-  if (currentIndustryFilter) headingParts.push(`Industry: ${currentIndustryFilter}`);
-  const hasActiveFilter = currentCategoryFilter || currentIndustryFilter;
+  if (onImpactPage) {
+    headingParts.push(currentImpactSubTab === 'watch'
+      ? 'Watch List — limited public data available yet'
+      : `High Impact Bills — score ${HIGH_IMPACT_THRESHOLD}+, backed by a real published summary`);
+  } else {
+    if (stalledOnly) headingParts.push(`Stalled bills (no action in ${STALLED_THRESHOLD_DAYS}+ days)`);
+    if (currentCategoryFilter) headingParts.push(`Community: ${currentCategoryFilter.replace(/_/g, ' ')}`);
+    if (currentIndustryFilter) headingParts.push(`Industry: ${currentIndustryFilter}`);
+  }
+  const hasActiveFilter = onImpactPage || currentCategoryFilter || currentIndustryFilter;
   headingEl.innerHTML = (headingParts.length ? headingParts.join(' · ') : 'All tracked bills')
     + (hasActiveFilter ? ' <a href="/bills/index.html" style="font-size:12px; font-weight:normal; color:var(--blue); margin-left:8px;">Clear filter ×</a>' : '');
 
   if (!filtered.length) {
-    const emptyMsg = stalledOnly
-      ? `No stalled bills right now — everything currently tracked has had action in the last ${STALLED_THRESHOLD_DAYS} days.`
-      : 'No bills match this filter.';
-    body.innerHTML = `<tr><td colspan="6" class="empty-note">${emptyMsg}</td></tr>`;
+    const emptyMsg = onImpactPage && currentImpactSubTab === 'watch'
+      ? 'Nothing on the watch list right now — every tracked bill either has a confirmed score or a published summary.'
+      : (stalledOnly
+        ? `No stalled bills right now — everything currently tracked has had action in the last ${STALLED_THRESHOLD_DAYS} days.`
+        : 'No bills match this filter.');
+    body.innerHTML = `<tr><td colspan="${colCount}" class="empty-note">${emptyMsg}</td></tr>`;
     document.getElementById('bills-pagination').innerHTML = '';
     return;
   }
@@ -126,6 +214,20 @@ function renderBillsTable(stageFilter, resetPage = true) {
   body.innerHTML = pageItems.map(s => {
     const days = daysSince(s.last_action_date);
     const staleBadge = isStalled(s) ? ` <span style="color:var(--text-secondary); font-size:11px;">(${days}d stalled)</span>` : '';
+    if (columnMode === 'watch') {
+      // Deliberately no Direction/Passage odds/Impact columns here -
+      // those numbers exist on a WATCH bill but aren't trustworthy
+      // enough to display as if they were, same reasoning as the
+      // banner above.
+      return `
+      <tr>
+        <td><a href="detail.html?id=${s.bill_id}">${s.bill_id}</a> — ${s.title}${staleBadge}</td>
+        <td>${s.industry}</td>
+        <td>${stagePill(s.stage, s.stageLabel)}</td>
+        <td>${fmtDate(s.last_action_date)}</td>
+      </tr>
+    `;
+    }
     return `
     <tr>
       <td><a href="detail.html?id=${s.bill_id}">${s.bill_id}</a> — ${s.title}${staleBadge}</td>
@@ -142,9 +244,10 @@ function renderBillsTable(stageFilter, resetPage = true) {
   if (totalPages <= 1) {
     pager.innerHTML = '';
   } else {
+    const itemLabel = onImpactPage && currentImpactSubTab === 'watch' ? 'watch list bills' : 'bills';
     pager.innerHTML = `
       <button class="pagination-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">← Prev</button>
-      <span style="margin:0 10px; font-size:13px; color:var(--text-muted);">Page ${currentPage} of ${totalPages} (${filtered.length} bills)</span>
+      <span style="margin:0 10px; font-size:13px; color:var(--text-muted);">Page ${currentPage} of ${totalPages} (${filtered.length} ${itemLabel})</span>
       <button class="pagination-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">Next →</button>
     `;
   }
@@ -187,6 +290,9 @@ async function init() {
   }
   if (params.get('industry')) {
     currentIndustryFilter = params.get('industry');
+  }
+  if (params.get('impact') === 'high') {
+    currentImpactFilter = 'high';
   }
 
   renderBillsTable('all');
