@@ -1,0 +1,32 @@
+name: Pilot impact rubric
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install requests anthropic
+      - name: Run pilot
+        env:
+          CONGRESS_API_KEY: ${{ secrets.CONGRESS_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/pilot_impact_rubric.py
+      # This is a one-off test, not a real pipeline run - results are
+      # uploaded as a downloadable artifact instead of being committed
+      # to data/, since nothing here should touch production data.
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pilot-results
+          path: pilot_results.json
+          retention-days: 14
