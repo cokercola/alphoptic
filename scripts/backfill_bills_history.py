@@ -106,11 +106,17 @@ BATCH_CHUNK_SIZE = 5000          # requests per Batch API submission -- conserva
 MODEL = "claude-sonnet-4-6"
 MAX_TOKENS = 700  # was 600 - matches fetch_bills.py's classify(), new schema needs more room
 
-# Rough per-request cost estimate for --debug mode. Based on the actual
-# CLASSIFY_PROMPT structure (title + status + summary in, short JSON
-# out). Batch API is 50% of standard $3/$15 per-million-token pricing.
-EST_INPUT_TOKENS_PER_BILL = 600
-EST_OUTPUT_TOKENS_PER_BILL = 300
+# Rough per-request cost estimate for --debug mode. Re-measured against
+# the actual rewritten CLASSIFY_PROMPT (7-factor rubric with band tables)
+# on 2026-08-20 - the prompt itself runs ~1,590 tokens filled in, and the
+# response now includes impact_breakdown (7 fields) + impact_rationale +
+# secondary_industries on top of what used to be just a single
+# impact_score integer, so both sides grew substantially from the old
+# short-prompt estimate. Still an estimate, not a guarantee - actual
+# bill title/status/summary length varies per bill. Batch API is 50% of
+# standard $3/$15 per-million-token pricing.
+EST_INPUT_TOKENS_PER_BILL = 1600
+EST_OUTPUT_TOKENS_PER_BILL = 550
 BATCH_INPUT_PRICE_PER_MTOK = 1.50
 BATCH_OUTPUT_PRICE_PER_MTOK = 7.50
 
