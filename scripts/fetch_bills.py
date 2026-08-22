@@ -834,7 +834,18 @@ def write_slim_data_files(signals, summary=None):
 
     company_rows = []
     for s in signals:
-        for c in s.get("companies") or []:
+        companies = s.get("companies")
+        # Defensive: at least one existing signal had "companies"
+        # stored as a raw string instead of a list (see the
+        # sanitize_classification fix in backfill_bills_history.py),
+        # which iterates character-by-character and crashes the next
+        # line on `.get`. Skip anything that isn't actually a list of
+        # dicts rather than let one bad record take down this rebuild.
+        if not isinstance(companies, list):
+            continue
+        for c in companies:
+            if not isinstance(c, dict):
+                continue
             company_rows.append({
                 "ticker": c.get("ticker"),
                 "name": c.get("name"),
