@@ -90,6 +90,7 @@ from fetch_bills import (
     fetch_bill_summary,
     fetch_bill_cbo_estimate,
     fetch_total_bill_count,
+    resolve_companies,
     bill_stage,
     is_on_calendar,
     STAGE_LABELS,
@@ -427,6 +428,12 @@ def build_signal_from_result(meta, classification, schema_version):
         "impact_score": impact_score,
         "has_summary": has_summary,
         "market_relevance": market_relevance,
+        # fetch_bills.py's daily job always stamps this (currently just a
+        # hardcoded "TBD" placeholder, not yet computed dynamically - see
+        # that file). This backfill path never set it at all, which left
+        # bill.next_event as JS `undefined` - rendered literally as the
+        # text "undefined" - on every backfilled bill's detail page.
+        "next_event": "TBD",
     }
 
 
@@ -535,6 +542,23 @@ def sanitize_classification(classification):
         classification["impact_breakdown"] = {k: 0 for k in IMPACT_FACTOR_MAX}
     if not isinstance(classification.get("secondary_industries"), list):
         classification["secondary_industries"] = []
+    if isinstance(classification.get("companies"), str):
+        # Observed at least once in existing data (HRES790): Claude's
+        # response had "companies" as the literal JSON string "[]"
+        # instead of an actual array. That's valid JSON so it sailed
+        # through extract_json_object/json.loads untouched, and every
+        # downstream `for c in signal["companies"]` then iterated over
+        # individual CHARACTERS ('[', ']') instead of company dicts -
+        # crashing normalize_companies.py and write_slim_data_files
+        # with "'str' object has no attribute 'get'" the moment it hit
+        # that bill. Try to recover a real list from the string; fall
+        # back to empty either way rather than let a stray string
+        # value poison every script that touches "companies" downstream.
+        try:
+            parsed = json.loads(classification["companies"])
+            classification["companies"] = parsed if isinstance(parsed, list) else []
+        except (ValueError, json.JSONDecodeError):
+            classification["companies"] = []
     if isinstance(classification.get("companies"), list):
         for c in classification["companies"]:
             if isinstance(c, dict) and "exposure" in c:
@@ -542,6 +566,18 @@ def sanitize_classification(classification):
                     c["exposure"] = int(c["exposure"])
                 except (TypeError, ValueError):
                     c["exposure"] = 0
+        # fetch_bills.py's daily job runs every classification's companies
+        # through the SEC-registry resolver before storing (see
+        # resolve_companies() / company_registry.py) - this backfill path
+        # was skipping that step entirely and storing Claude's raw,
+        # free-recalled company names with no ticker at all. That's what
+        # was showing up as ticker "undefined" on the dashboard Watchlist
+        # and on bill detail pages for any backfilled bill. Companies that
+        # don't confidently resolve are dropped here too, same as the
+        # daily job - not kept with an unverified ticker.
+        classification["companies"] = resolve_companies(classification["companies"])
+    else:
+        classification["companies"] = []
     if classification.get("industry") not in INDUSTRY_TAXONOMY:
         classification["industry"] = "Other / Cross-Sector"
     return classification
@@ -656,7 +692,15 @@ def rebuild_and_save_bills_json(signals, new_signals_count):
 
     try:
         total_bills_this_congress = fetch_total_bill_count()
-    except requests.HTTPError as e:
+    except Exception as e:
+        # This is a "nice to have" enrichment call, not core to the
+        # merge - a timeout/connection error here used to be uncaught
+        # (only requests.HTTPError was handled) and would crash the
+        # whole run AFTER the checkpoint already marked this batch as
+        # no longer pending, permanently losing that batch's
+        # already-paid-for classification results since nothing would
+        # ever retry them. Catching broadly here means a hiccup on
+        # this one lightweight call can never take the merge down.
         print(f"WARNING: couldn't fetch total bill count ({e}); omitting from output.")
         total_bills_this_congress = None
 
