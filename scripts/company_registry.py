@@ -107,13 +107,23 @@ class CompanyRegistry:
         with open(path) as f:
             data = json.load(f)
         self._entries = data["companies"]  # [{"cik_str", "ticker", "title"}, ...]
-        # normalized_title -> (ticker, canonical_title). A handful of
-        # normalized collisions are possible (rare); last one in the
-        # SEC file wins, which is an acceptable tradeoff for a fuzzy
-        # first pass -- exact-ticker lookups aren't affected.
-        self._by_normalized_title = {
-            normalize(e["title"]): (e["ticker"], e["title"]) for e in self._entries
-        }
+        # normalized_title -> (ticker, canonical_title). SEC's file
+        # lists a company's primary common-stock ticker before its
+        # preferred-share classes, ADR variants, and other secondary
+        # listings for the same CIK (e.g. Alphabet: GOOGL, GOOG, then
+        # two secondary/non-primary classes; JPMorgan: JPM, then eight
+        # preferred-share tickers). On a normalized-title collision,
+        # the FIRST entry wins so the common/primary ticker is what
+        # gets resolved - 1,447 titles in the SEC file have more than
+        # one ticker, so this tie-break matters far beyond one company.
+        # (This was previously "last wins," which is how a bill's
+        # Alphabet exposure ended up resolved to the ticker "GOOGN" -
+        # not a real tradeable security - instead of GOOGL.)
+        self._by_normalized_title = {}
+        for e in self._entries:
+            key = normalize(e["title"])
+            if key not in self._by_normalized_title:
+                self._by_normalized_title[key] = (e["ticker"], e["title"])
         self._by_ticker = {e["ticker"]: e["title"] for e in self._entries}
         self._choices = list(self._by_normalized_title.keys())
 
