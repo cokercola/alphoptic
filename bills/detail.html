@@ -40,6 +40,67 @@ function billChunkIndex(billId) {
   return sum % NUM_BILL_CHUNKS;
 }
 
+// Mirrors IMPACT_FACTOR_MAX and the impact_breakdown schema in
+// scripts/fetch_bills.py's CLASSIFY_PROMPT exactly - key, display
+// label, and max points per factor. Keep in sync if the rubric changes.
+const IMPACT_FACTORS = [
+  { key: 'economic', label: 'Economic & market impact', max: 30 },
+  { key: 'reach', label: 'Population & business reach', max: 20 },
+  { key: 'fiscal', label: 'Federal fiscal impact', max: 15 },
+  { key: 'regulatory', label: 'Regulatory & legal change', max: 15 },
+  { key: 'industry_exposure', label: 'Industry/company exposure concentration', max: 10 },
+  { key: 'state_local', label: 'State & local impact', max: 5 },
+  { key: 'duration', label: 'Duration/structural impact', max: 5 },
+];
+
+function scoreBreakdownHTML(bill) {
+  const breakdown = bill.impact_breakdown;
+  const hasBreakdown = breakdown && typeof breakdown === 'object'
+    && IMPACT_FACTORS.some(f => Number(breakdown[f.key]) > 0);
+
+  if (!hasBreakdown) {
+    // ~8,000 bills were scored under the older flat impact_score
+    // system, before the 7-factor rubric existed, and haven't been
+    // re-classified yet - show a plain note instead of an empty/
+    // all-zero breakdown that would look broken.
+    return `
+      <div class="section-label">Score breakdown</div>
+      <div class="impact-legacy-note">This bill was scored before Alphoptic's detailed 7-factor breakdown existed and hasn't been re-classified yet. Only the overall impact score above is available for now.</div>
+    `;
+  }
+
+  const rows = IMPACT_FACTORS.map(f => {
+    const val = Math.max(0, Math.min(Number(breakdown[f.key]) || 0, f.max));
+    const pct = f.max ? Math.round((val / f.max) * 100) : 0;
+    return `
+      <div class="impact-factor-row">
+        <div class="impact-factor-head">
+          <span class="impact-factor-name">${f.label}</span>
+          <span class="impact-factor-score">${val}/${f.max}</span>
+        </div>
+        <div class="impact-factor-bar-track"><div class="impact-factor-bar-fill" style="width:${pct}%"></div></div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="section-label">Score breakdown</div>
+    <div class="impact-breakdown-card">
+      ${rows}
+      <div class="impact-total-row"><span>Total impact score</span><strong>${bill.impact_score}/100</strong></div>
+    </div>
+    ${bill.impact_rationale ? `<div class="impact-rationale-box">${bill.impact_rationale}</div>` : ''}
+  `;
+}
+
+function industryChipsHTML(bill) {
+  if (!bill.industry) return '';
+  const secondary = Array.isArray(bill.secondary_industries) ? bill.secondary_industries : [];
+  const chips = [`<span class="industry-chip primary">${bill.industry}</span>`]
+    .concat(secondary.map(i => `<span class="industry-chip">${i}</span>`));
+  return `<div style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 18px;">${chips.join('')}</div>`;
+}
+
 async function init() {
   renderSidebar('bills');
   const params = new URLSearchParams(window.location.search);
@@ -97,13 +158,15 @@ async function init() {
       <div class="item"><div class="label">Impact score</div><div class="value">${bill.impact_score}/100</div></div>
       <div class="item"><div class="label">Confidence</div><div class="value">${bill.confidence}%</div></div>
       <div class="item"><div class="label">Last action</div><div class="value" style="font-size:13px;">${bill.last_action}${lastActionDate ? ` <span style="color:var(--text-muted);">(${lastActionDate})</span>` : ''}</div></div>
-      <div class="item"><div class="label">Next event</div><div class="value" style="font-size:13px;">${bill.next_event}</div></div>
+      <div class="item"><div class="label">Next event</div><div class="value" style="font-size:13px;">${bill.next_event || 'TBD'}</div></div>
     </div>
+    ${industryChipsHTML(bill)}
+    ${scoreBreakdownHTML(bill)}
     <div class="section-label">Company exposure</div>
     <table class="data-table">
       <thead><tr><th>Ticker</th><th>Company</th><th>Effect</th><th>Exposure</th></tr></thead>
       <tbody>
-        ${bill.companies.map(c => `
+        ${(Array.isArray(bill.companies) ? bill.companies : []).map(c => `
           <tr>
             <td><a href="/companies/index.html?ticker=${c.ticker}">${c.ticker}</a></td>
             <td>${c.name}</td>
