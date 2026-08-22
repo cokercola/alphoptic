@@ -938,6 +938,98 @@ table.data-table a { color: var(--blue); text-decoration: none; }
   border-radius: 10px;
 }
 
+/* Secondary industry chips on the bill detail page */
+.industry-chip {
+  display: inline-block;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 10px;
+}
+.industry-chip.primary {
+  background: rgba(90,155,255,0.15);
+  border-color: transparent;
+  color: var(--blue);
+  font-weight: 600;
+}
+
+/* ============================================
+   Bill detail: score breakdown card
+   ============================================ */
+.impact-breakdown-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px 6px;
+  margin-bottom: 14px;
+}
+.impact-factor-row {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.impact-factor-row:last-child { border-bottom: none; }
+.impact-factor-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+  gap: 10px;
+}
+.impact-factor-name {
+  font-size: 13px;
+  color: var(--text);
+}
+.impact-factor-score {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-weight: 600;
+}
+.impact-factor-bar-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--panel-raised);
+  overflow: hidden;
+}
+.impact-factor-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--orange);
+}
+.impact-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.impact-total-row strong {
+  color: var(--text);
+  font-size: 15px;
+}
+.impact-rationale-box {
+  background: var(--panel);
+  border-left: 3px solid var(--orange);
+  border-radius: 0 6px 6px 0;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+.impact-legacy-note {
+  color: var(--text-muted);
+  font-size: 13px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+}
+
 /* Bills index pagination */
 .pagination-btn {
   background: var(--panel);
