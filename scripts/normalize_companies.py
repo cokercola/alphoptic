@@ -39,9 +39,26 @@ def main():
     signals = data["signals"]
 
     unique_pairs = set()
+    malformed_bills = 0
     for s in signals:
-        for c in s.get("companies") or []:
+        companies = s.get("companies")
+        # Defensive: at least one signal (HRES790) had "companies"
+        # stored as the raw string "[]" instead of an actual list -
+        # iterating that yields individual characters ('[', ']')
+        # rather than company dicts, and crashed here on `.get`.
+        # Skip anything that isn't a real list rather than let one bad
+        # record take the whole normalization run down.
+        if not isinstance(companies, list):
+            if companies:
+                malformed_bills += 1
+            continue
+        for c in companies:
+            if not isinstance(c, dict):
+                continue
             unique_pairs.add((c.get("ticker"), c.get("name")))
+    if malformed_bills:
+        print(f"WARNING: skipped {malformed_bills} bill(s) with a malformed (non-list) "
+              f"companies field - these will be normalized to an empty list below.")
     print(f"Found {len(unique_pairs)} unique (ticker, name) pairs across {len(signals)} bills.")
 
     lookup = {}          # (old_ticker, old_name) -> (new_ticker, new_name) | None
@@ -64,11 +81,20 @@ def main():
     corrected_entries = 0
     for s in signals:
         companies = s.get("companies") or []
+        if not isinstance(companies, list):
+            # Malformed field (see above) - normalize it to an empty
+            # list rather than skip, so this run actually fixes it.
+            s["companies"] = []
+            changed_bills += 1
+            continue
         if not companies:
             continue
         new_companies = []
         bill_changed = False
         for c in companies:
+            if not isinstance(c, dict):
+                bill_changed = True
+                continue
             key = (c.get("ticker"), c.get("name"))
             match = lookup.get(key)
             if match is None:
