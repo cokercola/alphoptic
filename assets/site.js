@@ -165,6 +165,26 @@ function exposureInfoIcon() {
   return `<span class="info-icon">i<span class="tooltip-popover tooltip-popover-wide">${html}</span></span>`;
 }
 
+// Explains the High Impact / Watch List split on the Bills page - both
+// tiers come from the same market_relevance scoring, but WATCH exists
+// because a bill can score 70+ with no real Congress.gov summary yet,
+// which isn't trustworthy enough to show as a confident number (see
+// the in-page banner on that tab for the fuller explanation).
+function impactTiersInfoIcon() {
+  const html = `
+    <div class="tooltip-label">What these tiers mean</div>
+    <div class="tooltip-bullet">
+      <span class="tooltip-dot" style="background:var(--orange)"></span>
+      <span><strong style="color:var(--orange)">High Impact</strong> — score ${typeof HIGH_IMPACT_THRESHOLD !== 'undefined' ? HIGH_IMPACT_THRESHOLD : 70}+, backed by a real published Congress.gov summary.</span>
+    </div>
+    <div class="tooltip-bullet">
+      <span class="tooltip-dot" style="background:var(--text-muted)"></span>
+      <span><strong style="color:var(--text)">Watch List</strong> — likely high-impact based on early signals, but no published summary yet to confidently score. Moves to High Impact automatically once one is available.</span>
+    </div>
+  `;
+  return `<span class="info-icon">i<span class="tooltip-popover tooltip-popover-wide">${html}</span></span>`;
+}
+
 // Explains the 26-vs-25 gap between the dashboard's "Industries
 // tracked" stat (every taxonomy category with at least one tracked
 // bill, from bills.json) and the signals panel's "Industries checked"
