@@ -22,6 +22,12 @@
   <nav class="sidebar" id="sidebar"></nav>
   <main>
     <div class="breadcrumb"><a href="/index.html">Dashboard</a> / Bills</div>
+    <div class="view-toggle-row" id="view-toggle-row">
+      <button class="view-toggle-pill" id="view-toggle-all" onclick="setViewMode('all')">All Bills</button>
+      <button class="view-toggle-pill impact-pill" id="view-toggle-impact" onclick="setViewMode('impact')">
+        High Impact &amp; Watch List<span id="impact-tiers-info-slot"></span>
+      </button>
+    </div>
     <div class="section-label" style="display:flex; align-items:center; justify-content:space-between;">
       <span>Bills by stage</span>
       <label style="font-size:13px; font-weight:normal; display:flex; align-items:center; gap:6px; cursor:pointer;">
@@ -101,9 +107,29 @@ function setImpactSubTab(tab) {
   renderBillsTable(currentStageFilter);
 }
 
+function setViewMode(mode) {
+  currentImpactFilter = mode === 'impact' ? 'high' : null;
+  renderBillsTable(currentStageFilter);
+}
+
+function syncViewToggle() {
+  const onImpactPage = currentImpactFilter === 'high';
+  document.getElementById('view-toggle-all').classList.toggle('active', !onImpactPage);
+  document.getElementById('view-toggle-impact').classList.toggle('active', onImpactPage);
+}
+
+function clearAllFilters() {
+  currentImpactFilter = null;
+  currentCategoryFilter = null;
+  currentIndustryFilter = null;
+  document.getElementById('stalled-toggle').checked = false;
+  renderBillsTable('all');
+}
+
 function renderBillsTable(stageFilter, resetPage = true) {
   currentStageFilter = stageFilter;
   if (resetPage) currentPage = 1;
+  syncViewToggle();
   const body = document.getElementById('bills-body');
   const stalledOnly = document.getElementById('stalled-toggle').checked;
 
@@ -194,7 +220,7 @@ function renderBillsTable(stageFilter, resetPage = true) {
   }
   const hasActiveFilter = onImpactPage || currentCategoryFilter || currentIndustryFilter;
   headingEl.innerHTML = (headingParts.length ? headingParts.join(' · ') : 'All tracked bills')
-    + (hasActiveFilter ? ' <a href="/bills/index.html" style="font-size:12px; font-weight:normal; color:var(--blue); margin-left:8px;">Clear filter ×</a>' : '');
+    + (hasActiveFilter ? ' <a href="javascript:void(0)" onclick="clearAllFilters()" style="font-size:12px; font-weight:normal; color:var(--blue); margin-left:8px;">Clear filter ×</a>' : '');
 
   if (!filtered.length) {
     const emptyMsg = onImpactPage && currentImpactSubTab === 'watch'
@@ -278,6 +304,9 @@ async function init() {
   allSignals = data.bills.map(s => ({ ...s, stageLabel: labelByStage[s.stage] || s.stage }));
 
   renderStageBreakdown('stage-breakdown', data.summary, (stage) => renderBillsTable(stage));
+
+  document.getElementById('impact-tiers-info-slot').innerHTML = impactTiersInfoIcon();
+  initInfoTooltips();
 
   // Deep links from the dashboard's Stalled teaser, or from the
   // Community/Industries pages' "View all" links
