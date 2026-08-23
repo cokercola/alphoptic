@@ -40,7 +40,7 @@ async function loadDashboard() {
       caption: 'this week',
     })}
     ${statCardHTML({
-      href: '/signals/index.html',
+      href: '/#unusual-attention',
       label: 'Industries flagged',
       value: industriesFlagged != null ? industriesFlagged : '—',
       delta: industriesFlaggedDelta,
