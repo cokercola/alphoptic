@@ -31,6 +31,7 @@
       </select>
     </div>
     <div id="signal-list"></div>
+    <div id="signal-pagination" class="pagination-row"></div>
   </main>
 </div>
 <script src="/assets/site.js"></script>
@@ -38,15 +39,33 @@
 <script src="/assets/header.js"></script>
 <script>
 let allSignals = [];
+let currentPage = 1;
+const PAGE_SIZE = 50;
+
 function render(sortKey) {
   const keyMap = { impact: 'impact_score', probability: 'passage_probability', confidence: 'confidence' };
   const sorted = [...allSignals].sort((a, b) => b[keyMap[sortKey]] - a[keyMap[sortKey]]);
+  renderPage(sorted, currentPage);
+}
+
+function renderPage(sorted, page) {
   const list = document.getElementById('signal-list');
+  const paginationEl = document.getElementById('signal-pagination');
+
   if (!sorted.length) {
     list.innerHTML = `<div class="empty-note">No signals yet.</div>`;
+    paginationEl.innerHTML = '';
     return;
   }
-  list.innerHTML = sorted.map(s => `
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  page = Math.min(Math.max(1, page), totalPages);
+  currentPage = page;
+
+  const start = (page - 1) * PAGE_SIZE;
+  const pageItems = sorted.slice(start, start + PAGE_SIZE);
+
+  list.innerHTML = pageItems.map(s => `
     <a class="signal-card ${s.direction}" href="/bills/detail.html?id=${s.bill_id}">
       <div class="signal-head">
         <span>${s.bill_id} — ${s.title}</span>
@@ -55,15 +74,49 @@ function render(sortKey) {
       <div class="signal-sub">${s.industry} · impact ${s.impact_score}/100 · confidence ${s.confidence}% · ${s.companies.map(c => c.ticker).join(', ')}</div>
     </a>
   `).join('');
+
+  paginationEl.innerHTML = paginationHTML(page, totalPages, sorted.length, start, start + pageItems.length);
   initInfoTooltips();
+
+  const prevBtn = document.getElementById('pg-prev');
+  const nextBtn = document.getElementById('pg-next');
+  if (prevBtn) prevBtn.addEventListener('click', () => {
+    currentPage = page - 1;
+    render(document.getElementById('sort-select').value);
+    scrollToListTop();
+  });
+  if (nextBtn) nextBtn.addEventListener('click', () => {
+    currentPage = page + 1;
+    render(document.getElementById('sort-select').value);
+    scrollToListTop();
+  });
 }
+
+function paginationHTML(page, totalPages, total, startIdx, endIdx) {
+  return `
+    <div class="pagination-info">Showing ${startIdx + 1}–${endIdx} of ${total.toLocaleString()}</div>
+    <div class="pagination-controls">
+      <button id="pg-prev" ${page <= 1 ? 'disabled' : ''}>&larr; Previous</button>
+      <span class="pagination-page">Page ${page} of ${totalPages.toLocaleString()}</span>
+      <button id="pg-next" ${page >= totalPages ? 'disabled' : ''}>Next &rarr;</button>
+    </div>
+  `;
+}
+
+function scrollToListTop() {
+  document.getElementById('signal-list').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 async function init() {
   renderSidebar('signals');
   const data = await fetchSiteData();
   document.getElementById('updated-at').textContent = 'Updated ' + new Date(data.updated_at).toLocaleString();
   allSignals = data.signals;
   render('impact');
-  document.getElementById('sort-select').addEventListener('change', e => render(e.target.value));
+  document.getElementById('sort-select').addEventListener('change', e => {
+    currentPage = 1;
+    render(e.target.value);
+  });
 }
 init().catch(err => {
   console.error(err);
