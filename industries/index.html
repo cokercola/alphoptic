@@ -63,11 +63,15 @@ async function init() {
     list.innerHTML = `<div class="empty-note">No industry data yet.</div>`;
     return;
   }
-  const CAP = 10;
+  const CAP = 5;
   list.innerHTML = industries.map(industry => {
     const bills = byIndustry[industry];
     const avgImpact = Math.round(bills.reduce((sum, b) => sum + b.impact_score, 0) / bills.length);
-    const shown = bills.slice(0, CAP);
+    // Sorted by impact score (desc) before capping, so the ones shown
+    // are the most impactful in this industry - not just whatever
+    // order they happened to appear in the source data.
+    const sorted = [...bills].sort((a, b) => b.impact_score - a.impact_score);
+    const shown = sorted.slice(0, CAP);
     const remaining = bills.length - shown.length;
     return `
       <div class="industry-card">
