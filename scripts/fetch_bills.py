@@ -413,6 +413,12 @@ def resolve_companies(companies):
     return resolved
 
 
+CLASSIFY_REQUIRED_KEYS = (
+    "industry", "secondary_industries", "direction", "confidence",
+    "summary", "impact_breakdown", "impact_rationale", "companies",
+)
+
+
 def classify(title, status, summary, cbo_context="", bill_id="unknown"):
     message = client.messages.create(
         model="claude-sonnet-4-6",
@@ -431,7 +437,18 @@ def classify(title, status, summary, cbo_context="", bill_id="unknown"):
 
     try:
         json_str = extract_json_object(text)
-        return json.loads(json_str)
+        result = json.loads(json_str)
+        # Valid JSON isn't enough - Claude occasionally returns a
+        # parseable object that's missing fields (e.g. no
+        # impact_breakdown), which used to crash main() with a
+        # KeyError and kill the whole run. Treat that the same as a
+        # parse failure: log it, fall back, retry next run.
+        missing = [k for k in CLASSIFY_REQUIRED_KEYS if k not in result]
+        if missing:
+            raise ValueError(f"response missing required keys: {missing}")
+        if not isinstance(result["impact_breakdown"], dict):
+            raise ValueError("impact_breakdown is not an object")
+        return result
     except (ValueError, json.JSONDecodeError) as e:
         # Don't let one malformed response take down the entire run -
         # log enough to debug later, fall back to a placeholder for
