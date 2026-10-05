@@ -3,14 +3,13 @@ name: Update legislative signals
 on:
   schedule:
     - cron: "0 12 * * *"
-    
   workflow_dispatch: {}
 
 permissions:
   contents: write
 
 concurrency:
-  group: backfill-bills-history
+  group: update-bills
   cancel-in-progress: false
 
 jobs:
